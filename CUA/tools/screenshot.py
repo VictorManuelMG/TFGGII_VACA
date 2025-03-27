@@ -10,6 +10,11 @@ from ultralytics import YOLO
 import cv2
 import random
 import copy
+from .captionFlorence import caption_call
+
+# Import for debugging and testing
+import time
+
 
 @tool
 def interpret_screen(order: str):
@@ -24,11 +29,11 @@ def interpret_screen(order: str):
     image = ImageGrab.grab()
     image.save("screenshot.jpeg")
 
-
-
     if os.path.exists("./CUA/tools/tempcrops"):
-        shutil.rmtree("./CUA/tools/tempcrops")  
-    os.makedirs("./CUA/tools/tempcrops", exist_ok=True) #Generate a tempfolder for the crops given to Florence, will be removed in the future.
+        shutil.rmtree("./CUA/tools/tempcrops")
+    os.makedirs(
+        "./CUA/tools/tempcrops", exist_ok=True
+    )  # Generate a tempfolder for the crops given to Florence, will be removed in the future.
     coords = image_YOLOED("screenshot.jpeg")
     with open("Yoloed.jpeg", "rb") as image_file:
         img_data = base64.b64encode(image_file.read()).decode("utf-8")
@@ -36,7 +41,7 @@ def interpret_screen(order: str):
     client = anthropic.Anthropic()
     cursor = pyautogui.position()
 
-
+    start = time.time()
 
     message = client.messages.create(
         model="claude-3-7-sonnet-20250219",
@@ -74,9 +79,9 @@ def interpret_screen(order: str):
 
                         an image_description
 
-                        <bounding_boxes>
+                        <bounding_boxes with captions>
                         {coords}
-                        </bounding_boxes>
+                        </bounding_boxes with captions>
 
                         <cursor_coordinates>
                         {cursor}
@@ -86,7 +91,7 @@ def interpret_screen(order: str):
 
                         1. Carefully read the user request:
 
-                        2. Analyze the image description and bounding boxes to locate the requested element.
+                        2. Analyze the image description and bounding boxes to locate the requested element take in account the captions on the bounding boxes if you don't know what are you seeing, take in account captions might be sometimes wrong.
 
                         3. If the requested element is found in the bounding boxes:
                         a. Identify the corresponding bounding box.
@@ -110,12 +115,17 @@ def interpret_screen(order: str):
                         Remember to be as precise as possible when determining coordinates. If you need to make any assumptions or estimations, clearly state them in your explanation.
                         Also remember to always use the bounding boxes.
                         Also give your own insights like advices when you're asked something like "is the dropdown visible?" you should respond like "No but you can drop it clicking on...".
-                        Your feedback must always have coordinates for the agent."""
+                        Your feedback must always have coordinates for the agent.""",
                     }
                 ],
             },
         ],
     )
+
+    end = time.time()
+    print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print(f"Tiempo de ejecucion de razonamiendo screenshot: {end - start} segundos")
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n")
 
     return message
 
@@ -141,15 +151,15 @@ def image_YOLOED(pathScreenshot: str):
     resultsOriginal = yolo.predict(
         image,
         save=False,
-        conf=0.05, #Low conf so it makes more bounding boxes
-        iou=0.35, #Lower iou to not let the model hallucinate certain boundin boxes
+        conf=0.05,  # Low conf so it makes more bounding boxes
+        iou=0.35,  # Lower iou to not let the model hallucinate certain boundin boxes
         line_width=1,
-        imgsz=1920, #Always resized to 1920
+        imgsz=1920,  # Always resized to 1920
         show_labels=True,
         show_conf=False,
     )
 
-    #In case colour palette is too similar, included gray scale analysis
+    # In case colour palette is too similar, included gray scale analysis
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     cv2.imwrite("gray.jpeg", gray_image)
@@ -157,10 +167,10 @@ def image_YOLOED(pathScreenshot: str):
     resultsGray = yolo.predict(
         "gray.jpeg",
         save=False,
-        conf=0.05, #Low conf so it makes more bounding boxes
-        iou=0.2, #Even lower IOU than original as it tends to hallucinate more with gray scale
+        conf=0.05,  # Low conf so it makes more bounding boxes
+        iou=0.2,  # Even lower IOU than original as it tends to hallucinate more with gray scale
         line_width=1,
-        imgsz=1920, #Always resized to 1920
+        imgsz=1920,  # Always resized to 1920
         show_labels=True,
         show_conf=False,
     )
@@ -172,11 +182,13 @@ def image_YOLOED(pathScreenshot: str):
         for box in result:
             count_gray += 1
 
+    print(count_gray, count_original)
+
     if count_original >= count_gray:
         coords = Yolo_boxes_coord(image, resultsOriginal)
     else:
         coords = Yolo_boxes_coord(image, resultsGray)
-    print(count_gray, count_original)
+
     return coords
 
 
@@ -195,27 +207,29 @@ def Yolo_boxes_coord(image, results: list):
     count = 0
 
     Bboxes = []
-    FlorenceIndex={}
+    CaptionBboxes = {}
+
+    complete_dict = {}
 
     for result in results:
         for box in result.boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
             # confidence = box.conf[0].item()
 
-            Bboxes.append([x1,y1,x2,y2])
+            Bboxes.append([x1, y1, x2, y2])
 
             R = random.randint(0, 255)
             G = random.randint(0, 255)
             B = random.randint(0, 255)
 
-            #Generate bounding box
+            # Generate bounding box
             cv2.rectangle(
                 img=image, pt1=(x1, y1), pt2=(x2, y2), color=(B, G, R), thickness=2
             )
 
             text = f"{count}"
-            
-            #Add index to Bbox
+
+            # Add index to Bbox
             cv2.putText(
                 image,
                 text,
@@ -226,17 +240,27 @@ def Yolo_boxes_coord(image, results: list):
                 2,
             )
 
-            cropped_image = original_image[y1:y2,x1:x2]
-            cropped_resized = cv2.resize(cropped_image,(320,320))
-            cv2.imwrite(f"./CUA/tools/tempcrops/cropped{count}.jpeg",cropped_resized)
+            cropped_image = original_image[y1:y2, x1:x2]
+            cropped_resized = cv2.resize(cropped_image, (64, 64))
+            cv2.imwrite(f"./CUA/tools/tempcrops/cropped{count}.jpeg", cropped_resized)
 
             index[count] = [round((x1 + x2) / 2), round((y1 + y2) / 2)]
-            FlorenceIndex[count] = [Bboxes]
             count += 1
 
+    CaptionBboxes = caption_call()
 
-    print(index)
-    # print(FlorenceIndex)
+    for key in index:
+        complete_dict[key] = {
+            "coord": index[key],
+            "caption": CaptionBboxes[key],
+        }
+
+    # print(index)
+    # print(CaptionBboxes)
+
+    # print("--------------------------------------")
+    # print(complete_dict)
+
     cv2.imwrite("Yoloed.jpeg", image)
 
-    return index
+    return complete_dict

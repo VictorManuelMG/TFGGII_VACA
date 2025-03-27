@@ -9,6 +9,10 @@ from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 
 
+# import for debugging and testing
+import time
+
+
 tools = [
     screenshot.interpret_screen,
     computer.move_mouse,
@@ -38,8 +42,10 @@ class State(MessagesState):
 
     Args:
         MessagesState: MessageState
-    """    
+    """
+
     summary: str
+
 
 def call_model(state: State):
     """Calls the LLM
@@ -49,7 +55,7 @@ def call_model(state: State):
 
     Returns:
         response: LLM response on the prompt given by the user
-    """    
+    """
     sys_msg = SystemMessage(
         content="""**Prompt:** You are an advanced computer use agent designed to assist the user in navigating their computer effectively.Your primary objective is to execute tasks that are within your capabilities based on user input.
         1.**User Interaction**: When the user requests an action, analyze their instructions carefully to ensure you fully understand the task.Confirm the action required and clarify any ambiguous requests by asking specific questions if necessary.
@@ -92,7 +98,7 @@ def summarize_conversation(state: State):
 
     Returns:
         Summary: summary of the conversation
-    """    
+    """
     summary = state.get("summary", "")
 
     if summary:
@@ -107,7 +113,7 @@ def summarize_conversation(state: State):
     messages = state["messages"] + [HumanMessage(content=summary_message)]
     response = llm_with_tools.invoke(messages)
 
-    delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]] # type: ignore
+    delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]]  # type: ignore
     return {"summary": response.content, "messages": delete_messages}
 
 
@@ -116,8 +122,7 @@ def should_continue(state: State):
 
     Args:
         state (State): state
-    """    
-
+    """
 
     messages = state["messages"]
     if len(messages) > 6:
@@ -150,10 +155,13 @@ react_graph = builder.compile(checkpointer=memory)
 #     f.write(png_bytes)
 
 
-config = {"configurable": {"thread_id": "1"},"recursion_limit":100}
+config = {"configurable": {"thread_id": "1"}, "recursion_limit": 100}
 
 
 flag = True
+start = time.time()
+end = time.time()
+
 
 while flag:
     print("Escriba su orden (Escriba exit para salir.)")
@@ -162,7 +170,13 @@ while flag:
     if order.lower() == "exit":
         flag = False
     else:
-        messages = react_graph.invoke({"messages": order}, config) # type: ignore
+        start = time.time()
+        messages = react_graph.invoke({"messages": order}, config)  # type: ignore
+        end = time.time()
 
         for m in messages["messages"]:
             m.pretty_print()
+
+    print("\n///////////////////////////////////////////////////////////")
+    print(f"Tiempo de ejecucion de el prompt: {end - start} segundos")
+    print("///////////////////////////////////////////////////////////\n")

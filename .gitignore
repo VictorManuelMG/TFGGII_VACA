@@ -5,3 +5,9 @@
 
 #Ignore crops temporal folder
 /CUA/tools/tempcrops
+
+#Ignore .py file
+mouse_move.py
+
+#Ignore py cache
+__pycache__

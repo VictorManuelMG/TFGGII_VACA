@@ -29,10 +29,65 @@ class ScreenAssistant:
         self.max_tokens_SI = max_tokens_SI
         self.crops_folder = crops_folder
         self.captioner = captioner
+        self.client = anthropic.Anthropic()
+
+
+
+    def simple_interpreter(self,order:str):
+        """Analyzes an image and gives feedback about it
+
+        Args:
+            order (str): User's prompt
+
+        Returns:
+            Message: LLM's answer
+        """        
+        image = ImageGrab.grab()
+        image.save("screenshot2.jpeg")
+
+        with open("screenshot2.jpeg","rb") as image_file:
+            img_data = base64.b64encode(image_file.read()).decode("utf-8")
+
+        message = self.client.messages.create(
+            model="claude-3-7-sonnet-20250219",
+            max_tokens=1024,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/jpeg",
+                                "data": img_data,
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": f"**USER** The user is asking: {order}",
+                        },
+                    ],
+                },
+                {
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """Role: You are a visual operator for a computer use agent. 
+                            
+                            Your task is to analyze what you see on the image, the image sended is a screenshot of the user's enviroment.
+                            You'll also respond whatever question the user have about the image.""",
+                        }
+                    ],
+                },
+            ],
+        )
+        return message
+
 
     def interpret_screen(self,order:str):
-        """Makes a call to a model to interpret screen information
-
+        """Makes a call to a model to interpret screen information and gives back directions about what to do to complete user's request such as opening a browser, typing, etc...
         Args:
             order (str): User order about screen information
 
@@ -52,13 +107,13 @@ class ScreenAssistant:
         with open("Yoloed.jpeg","rb") as image_file:
             img_data = base64.b64encode(image_file.read()).decode("utf-8")
         
-        client = anthropic.Anthropic()
+
         cursor = pyautogui.position()
         
         start = time.time()
 
 
-        message = client.messages.create(
+        message = self.client.messages.create(
             model="claude-3-7-sonnet-20250219",
             max_tokens=1024,
             messages=[

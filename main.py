@@ -28,18 +28,48 @@ print("Modelos cargados")
 #Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
 @tool
 def ScreenInterpreter(order:str):
-    """Makes a call to a model to interpret screen information
+    """Use this tool to analyze the user's screen and determine precise actions that must be performed.
+
+    It uses object detection and visual captioning models (YOLO and Florence 2) to fully understand all elements on the screen.
+
+    Use this tool when the user asks for:
+    - Interacting with screen elements (e.g., move the mouse, click a button, type something)
+    - Locating UI elements precisely
+    - Opening applications, clicking icons, handling buttons, etc.
+    - When spatial position or captioning of icons/buttons is essential
+
+    Returns detailed coordinates and captions for screen elements and explains how to perform the action requested by the user.
 
     Args:
         order (str): User order about screen information
-        
+
     Returns:
             message: LLM answer
     """    
     message = Assistant.interpret_screen(order)
     return message
+@tool
+def SimpleScreenInterpreter(order:str):
+    """ Use this tool to get general insights or descriptions about what's visible on the screen without interacting with it.
+
+    This tool does NOT use heavy visual models, and it is meant for:
+    - Understanding the current screen state at a high level
+    - Checking if something appears to be open, visible, or loaded
+    - Answering general questions like “Did the browser open?”, “Is there an error message?”, “Is the user on Google?”
+
+    Use this only when you need to describe what's visible, NOT to take action.
+
+    Args:
+        order (str): User order about screen information
+
+    Returns:
+        message: LLM answer
+    """    
+    message = Assistant.simple_interpreter(order)
+    return message
 
 tools = [
+    SimpleScreenInterpreter,
     ScreenInterpreter,
     computer.move_mouse,
     computer.mouse_clicker,

@@ -1,6 +1,7 @@
 import os
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
+
 from CUA.tools import computer
 from langgraph.graph import MessagesState
 from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
@@ -9,7 +10,7 @@ from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_core.tools import tool
-
+from langgraph.managed.is_last_step import RemainingSteps
 
 # import for debugging and testing
 import time
@@ -99,7 +100,7 @@ class State(MessagesState):
     Args:
         MessagesState: MessageState
     """
-
+    remaining_steps: RemainingSteps
     summary: str
 
 
@@ -133,7 +134,9 @@ def call_model(state: State):
                         
                         Everytime you ask for an application whereabouts to the screenshot tool, ask for specific coordinates of the application.
                         Also take in account you'll recive a summary up to date of the interactions with the user or memory of it, if he asks something you already know from this
-                        just respon directly with your memory dont use tools."""
+                        just respon directly with your memory dont use tools.
+                        If you open something and you don't see it maximized, try to maximaze it if possible using your tools
+                        If the user tell you something ambigous ALWAYS ask for more information."""
     )
 
     summary = state.get("summary", "")
@@ -185,20 +188,38 @@ def should_continue(state: State):
         return "summarize_conversation"
     return END
 
+def router(state: State):
+    """Node to stop once recursion limit is approximating to the stopping point so the agent doesn't die due to recursion limit error.
+
+    Args:
+        state (State): state
+
+    """    
+
+    if state["remaining_steps"] <=3:
+        return {
+            "messages": [HumanMessage(content="Te has pasado del limite de recursion, finaliza lo que estes haciendo y devuelve un resumen los resultados actuales obtenidos anteriormente a este mensaje.")]
+        }
+    else:
+        return state
+
 
 builder = StateGraph(MessagesState)
 
 builder.add_node("assistant", call_model)
 builder.add_node("tools", ToolNode(tools))
 builder.add_node("summarize", summarize_conversation)
+builder.add_node("returnOnLimit",router)
+
+builder.add_edge(START,"returnOnLimit")
+builder.add_edge("returnOnLimit", "assistant")
 
 
-builder.add_edge(START, "assistant")
 builder.add_conditional_edges("assistant", tools_condition)
-builder.add_edge("tools", "assistant")
+builder.add_edge("tools", "returnOnLimit")
 
 builder.add_conditional_edges("assistant", should_continue)
-builder.add_edge("summarize", "assistant")
+builder.add_edge("summarize", "returnOnLimit")
 
 memory = MemorySaver()
 
@@ -211,7 +232,7 @@ react_graph = builder.compile(checkpointer=memory)
 #     f.write(png_bytes)
 
 
-config = {"configurable": {"thread_id": "1"}, "recursion_limit": 100}
+config = {"configurable": {"thread_id": "1"}, "recursion_limit": 40}
 
 
 flag = True
@@ -227,7 +248,7 @@ while flag:
         flag = False
     else:
         start = time.time()
-        messages = react_graph.invoke({"messages": order}, config)  # type: ignore
+        messages = react_graph.invoke({"messages": order}, config,)  # type: ignore
         end = time.time()
 
         for m in messages["messages"]:

@@ -185,7 +185,8 @@ class ScreenAssistant:
                             Remember to be as precise as possible when determining coordinates. If you need to make any assumptions or estimations, clearly state them in your explanation.
                             Also remember to always use the bounding boxes.
                             Also give your own insights like advices when you're asked something like "is the dropdown visible?" you should respond like "No but you can drop it clicking on...".
-                            Your feedback must always have coordinates for the agent.""",
+                            Your feedback must always have coordinates for the agent.
+                            The coordinates on the feedback must be in the {coords} given, and if you're going to do pixel counting, tell so to the user.""",
                         }
                     ],
                 },

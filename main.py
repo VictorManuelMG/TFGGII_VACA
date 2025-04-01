@@ -1,20 +1,46 @@
 import os
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
-from CUA.tools import screenshot, computer
+from CUA.tools import computer
 from langgraph.graph import MessagesState
 from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
 from langgraph.graph import START, StateGraph, END
 from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 
+from langchain_core.tools import tool
+
 
 # import for debugging and testing
 import time
 
+from CUA.tools.ClassFlorence import FlorenceCaptioner
+from CUA.tools.ClassScreenAssistant import ScreenAssistant
+
+print("Cargando modelos para captioning y screen interpreter")
+
+Florence = FlorenceCaptioner()
+Assistant = ScreenAssistant(Florence)
+
+print("Modelos cargados")
+
+
+#Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
+@tool
+def ScreenInterpreter(order:str):
+    """Makes a call to a model to interpret screen information
+
+    Args:
+        order (str): User order about screen information
+        
+    Returns:
+            message: LLM answer
+    """    
+    message = Assistant.interpret_screen(order)
+    return message
 
 tools = [
-    screenshot.interpret_screen,
+    ScreenInterpreter,
     computer.move_mouse,
     computer.mouse_clicker,
     computer.keyboard_input,

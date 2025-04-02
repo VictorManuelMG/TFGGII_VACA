@@ -11,17 +11,22 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_core.tools import tool
 from langgraph.managed.is_last_step import RemainingSteps
+from CUA.tools.ClassFlorence import FlorenceCaptioner
+from CUA.tools.ClassScreenAssistant import ScreenAssistant
+from CUA.tools.ClassWhisper import WhisperASR
 
 # import for debugging and testing
 import time
 
-from CUA.tools.ClassFlorence import FlorenceCaptioner
-from CUA.tools.ClassScreenAssistant import ScreenAssistant
+
+
+
 
 print("Cargando modelos para captioning y screen interpreter")
 
 Florence = FlorenceCaptioner()
 Assistant = ScreenAssistant(Florence)
+Whisper = WhisperASR()
 
 print("Modelos cargados")
 
@@ -48,6 +53,9 @@ def ScreenInterpreter(order:str):
             message: LLM answer
     """    
     message = Assistant.interpret_screen(order)
+
+    # print(f"{message}\n") #For debugging
+
     return message
 @tool
 def SimpleScreenInterpreter(order:str):
@@ -67,6 +75,9 @@ def SimpleScreenInterpreter(order:str):
         message: LLM answer
     """    
     message = Assistant.simple_interpreter(order)
+
+    # print(f"{message}\n") #For debugging
+
     return message
 
 tools = [
@@ -149,6 +160,9 @@ def call_model(state: State):
         messages = state["messages"]
 
     response = llm_with_tools.invoke([sys_msg] + messages)
+
+    #print(f"{response}\n") #For Debugging
+
     return {"messages": response}
 
 
@@ -232,7 +246,7 @@ react_graph = builder.compile(checkpointer=memory)
 #     f.write(png_bytes)
 
 
-config = {"configurable": {"thread_id": "1"}, "recursion_limit": 40}
+config = {"configurable": {"thread_id": "1"}, "recursion_limit": 100}
 
 
 flag = True
@@ -241,18 +255,35 @@ end = time.time()
 
 
 while flag:
-    print("Escriba su orden (Escriba exit para salir.)")
+    print("Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz.)")
     order = input()
 
     if order.lower() == "exit":
         flag = False
+    elif order == '.':
+        print("Se realizara una grabacion")
+        time.sleep(2)
+        order = Whisper.whisper_SST()
+
+        start = time.time()
+        messages = react_graph.invoke({"messages": order}, config,)  # type: ignore
+        end = time.time()
+        for m in messages["messages"]:
+            m.pretty_print()
     else:
+
         start = time.time()
         messages = react_graph.invoke({"messages": order}, config,)  # type: ignore
         end = time.time()
 
         for m in messages["messages"]:
             m.pretty_print()
+
+        # start = time.time()
+        # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
+        #     print(messages)
+        #     print("\n")
+        # end = time.time()
 
     print("\n///////////////////////////////////////////////////////////")
     print(f"Tiempo de ejecucion de el prompt: {end - start} segundos")

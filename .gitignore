@@ -2,7 +2,7 @@
 *.jpeg
 .env
 .venv/
-.wav
+*.wav
 
 #Ignore crops temporal folder
 /CUA/tools/tempcrops

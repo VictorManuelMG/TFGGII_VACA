@@ -12,9 +12,16 @@ import copy
 from pathlib import Path
 from CUA.tools.ClassFlorence import FlorenceCaptioner
 
+
 class ScreenAssistant:
-    
-    def __init__(self,captioner: FlorenceCaptioner,model_dir="model.pt",model_screen_interpreter="claude-3-7-sonnet-20250219",max_tokens_SI=1024,crops_folder=Path("./CUA/tools/tempcrops")) -> None:
+    def __init__(
+        self,
+        captioner: FlorenceCaptioner,
+        model_dir="model.pt",
+        model_screen_interpreter="claude-3-7-sonnet-20250219",
+        max_tokens_SI=1024,
+        crops_folder=Path("./CUA/tools/tempcrops"),
+    ) -> None:
         """Initialize screeninterpreter with YOLO
 
         Args:
@@ -23,7 +30,7 @@ class ScreenAssistant:
             model_screen_interpreter (str, optional): Claude model for interpreting images. Defaults to "claude-3-7-sonnet-20250219".
             max_tokens_SI (int, optional): max token output for Claude. Defaults to 1024.
             crops_folder (_type_, optional): dir to save crops. Defaults to Path("./CUA/tools/tempcrops").
-        """        
+        """
         self.yolo = YOLO(model_dir)
         self.model_screen_interpreter = model_screen_interpreter
         self.max_tokens_SI = max_tokens_SI
@@ -31,9 +38,7 @@ class ScreenAssistant:
         self.captioner = captioner
         self.client = anthropic.Anthropic()
 
-
-
-    def simple_interpreter(self,order:str):
+    def simple_interpreter(self, order: str):
         """Analyzes an image and gives feedback about it
 
         Args:
@@ -41,11 +46,11 @@ class ScreenAssistant:
 
         Returns:
             Message: LLM's answer
-        """        
+        """
         image = ImageGrab.grab()
         image.save("screenshot2.jpeg")
 
-        with open("screenshot2.jpeg","rb") as image_file:
+        with open("screenshot2.jpeg", "rb") as image_file:
             img_data = base64.b64encode(image_file.read()).decode("utf-8")
 
         message = self.client.messages.create(
@@ -85,33 +90,28 @@ class ScreenAssistant:
         )
         return message
 
-
-    def interpret_screen(self,order:str):
+    def interpret_screen(self, order: str):
         """Makes a call to a model to interpret screen information and gives back directions about what to do to complete user's request such as opening a browser, typing, etc...
         Args:
             order (str): User order about screen information
 
         Returns:
             message: LLM answer
-        """        
-        
+        """
+
         image = ImageGrab.grab()
         image.save("screenshot.jpeg")
 
         if os.path.exists(self.crops_folder):
             shutil.rmtree(self.crops_folder)
-        os.makedirs(
-            self.crops_folder, exist_ok=True
-        )
+        os.makedirs(self.crops_folder, exist_ok=True)
         coords = self._image_YOLOED("screenshot.jpeg")
-        with open("Yoloed.jpeg","rb") as image_file:
+        with open("Yoloed.jpeg", "rb") as image_file:
             img_data = base64.b64encode(image_file.read()).decode("utf-8")
-        
 
         cursor = pyautogui.position()
-        
-        start = time.time()
 
+        start = time.time()
 
         message = self.client.messages.create(
             model="claude-3-7-sonnet-20250219",
@@ -194,15 +194,18 @@ class ScreenAssistant:
         )
 
         end = time.time()
-        print("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(
+            "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        )
         print(f"Tiempo de ejecucion de razonamiendo screenshot: {end - start} segundos")
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n")
+        print(
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+        )
 
         return message
-    
 
     def _image_YOLOED(self, pathScreenshot: str):
-        """Takes a image and uses YOLO to bound icons with squares and indexes for the LLM to understand better coordinates, 
+        """Takes a image and uses YOLO to bound icons with squares and indexes for the LLM to understand better coordinates,
             it uses gray scale on the image in case the original gets less than 30 objects predicted.
 
         Args:
@@ -210,7 +213,7 @@ class ScreenAssistant:
 
         Returns:
             coords: returns the coordinates of all the bounded icons and its captions
-        """        
+        """
         coords = {}
         count_original = 0
 
@@ -240,7 +243,7 @@ class ScreenAssistant:
                 "gray.jpeg",
                 save=False,
                 conf=0.05,  # Low conf so it makes more bounding boxes
-                iou=0.35,  
+                iou=0.35,
                 line_width=1,
                 imgsz=1920,  # Always resized to 1920
                 show_labels=True,
@@ -249,12 +252,10 @@ class ScreenAssistant:
             coords = self._Yolo_boxes_coord(image, resultsGray)
         else:
             coords = self._Yolo_boxes_coord(image, resultsOriginal)
-            
+
         return coords
 
-
-
-    def _Yolo_boxes_coord(self,image,results: list):
+    def _Yolo_boxes_coord(self, image, results: list):
         """paints the bounded boxes on the detected objects and gives them an index
 
         Args:
@@ -263,49 +264,55 @@ class ScreenAssistant:
 
         Returns:
             Complete_dict:  returns the center coordinate of the objects bounded and its captions
-        """       
+        """
         original_image = copy.deepcopy(image)
         index = {}
         count = 0
 
         Bboxes = []
         CaptionBboxes = {}
-        
+
         complete_dict = {}
-        
+
         for result in results:
             for box in result.boxes:
-                x1,y1,x2,y2 = map(int,box.xyxy[0].tolist())
+                x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
                 # confidence = box.conf[0].item()
-                Bboxes.append([x1,y1,x2,y2])
-                R = random.randint(0,255)
-                G = random.randint(0,255)
-                B = random.randint(0,255)
+                Bboxes.append([x1, y1, x2, y2])
+                R = random.randint(0, 255)
+                G = random.randint(0, 255)
+                B = random.randint(0, 255)
 
-                cv2.rectangle(img = image, pt1 = (x1,y1), pt2=(x2,y2), color = (B,G,R), thickness= 2,)
+                cv2.rectangle(
+                    img=image,
+                    pt1=(x1, y1),
+                    pt2=(x2, y2),
+                    color=(B, G, R),
+                    thickness=2,
+                )
 
-                text= f"{count}"
+                text = f"{count}"
 
                 cv2.putText(
                     image,
                     text,
-                    (x2 -30 , y1 +30),
+                    (x2 - 30, y1 + 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.75,
-                    (B,G,R),
+                    (B, G, R),
                     2,
-                    )
+                )
 
-                cropped_image = original_image[y1:y2,x1:x2]
-                cropped_resized = cv2.resize(cropped_image,(64,64))
+                cropped_image = original_image[y1:y2, x1:x2]
+                cropped_resized = cv2.resize(cropped_image, (64, 64))
 
                 filename = f"cropped{count}.jpeg"
                 fullpath = self.crops_folder / filename
 
-                cv2.imwrite(str(fullpath),cropped_resized)
-                index[count] = [round((x1+x2)/2),round((y1+y2)/2)]
-                count +=1
-            
+                cv2.imwrite(str(fullpath), cropped_resized)
+                index[count] = [round((x1 + x2) / 2), round((y1 + y2) / 2)]
+                count += 1
+
             CaptionBboxes = self.captioner.generate_captions()
 
             for key in index:
@@ -314,6 +321,6 @@ class ScreenAssistant:
                     "caption": CaptionBboxes[key],
                 }
 
-            cv2.imwrite("Yoloed.jpeg",image)
+            cv2.imwrite("Yoloed.jpeg", image)
 
             return complete_dict

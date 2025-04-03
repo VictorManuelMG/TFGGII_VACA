@@ -7,14 +7,19 @@ import time
 
 
 class FlorenceCaptioner:
-    def __init__(self, model_dir: str = "Florence2", crop_dir: str = "tempcrops", batch_size: int = 128):
+    def __init__(
+        self,
+        model_dir: str = "Florence2",
+        crop_dir: str = "tempcrops",
+        batch_size: int = 128,
+    ):
         """Initialize Florence Model
 
         Args:
             model_dir (str, optional): Model folder direction. Defaults to "Florence2".
             crop_dir (str, optional): Img crops folder direction. Defaults to "tempcrops".
             batch_size (int, optional): Img batch size to do inferring by the model. Defaults to 128.
-        """        
+        """
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
@@ -37,7 +42,7 @@ class FlorenceCaptioner:
 
         Returns:
             Crops,ids: returns an array of crops and ids
-        """        
+        """
 
         crops = []
         ids = []
@@ -59,7 +64,7 @@ class FlorenceCaptioner:
 
         Returns:
             sorted_dict: returns a sorted dictionary of the captions of each crop sorted by id
-        """        
+        """
         captions = []
         caption_dictionary = {}
         for i in range(0, len(crops), self.batch_size):

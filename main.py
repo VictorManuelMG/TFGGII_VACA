@@ -15,11 +15,9 @@ from CUA.tools.ClassFlorence import FlorenceCaptioner
 from CUA.tools.ClassScreenAssistant import ScreenAssistant
 from CUA.tools.ClassWhisper import WhisperASR
 
+
 # import for debugging and testing
 import time
-
-
-
 
 
 print("Cargando modelos para captioning y screen interpreter")
@@ -31,9 +29,9 @@ Whisper = WhisperASR()
 print("Modelos cargados")
 
 
-#Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
+# Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
 @tool
-def ScreenInterpreter(order:str):
+def ScreenInterpreter(order: str):
     """Use this tool to analyze the user's screen and determine precise actions that must be performed.
 
     It uses object detection and visual captioning models (YOLO and Florence 2) to fully understand all elements on the screen.
@@ -51,15 +49,17 @@ def ScreenInterpreter(order:str):
 
     Returns:
             message: LLM answer
-    """    
+    """
     message = Assistant.interpret_screen(order)
 
     # print(f"{message}\n") #For debugging
 
     return message
+
+
 @tool
-def SimpleScreenInterpreter(order:str):
-    """ Use this tool to get general insights or descriptions about what's visible on the screen without interacting with it.
+def SimpleScreenInterpreter(order: str):
+    """Use this tool to get general insights or descriptions about what's visible on the screen without interacting with it.
 
     This tool does NOT use heavy visual models, and it is meant for:
     - Understanding the current screen state at a high level
@@ -73,12 +73,13 @@ def SimpleScreenInterpreter(order:str):
 
     Returns:
         message: LLM answer
-    """    
+    """
     message = Assistant.simple_interpreter(order)
 
     # print(f"{message}\n") #For debugging
 
     return message
+
 
 tools = [
     SimpleScreenInterpreter,
@@ -111,6 +112,7 @@ class State(MessagesState):
     Args:
         MessagesState: MessageState
     """
+
     remaining_steps: RemainingSteps
     summary: str
 
@@ -147,7 +149,8 @@ def call_model(state: State):
                         Also take in account you'll recive a summary up to date of the interactions with the user or memory of it, if he asks something you already know from this
                         just respon directly with your memory dont use tools.
                         If you open something and you don't see it maximized, try to maximaze it if possible using your tools
-                        If the user tell you something ambigous ALWAYS ask for more information."""
+                        If the user tell you something ambigous ALWAYS ask for more information.
+                        If users tell "exit" give a goodbye message as you'll stop working and the programm will stop"""
     )
 
     summary = state.get("summary", "")
@@ -161,7 +164,7 @@ def call_model(state: State):
 
     response = llm_with_tools.invoke([sys_msg] + messages)
 
-    #print(f"{response}\n") #For Debugging
+    # print(f"{response}\n") #For Debugging
 
     return {"messages": response}
 
@@ -202,17 +205,22 @@ def should_continue(state: State):
         return "summarize_conversation"
     return END
 
+
 def router(state: State):
     """Node to stop once recursion limit is approximating to the stopping point so the agent doesn't die due to recursion limit error.
 
     Args:
         state (State): state
 
-    """    
+    """
 
-    if state["remaining_steps"] <=3:
+    if state["remaining_steps"] <= 3:
         return {
-            "messages": [HumanMessage(content="Te has pasado del limite de recursion, finaliza lo que estes haciendo y devuelve un resumen los resultados actuales obtenidos anteriormente a este mensaje.")]
+            "messages": [
+                HumanMessage(
+                    content="Te has pasado del limite de recursion, finaliza lo que estes haciendo y devuelve un resumen los resultados actuales obtenidos anteriormente a este mensaje."
+                )
+            ]
         }
     else:
         return state
@@ -223,9 +231,9 @@ builder = StateGraph(MessagesState)
 builder.add_node("assistant", call_model)
 builder.add_node("tools", ToolNode(tools))
 builder.add_node("summarize", summarize_conversation)
-builder.add_node("returnOnLimit",router)
+builder.add_node("returnOnLimit", router)
 
-builder.add_edge(START,"returnOnLimit")
+builder.add_edge(START, "returnOnLimit")
 builder.add_edge("returnOnLimit", "assistant")
 
 
@@ -255,35 +263,42 @@ end = time.time()
 
 
 while flag:
-    print("Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz.)")
+    print(
+        "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA.)"
+    )
     order = input()
+    flag_tts = False
+
+    if order == ",":
+        flag_tts = True
+    else:
+        flag_tts = False
 
     if order.lower() == "exit":
         flag = False
-    elif order == '.':
-        print("Se realizara una grabacion")
+        continue
+
+    if order == ".":
+        print("Se realizará una grabación")
         time.sleep(2)
         order = Whisper.whisper_SST()
 
-        start = time.time()
-        messages = react_graph.invoke({"messages": order}, config,)  # type: ignore
-        end = time.time()
-        for m in messages["messages"]:
-            m.pretty_print()
-    else:
+    start = time.time()
+    messages = react_graph.invoke({"messages": order}, config)  # type: ignore
+    end = time.time()
 
-        start = time.time()
-        messages = react_graph.invoke({"messages": order}, config,)  # type: ignore
-        end = time.time()
+    for m in messages["messages"]:
+        m.pretty_print()
 
-        for m in messages["messages"]:
-            m.pretty_print()
+    if flag_tts:
+        last_message = messages["messages"][-1]
+        Whisper.whisper_TTS(last_message.content)
 
-        # start = time.time()
-        # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
-        #     print(messages)
-        #     print("\n")
-        # end = time.time()
+    # start = time.time()
+    # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
+    #     print(messages)
+    #     print("\n")
+    # end = time.time()
 
     print("\n///////////////////////////////////////////////////////////")
     print(f"Tiempo de ejecucion de el prompt: {end - start} segundos")

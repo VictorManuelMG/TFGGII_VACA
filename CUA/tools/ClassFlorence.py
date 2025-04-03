@@ -10,14 +10,14 @@ class FlorenceCaptioner:
     def __init__(
         self,
         model_dir: str = "Florence2",
-        crop_dir: str = "tempcrops",
+        crop_dir: str = "tmpcrops",
         batch_size: int = 128,
     ):
         """Initialize Florence Model
 
         Args:
             model_dir (str, optional): Model folder direction. Defaults to "Florence2".
-            crop_dir (str, optional): Img crops folder direction. Defaults to "tempcrops".
+            crop_dir (str, optional): Img crops folder direction. Defaults to "tmpcrops" should be the same folder as the one passed to ScreenAssistant.
             batch_size (int, optional): Img batch size to do inferring by the model. Defaults to 128.
         """
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -29,6 +29,10 @@ class FlorenceCaptioner:
         self.batch_size = batch_size
 
         print(f"Cargando Florence en {self.device}")
+
+
+
+
         self.model = AutoModelForCausalLM.from_pretrained(
             str(self.model_path), torch_dtype=self.torch_dtype, trust_remote_code=True
         ).to(self.device)

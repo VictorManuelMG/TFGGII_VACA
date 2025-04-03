@@ -17,10 +17,10 @@ class ScreenAssistant:
     def __init__(
         self,
         captioner: FlorenceCaptioner,
-        model_dir="model.pt",
-        model_screen_interpreter="claude-3-7-sonnet-20250219",
-        max_tokens_SI=1024,
-        crops_folder=Path("./CUA/tools/tempcrops"),
+        model_dir : str ="model.pt",
+        model_screen_interpreter: str = "claude-3-7-sonnet-20250219",
+        max_tokens_SI : int =1024,
+        crop_dir: str = "tmpcrops",
     ) -> None:
         """Initialize screeninterpreter with YOLO
 
@@ -29,12 +29,15 @@ class ScreenAssistant:
             model_dir (str, optional): dir of yolo model. Defaults to "model.pt".
             model_screen_interpreter (str, optional): Claude model for interpreting images. Defaults to "claude-3-7-sonnet-20250219".
             max_tokens_SI (int, optional): max token output for Claude. Defaults to 1024.
-            crops_folder (_type_, optional): dir to save crops. Defaults to Path("./CUA/tools/tempcrops").
+            crop_dir (str, optional): dir to save crops. Defaults to Path("./CUA/tools/tempcrops").
         """
         self.yolo = YOLO(model_dir)
         self.model_screen_interpreter = model_screen_interpreter
         self.max_tokens_SI = max_tokens_SI
-        self.crops_folder = crops_folder
+
+        self.root_dir = Path(__file__).resolve().parent
+
+        self.crop_dir = self.root_dir / crop_dir
         self.captioner = captioner
         self.client = anthropic.Anthropic()
 
@@ -102,9 +105,9 @@ class ScreenAssistant:
         image = ImageGrab.grab()
         image.save("screenshot.jpeg")
 
-        if os.path.exists(self.crops_folder):
-            shutil.rmtree(self.crops_folder)
-        os.makedirs(self.crops_folder, exist_ok=True)
+        if os.path.exists(self.crop_dir):
+            shutil.rmtree(self.crop_dir)
+        os.makedirs(self.crop_dir, exist_ok=True)
         coords = self._image_YOLOED("screenshot.jpeg")
         with open("Yoloed.jpeg", "rb") as image_file:
             img_data = base64.b64encode(image_file.read()).decode("utf-8")
@@ -205,8 +208,7 @@ class ScreenAssistant:
         return message
 
     def _image_YOLOED(self, pathScreenshot: str):
-        """Takes a image and uses YOLO to bound icons with squares and indexes for the LLM to understand better coordinates,
-            it uses gray scale on the image in case the original gets less than 30 objects predicted.
+        """Takes a image and uses YOLO to bound icons with squares and indexes for the LLM to understand better coordinates.
 
         Args:
             pathScreenshot (str): path to the screenshot of the user's computer screen
@@ -215,7 +217,6 @@ class ScreenAssistant:
             coords: returns the coordinates of all the bounded icons and its captions
         """
         coords = {}
-        count_original = 0
 
         image = cv2.imread(pathScreenshot)
 
@@ -230,28 +231,7 @@ class ScreenAssistant:
             show_conf=False,
         )
 
-        for result in resultsOriginal:
-            for box in result:
-                count_original += 1
-        if count_original < 30:
-            # In case colour palette is too similar, included gray scale analysis
-            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-            cv2.imwrite("gray.jpeg", gray_image)
-
-            resultsGray = self.yolo.predict(
-                "gray.jpeg",
-                save=False,
-                conf=0.05,  # Low conf so it makes more bounding boxes
-                iou=0.35,
-                line_width=1,
-                imgsz=1920,  # Always resized to 1920
-                show_labels=True,
-                show_conf=False,
-            )
-            coords = self._Yolo_boxes_coord(image, resultsGray)
-        else:
-            coords = self._Yolo_boxes_coord(image, resultsOriginal)
+        coords = self._Yolo_boxes_coord(image, resultsOriginal)
 
         return coords
 
@@ -265,6 +245,7 @@ class ScreenAssistant:
         Returns:
             Complete_dict:  returns the center coordinate of the objects bounded and its captions
         """
+
         original_image = copy.deepcopy(image)
         index = {}
         count = 0
@@ -273,6 +254,8 @@ class ScreenAssistant:
         CaptionBboxes = {}
 
         complete_dict = {}
+
+
 
         for result in results:
             for box in result.boxes:
@@ -307,7 +290,7 @@ class ScreenAssistant:
                 cropped_resized = cv2.resize(cropped_image, (64, 64))
 
                 filename = f"cropped{count}.jpeg"
-                fullpath = self.crops_folder / filename
+                fullpath = self.crop_dir / filename
 
                 cv2.imwrite(str(fullpath), cropped_resized)
                 index[count] = [round((x1 + x2) / 2), round((y1 + y2) / 2)]

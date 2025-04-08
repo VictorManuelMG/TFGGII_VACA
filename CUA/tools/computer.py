@@ -32,7 +32,7 @@ def mouse_clicker(action: str):
     if "single_clickright" == action:
         pyautogui.click(button="right")
     if "double_clickright" == action:
-        pyautogui.click(button="left", clicks=2)
+        pyautogui.click(button="right", clicks=2)
 
 
 @tool

@@ -77,7 +77,7 @@ class WhisperASR:
             self.logger.error(f"Excepción al procesar el audio: {str(e)}")
             return f"Error: {str(e)}"
 
-    def _record_audio(self):
+    def _record_audio(self,path_record:str = "./CUA/tools/output.wav"):
         """Records an audio and saves it locally"""
         self.CHUNK
         self.FORMAT
@@ -107,7 +107,7 @@ class WhisperASR:
         stream.close()
         p.terminate()
 
-        with wave.open("./CUA/tools/output.wav", "wb") as wf:
+        with wave.open(path_record, "wb") as wf:
             wf.setnchannels(self.CHANNELS)
             wf.setsampwidth(p.get_sample_size(self.FORMAT))
             wf.setframerate(self.RATE)

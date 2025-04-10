@@ -21,10 +21,10 @@ class BrowserUse:
         Args:
             anthropic_model (str, optional): Claude model for the agent reasoning. Defaults to "claude-3-7-sonnet-latest".
             temperature (float, optional): Temperature for the LLM. Defaults to 0.0.
-            timeout (int, optional): Timeout after X steps. Defaults to 100.
+            timeout (int, optional): Timeout X time in seconds passed. Defaults to 100.
             chrome_instance_path (_type_, optional): Chrome executable location to launch local chrome. Defaults to "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe".
             max_steps (int, optional): Max steps given by the user for the agent. Defaults to 20.
-        """        
+        """
         self.llm = ChatAnthropic(
             model_name=anthropic_model, temperature=temperature, timeout=timeout
         )  # type: ignore
@@ -54,8 +54,7 @@ class BrowserUse:
         self.client = anthropic.Anthropic()
 
     async def _init_context(self):
-        """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser.
-        """        
+        """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser."""
         if self.context:
             await self.context.close()
             self.context = None
@@ -82,9 +81,9 @@ class BrowserUse:
 
         Returns:
             final_result: returns the final result of the search or a message telling the user it couldn't do what he told it to.
-        """        
+        """
         await self._init_context()
-
+        fail_reason = None
         agent = Agent(
             task=order,
             llm=self.llm,
@@ -107,13 +106,16 @@ class BrowserUse:
                 break
 
             last = agent.state.history.history[-1]
-            if "Failed" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
-                print("Fallo el paso:")
-                print(last.model_output.current_state.evaluation_previous_goal)  # type: ignore
+            if "Failed:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
+                fail_reason = last.model_output.current_state.evaluation_previous_goal  # type:ignore
                 break
 
-        final_result = (
-            agent.state.history.final_result() or "No se pudo obtener resultado"
-        )
+        if fail_reason is not None:
+            return f"There's been a fail: {fail_reason} \nTry another approach as browser_use cannot overcome this."
 
-        return final_result
+        else:
+            final_result = (
+                agent.state.history.final_result() or "No se pudo obtener resultado"
+            )
+
+            return final_result

@@ -1,4 +1,5 @@
 import os
+import asyncio
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 
@@ -14,10 +15,12 @@ from langgraph.managed.is_last_step import RemainingSteps
 from CUA.tools.ClassFlorence import FlorenceCaptioner
 from CUA.tools.ClassScreenAssistant import ScreenAssistant
 from CUA.tools.ClassWhisper import WhisperASR
-
+from CUA.tools.ClassBrowserUse import BrowserUse
 
 # import for debugging and testing
 import time
+import subprocess
+import requests
 
 
 print("Cargando modelos para captioning y screen interpreter")
@@ -25,11 +28,31 @@ print("Cargando modelos para captioning y screen interpreter")
 Florence = FlorenceCaptioner()
 Assistant = ScreenAssistant(Florence)
 Whisper = WhisperASR()
+Browser = BrowserUse()
 
 print("Modelos cargados")
 
 
 # Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
+@tool
+def browser_use(order: str):
+    """Tool mainly focused on browsing over the internet
+    Args:
+        order (str): order for browser_use
+
+    Returns:
+        message: result of search
+    """
+
+    async def run_browser():
+        return await Browser.browser_executable(
+            order,
+        )
+
+    result = asyncio.run(run_browser())
+    return f"Resultado browser_use:\n{result}"
+
+
 @tool
 def ScreenInterpreter(order: str):
     """Use this tool to analyze the user's screen and determine precise actions that must be performed.
@@ -81,7 +104,36 @@ def SimpleScreenInterpreter(order: str):
     return message
 
 
+@tool
+def OpenChrome():
+    """Tool that opens Chrome for web searching, it checks if chrome is open already if not creates a new instance of chrome
+
+    Returns:
+        msg: result of execution of tool
+    """
+    url_debug = "http://localhost:9222/json"
+
+    chrome_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+
+    try:
+        response = requests.get(url_debug, timeout=1)
+        if response.status_code == 200:
+            return "Ya hay una instancia de Chrome abierta."
+    except requests.exceptions.RequestException:
+        pass
+
+    cmd = [
+        chrome_path,
+        "--remote-debugging-port=9222",
+    ]
+    subprocess.Popen(cmd)
+
+    return "Inicializado Chrome"
+
+
 tools = [
+    browser_use,
+    OpenChrome,
     SimpleScreenInterpreter,
     ScreenInterpreter,
     computer.move_mouse,
@@ -90,6 +142,7 @@ tools = [
     computer.keyboard_hotkey,
     computer.delete_text,
 ]
+
 
 load_dotenv()
 model = "claude-3-7-sonnet-20250219"
@@ -150,7 +203,11 @@ def call_model(state: State):
                         just respon directly with your memory dont use tools.
                         If you open something and you don't see it maximized, try to maximaze it if possible using your tools
                         If the user tell you something ambigous ALWAYS ask for more information.
-                        If users tell "exit" give a goodbye message as you'll stop working and the programm will stop"""
+                        If users tell "exit" give a goodbye message as you'll stop working and the programm will stop
+                        Mainly use browser_use tool to surf over the internet althought it might show fails upon encontering captchas or other type of auths, 
+                        in that case use ScreenInterpreter and computer tools instead of browser_use with help of computer tools to achieve whatever browser_use cannot, once the cause of
+                        fail is overcome, return to use browser_use tool.
+                        Always respond to user in spanish unless asked otherwise"""
     )
 
     summary = state.get("summary", "")
@@ -214,7 +271,7 @@ def router(state: State):
 
     """
 
-    if state["remaining_steps"] <= 3:
+    if state["remaining_steps"] <= 10:
         return {
             "messages": [
                 HumanMessage(
@@ -254,25 +311,28 @@ react_graph = builder.compile(checkpointer=memory)
 #     f.write(png_bytes)
 
 
-config = {"configurable": {"thread_id": "1"}, "recursion_limit": 100}
+config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
 
 
 flag = True
 start = time.time()
 end = time.time()
+flag_tts = False
 
 
 while flag:
     print(
-        "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA.)"
+        "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA, ',,' para desactivarlo.)"
     )
     order = input()
-    flag_tts = False
 
     if order == ",":
         flag_tts = True
-    else:
+        continue
+
+    if order == ",,":
         flag_tts = False
+        continue
 
     if order.lower() == "exit":
         flag = False

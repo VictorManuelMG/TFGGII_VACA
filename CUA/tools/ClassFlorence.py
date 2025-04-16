@@ -1,5 +1,8 @@
 from PIL import Image
-from transformers import AutoProcessor, AutoModelForCausalLM
+
+from transformers.models.auto.processing_auto import AutoProcessor
+from transformers.models.auto.modeling_auto import AutoModelForCausalLM
+
 import torch
 import os
 from pathlib import Path

@@ -2,7 +2,7 @@ from langchain_anthropic import ChatAnthropic
 import asyncio
 from browser_use import Agent, Browser, BrowserConfig, BrowserContextConfig
 from dotenv import load_dotenv
-import anthropic
+
 
 load_dotenv()
 
@@ -12,18 +12,18 @@ class BrowserUse:
         self,
         anthropic_model: str = "claude-3-7-sonnet-latest",
         temperature: float = 0.0,
-        timeout: int = 100,
+        timeout: int = 30,
         chrome_instance_path: str = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        max_steps: int = 20,
+        max_steps: int = 8,
     ):
         """Initialization of browser_use agent.
 
         Args:
             anthropic_model (str, optional): Claude model for the agent reasoning. Defaults to "claude-3-7-sonnet-latest".
             temperature (float, optional): Temperature for the LLM. Defaults to 0.0.
-            timeout (int, optional): Timeout X time in seconds passed. Defaults to 100.
+            timeout (int, optional): Timeout X time in seconds passed. Defaults to 30.
             chrome_instance_path (_type_, optional): Chrome executable location to launch local chrome. Defaults to "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe".
-            max_steps (int, optional): Max steps given by the user for the agent. Defaults to 20.
+            max_steps (int, optional): Max steps given by the user for the agent. Defaults to 8.
         """
         self.llm = ChatAnthropic(
             model_name=anthropic_model, temperature=temperature, timeout=timeout
@@ -50,8 +50,6 @@ class BrowserUse:
         )
 
         self.context = None
-
-        self.client = anthropic.Anthropic()
 
     async def _init_context(self):
         """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser."""
@@ -97,7 +95,7 @@ class BrowserUse:
             prev_len = len(agent.state.history.history)
             await agent.step()
 
-            for loop in range(20):
+            for loop in range(10):
                 await asyncio.sleep(0.1)
                 if len(agent.state.history.history) > prev_len:
                     break

@@ -296,14 +296,14 @@ class ScreenAssistant:
                 index[count] = [round((x1 + x2) / 2), round((y1 + y2) / 2)]
                 count += 1
 
-            CaptionBboxes = self.captioner.generate_captions()
+        CaptionBboxes = self.captioner.generate_captions()
 
-            for key in index:
-                complete_dict[key] = {
-                    "coord": index[key],
-                    "caption": CaptionBboxes[key],
-                }
+        for key in index:
+            complete_dict[key] = {
+                "coord": index[key],
+                "caption": CaptionBboxes[key],
+            }
 
-            cv2.imwrite("Yoloed.jpeg", image)
+        cv2.imwrite("Yoloed.jpeg", image)
 
-            return complete_dict
+        return complete_dict

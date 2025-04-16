@@ -207,6 +207,7 @@ def call_model(state: State):
                         Mainly use browser_use tool to surf over the internet althought it might show fails upon encontering captchas or other type of auths, 
                         in that case use ScreenInterpreter and computer tools instead of browser_use with help of computer tools to achieve whatever browser_use cannot, once the cause of
                         fail is overcome, return to use browser_use tool.
+                        After returning from using browser_use ask the user first if he wishes to keep using this tool or other tools.
                         Always respond to user in spanish unless asked otherwise"""
     )
 
@@ -305,7 +306,8 @@ memory = MemorySaver()
 react_graph = builder.compile(checkpointer=memory)
 
 
-# png_bytes = react_graph.get_graph(xray=True).draw_mermaid_png()
+# png_bytes = react_graph.get_graph().draw_mermaid_png()
+
 
 # with open("graph.png", "wb") as f:
 #     f.write(png_bytes)

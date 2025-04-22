@@ -14,7 +14,7 @@ class BrowserUse:
         temperature: float = 0.0,
         timeout: int = 30,
         chrome_instance_path: str = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        max_steps: int = 8,
+        max_steps: int = 75,
     ):
         """Initialization of browser_use agent.
 
@@ -80,6 +80,7 @@ class BrowserUse:
         Returns:
             final_result: returns the final result of the search or a message telling the user it couldn't do what he told it to.
         """
+        cooldown_flag = False
         await self._init_context()
         fail_reason = None
         agent = Agent(
@@ -109,11 +110,15 @@ class BrowserUse:
                 break
 
         if fail_reason is not None:
-            return f"There's been a fail: {fail_reason} \nTry another approach as browser_use cannot overcome this."
+            cooldown_flag = True
+            return (
+                f"There's been a fail: {agent.state.history.final_result()} \nTry another approach as browser_use cannot overcome this.",
+                cooldown_flag,
+            )
 
         else:
             final_result = (
                 agent.state.history.final_result() or "No se pudo obtener resultado"
             )
 
-            return final_result
+            return final_result, cooldown_flag

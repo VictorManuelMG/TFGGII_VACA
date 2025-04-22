@@ -23,6 +23,8 @@ import subprocess
 import requests
 
 
+from datetime import datetime, timedelta
+
 print("Cargando modelos para captioning y screen interpreter")
 
 Florence = FlorenceCaptioner()
@@ -32,8 +34,12 @@ Browser = BrowserUse()
 
 print("Modelos cargados")
 
+# Dictionary to save actual tools on cooldown
+cooldowns = {}
+
 
 # Tool is defined inside a class, so we'll instance a call outside the class to convert it into a callable tool
+## Use of datetime over time as the former gives problems when trying to add seconds to the cooldown, might change all time imports in the future.
 @tool
 def browser_use(order: str):
     """Tool mainly focused on browsing over the internet
@@ -44,13 +50,33 @@ def browser_use(order: str):
         message: result of search
     """
 
-    async def run_browser():
-        return await Browser.browser_executable(
-            order,
-        )
+    time_now = datetime.now()
 
-    result = asyncio.run(run_browser())
-    return f"Resultado browser_use:\n{result}"
+    # Cooldown on browser_use to forbid the use of this tool in case of failure on search so it uses other available tools that have the same purpouse or can do the same.
+    if "browser_use" in cooldowns and time_now < cooldowns["browser_use"]:
+        remaining = (cooldowns["browser_use"] - time_now).seconds
+        print(f"\n{cooldowns}+ le queda: {remaining}\n")
+        return {
+            "result": "Browser tool is currently on cooldown.",
+            "cooldown_flag": True,
+            "cooldown_remaining_seconds": remaining,
+        }
+
+    async def run_browser():
+        return await Browser.browser_executable(order)
+
+    result, cooldown_flag = asyncio.run(run_browser())
+
+    if cooldown_flag:
+        cooldowns["browser_use"] = time_now + timedelta(seconds=200)
+
+    print(f"\n{cooldowns}\n")
+
+    return {
+        "result": f"Resultado browser_use:\n{result}",
+        "cooldown_flag": cooldown_flag,
+        "cooldown_remaining_seconds": 0 if not cooldown_flag else 200,
+    }
 
 
 @tool
@@ -145,7 +171,7 @@ tools = [
 
 
 load_dotenv()
-model = "claude-3-7-sonnet-20250219"
+model = "claude-3-7-sonnet-latest"
 model2 = "claude-3-5-sonnet-20240620"
 
 llm = ChatAnthropic(
@@ -203,11 +229,9 @@ def call_model(state: State):
                         just respon directly with your memory dont use tools.
                         If you open something and you don't see it maximized, try to maximaze it if possible using your tools
                         If the user tell you something ambigous ALWAYS ask for more information.
-                        If users tell "exit" give a goodbye message as you'll stop working and the programm will stop
-                        Mainly use browser_use tool to surf over the internet althought it might show fails upon encontering captchas or other type of auths, 
-                        in that case use ScreenInterpreter and computer tools instead of browser_use with help of computer tools to achieve whatever browser_use cannot, once the cause of
-                        fail is overcome, return to use browser_use tool.
-                        After returning from using browser_use ask the user first if he wishes to keep using this tool or other tools.
+                        If users tell "exit" give a goodbye message as you'll stop working and the programm will stop.
+                        When asking something to be done over the internet, use browser_use tool, if it's on cooldown always check when it will be available
+
                         Always respond to user in spanish unless asked otherwise"""
     )
 

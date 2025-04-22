@@ -17,9 +17,9 @@ class ScreenAssistant:
     def __init__(
         self,
         captioner: FlorenceCaptioner,
-        model_dir : str ="model.pt",
-        model_screen_interpreter: str = "claude-3-7-sonnet-20250219",
-        max_tokens_SI : int =1024,
+        model_dir: str = "model.pt",
+        model_screen_interpreter: str = "claude-3-7-sonnet-latest",
+        max_tokens_SI: int = 1024,
         crop_dir: str = "tmpcrops",
     ) -> None:
         """Initialize screeninterpreter with YOLO
@@ -27,7 +27,7 @@ class ScreenAssistant:
         Args:
             captioner (FlorenceCaptioner): Captioner model, in this case Florencev2
             model_dir (str, optional): dir of yolo model. Defaults to "model.pt".
-            model_screen_interpreter (str, optional): Claude model for interpreting images. Defaults to "claude-3-7-sonnet-20250219".
+            model_screen_interpreter (str, optional): Claude model for interpreting images. Defaults to "claude-3-7-sonnet-latest".
             max_tokens_SI (int, optional): max token output for Claude. Defaults to 1024.
             crop_dir (str, optional): dir to save crops. Defaults to Path("./CUA/tools/tempcrops").
         """
@@ -254,8 +254,6 @@ class ScreenAssistant:
         CaptionBboxes = {}
 
         complete_dict = {}
-
-
 
         for result in results:
             for box in result.boxes:

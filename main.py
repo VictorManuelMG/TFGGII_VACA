@@ -12,10 +12,10 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_core.tools import tool
 from langgraph.managed.is_last_step import RemainingSteps
-from CUA.tools.ClassFlorence import FlorenceCaptioner
-from CUA.tools.ClassScreenAssistant import ScreenAssistant
-from CUA.tools.ClassWhisper import WhisperASR
-from CUA.tools.ClassBrowserUse import BrowserUse
+from CUA.tools.class_florence import florence_captioner
+from CUA.tools.class_screen_assistant import screen_assistant
+from CUA.tools.class_whisper import whisper_asr
+from CUA.tools.class_browser_use import browser
 
 # import for debugging and testing
 import time
@@ -27,20 +27,20 @@ from datetime import datetime, timedelta
 
 print("Cargando modelos para captioning y screen interpreter")
 
-Florence = FlorenceCaptioner()
-Whisper = WhisperASR()
-Browser = BrowserUse()
+Florence = florence_captioner()
+Whisper = whisper_asr()
+Browser = browser()
 
 
 #Model selection prototype, it shall be upgraded in the future.
 print("Elija que modelo querra usar para la inferencia de imagenes: 1.- OpenAI, 2.-Anthropic 3.- Predeterminado")
 opcion = input()
 if opcion == 1:
-    Assistant = ScreenAssistant(captioner=Florence, model_screen_interpreter="gpt-4o")
+    Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="gpt-4o")
 elif opcion == 2:
-    Assistant = ScreenAssistant(captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest")
+    Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest")
 else:
-    Assistant = ScreenAssistant(captioner=Florence)
+    Assistant = screen_assistant(captioner=Florence)
 
 
 

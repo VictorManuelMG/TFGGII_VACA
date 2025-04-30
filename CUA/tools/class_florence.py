@@ -9,7 +9,7 @@ from pathlib import Path
 import time
 
 
-class FlorenceCaptioner:
+class florence_captioner:
     def __init__(
         self,
         model_dir: str = "Florence2",

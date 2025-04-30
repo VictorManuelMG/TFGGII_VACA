@@ -1,10 +1,10 @@
-from CUA.tools.ClassBrowserUse import BrowserUse
+from CUA.tools.class_browser_use import browser
 import pytest
 
 
 def test_initialization():
     """Test the initialization of a object from class BrowserUse"""
-    Browser = BrowserUse(
+    Browser = browser(
         anthropic_model="claude-3-7-sonnet-latest",
         temperature=0,
         timeout=100,
@@ -25,7 +25,7 @@ def test_initialization():
 @pytest.mark.asyncio
 async def test_init_context():
     """Test the generation of browser and context"""
-    Browser = BrowserUse()
+    Browser = browser()
     await Browser._init_context()
 
     assert Browser.browser is not None

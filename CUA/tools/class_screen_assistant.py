@@ -1,4 +1,3 @@
-from pyexpat.errors import messages
 import random
 import anthropic
 import pyautogui
@@ -12,13 +11,13 @@ import cv2
 import copy
 import openai
 from pathlib import Path
-from CUA.tools.ClassFlorence import FlorenceCaptioner
+from CUA.tools.class_florence import florence_captioner
 
 
-class ScreenAssistant:
+class screen_assistant:
     def __init__(
         self,
-        captioner: FlorenceCaptioner,
+        captioner: florence_captioner,
         model_dir: str = "model.pt",
         model_screen_interpreter: str = "claude-3-7-sonnet-latest",
         max_tokens_SI: int = 1024,
@@ -128,7 +127,7 @@ class ScreenAssistant:
                 ],
                 max_tokens=1024,
             )
-        return (response.model_dump())
+        return (response.model_dump()) #type: ignore
 
     def interpret_screen(self, order: str):
         """Makes a call to a model to interpret screen information and gives back directions about what to do to complete user's request such as opening a browser, typing, etc...

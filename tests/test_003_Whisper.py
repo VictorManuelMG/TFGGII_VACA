@@ -1,5 +1,5 @@
 
-from CUA.tools.ClassWhisper import WhisperASR
+from CUA.tools.class_whisper import whisper_asr
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -13,7 +13,7 @@ load_dotenv()
 def test_initialization():
     """Test of instanziation of all params of whisper class object
     """    
-    whisper = WhisperASR(
+    whisper = whisper_asr(
         1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base"
     )
     assert whisper.CHUNK == 1024,f"Did not instantiate CHUNK param right, expected 1024 got: {whisper.CHUNK}"
@@ -28,7 +28,7 @@ def test_request_tts_inference():
     """Tests the generation of an audio file by the model, optional you can enable commented section to test the audio output.
     """    
     #This test will assert if the function generates an audio file, we will not bother with the audio itself as the LLM might generate different audios for the same prompt.
-    whisper = WhisperASR(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
+    whisper = whisper_asr(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
     os.makedirs(Path(__file__).resolve().parent / "resources/generatedAudio", exist_ok=True)
     #Initialization of the model as it might be offline and we've to wait for it to become available
 
@@ -66,7 +66,7 @@ def test_request_tts_inference():
 def test_request_asr_inference():
     """Test the generation of a transcription from the audio made from previous tests.
     """    
-    whisper = WhisperASR(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
+    whisper = whisper_asr(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
     audio_bytes = whisper._request_tts_inference("Esto es un audio de prueba.")
 
     response = whisper._request_asr_inference(audio_bytes["audio_data"])
@@ -78,7 +78,7 @@ def test_request_asr_inference():
 
 
 def test_record_audio():
-    whisper = WhisperASR(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
+    whisper = whisper_asr(1024, 4410, 5, os.getenv("WHISPER_TURBO_ID"), os.getenv("TTS_MODEL_ID"), "base")
     whisper._record_audio("./resources/generatedAudio/output_record.wav")
     path_record = Path(__file__).parent / "resources/generatedAudio/output_record.wav"
 

@@ -1,4 +1,4 @@
-from CUA.tools.ClassScreenAssistant import ScreenAssistant
+from CUA.tools.class_screen_assistant import screen_assistant
 from unittest.mock import MagicMock
 from pathlib import Path
 import cv2
@@ -14,7 +14,7 @@ def test_screen_assistant_initialization():
     """Test the generation of Screen Assistant class, we use a mock as Florence sustitute for the initialization.
     """    
     mock_captioner = MagicMock()
-    assistant = ScreenAssistant(
+    assistant = screen_assistant(
         captioner=mock_captioner,
         model_dir=parent_dir + "/dummy.pt",
         crop_dir="tmpcrops"
@@ -33,7 +33,7 @@ def test_yolo_boxes_coord():
     mock_captioner = MagicMock()
     mock_captioner.generate_captions.return_value = {0: "testing"}
 
-    assistant = ScreenAssistant(
+    assistant = screen_assistant(
         captioner=mock_captioner,
         model_dir=parent_dir + "/dummy.pt",
         crop_dir="tmpcrops"
@@ -100,7 +100,7 @@ def test_image_YOLOED():
     mock_captioner = MagicMock()
     mock_captioner.generate_captions.return_value={0: "testing"}
     
-    assistant = ScreenAssistant(
+    assistant = screen_assistant(
         captioner=mock_captioner,
         model_dir= parent_dir + "/dummy.pt",
         crop_dir= "tmpcrops"

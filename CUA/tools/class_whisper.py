@@ -9,7 +9,7 @@ import wave
 load_dotenv()
 
 
-class WhisperASR:
+class whisper_asr:
     def __init__(
         self,
         CHUNK=1024,

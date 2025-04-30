@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class BrowserUse:
+class browser:
     def __init__(
         self,
         anthropic_model: str = "claude-3-7-sonnet-latest",

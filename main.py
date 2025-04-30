@@ -28,9 +28,23 @@ from datetime import datetime, timedelta
 print("Cargando modelos para captioning y screen interpreter")
 
 Florence = FlorenceCaptioner()
-Assistant = ScreenAssistant(Florence)
 Whisper = WhisperASR()
 Browser = BrowserUse()
+
+
+#Model selection prototype, it shall be upgraded in the future.
+print("Elija que modelo querra usar para la inferencia de imagenes: 1.- OpenAI, 2.-Anthropic 3.- Predeterminado")
+opcion = input()
+if opcion == 1:
+    Assistant = ScreenAssistant(captioner=Florence, model_screen_interpreter="gpt-4o")
+elif opcion == 2:
+    Assistant = ScreenAssistant(captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest")
+else:
+    Assistant = ScreenAssistant(captioner=Florence)
+
+
+
+
 
 print("Modelos cargados")
 
@@ -283,7 +297,7 @@ def should_continue(state: State):
     """
 
     messages = state["messages"]
-    if len(messages) > 6:
+    if len(messages) > 12:
         return "summarize_conversation"
     return END
 

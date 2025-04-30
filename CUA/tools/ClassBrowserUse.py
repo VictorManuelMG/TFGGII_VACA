@@ -108,6 +108,10 @@ class BrowserUse:
             if "Failed:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
                 fail_reason = last.model_output.current_state.evaluation_previous_goal  # type:ignore
                 break
+            
+            if "Error:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
+                fail_reason = last.model_output.current_state.evaluation_previous_goal  # type:ignore
+                break
 
         if fail_reason is not None:
             cooldown_flag = True

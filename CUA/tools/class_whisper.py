@@ -1,9 +1,10 @@
 import requests
-import logging
 import os
 from dotenv import load_dotenv
 import pyaudio
 import wave
+
+from CUA.util.logger import logger
 
 
 load_dotenv()
@@ -27,8 +28,6 @@ class whisper_asr:
             RECORD_SECONDS (int, optional): Total seconds going to be recorded by pyaudio. Defaults to 5.
             WHISPER_MODEL (_type_, optional): WhisperModel to do ASR inference. Defaults to os.getenv("WHISPER_TURBO_ID").
         """
-
-        self.logger = logging.getLogger(__name__)
         self.CHUNK = CHUNK  # Audio chunks sizes
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 2  # Stereo for Windows.
@@ -69,12 +68,12 @@ class whisper_asr:
             if response.status_code == 200:
                 return response.json().get("text", "")
             else:
-                self.logger.error(
+                logger.error(
                     f"Error en la transcripción de audio: {response.status_code} - {response.text}"
                 )
                 return f"Error {response.status_code}: {response.text}"
         except Exception as e:
-            self.logger.error(f"Excepción al procesar el audio: {str(e)}")
+            logger.error(f"Excepción al procesar el audio: {str(e)}")
             return f"Error: {str(e)}"
 
     def _record_audio(self,path_record:str = "./CUA/tools/output.wav"):
@@ -144,12 +143,12 @@ class whisper_asr:
                 content_type = response.headers.get("Content-Type", "")
                 return {"audio_data": response.content, "content_type": content_type}
             else:
-                self.logger.error(
+                logger.error(
                     f"Error en la respuesta del TTS: {response.status_code} - {response.text}"
                 )
                 return {}
         except Exception as e:
-            self.logger.error(f"Error en la respuesta del TTS: {str(e)}")
+            logger.error(f"Error en la respuesta del TTS: {str(e)}")
             return {}
 
     def whisper_TTS(self, text: str):

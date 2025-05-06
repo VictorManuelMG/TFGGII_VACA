@@ -9,6 +9,8 @@ from pathlib import Path
 import time
 
 
+from CUA.util.logger import logger
+
 class florence_captioner:
     def __init__(
         self,
@@ -31,9 +33,9 @@ class florence_captioner:
         self.crop_dir = self.root_dir / crop_dir
         self.batch_size = batch_size
 
-        print(f"Cargando Florence en {self.device}")
 
 
+        logger.info(f"Florence inference is using: {self.device}")
 
 
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -110,8 +112,5 @@ class florence_captioner:
         caption_dict = self._caption_batch(crops, ids)
         end = time.time()
 
-        print("\n************************************************************")
-        print(f"Tiempo de ejecución de Florence: {end - start} segundos")
-        print("************************************************************\n")
-
+        logger.info(f"Florence execution time: {end - start} seconds")
         return caption_dict

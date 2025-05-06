@@ -25,6 +25,8 @@ import requests
 
 from datetime import datetime, timedelta
 
+from CUA.util.logger import logger
+ 
 print("Cargando modelos para captioning y screen interpreter")
 
 Florence = florence_captioner()
@@ -34,17 +36,20 @@ Browser = browser()
 
 #Model selection prototype, it shall be upgraded in the future.
 print("Elija que modelo querra usar para la inferencia de imagenes: 1.- OpenAI, 2.-Anthropic 3.- Predeterminado")
-opcion = input()
+while True:
+    try:
+        opcion = int(input())
+        break 
+    except ValueError as e:
+        logger.error(f"Introducido un caracter diferente a un numero: {e}", exc_info=True)
+        print("Por favor, ingrese un número válido.")
+
 if opcion == 1:
     Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="gpt-4o")
 elif opcion == 2:
     Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest")
 else:
     Assistant = screen_assistant(captioner=Florence)
-
-
-
-
 
 print("Modelos cargados")
 
@@ -63,7 +68,7 @@ def browser_use(order: str):
     Returns:
         message: result of search
     """
-
+    logger.info(f"browser_use user order: {order}")
     time_now = datetime.now()
 
     # Cooldown on browser_use to forbid the use of this tool in case of failure on search so it uses other available tools that have the same purpouse or can do the same.
@@ -84,7 +89,7 @@ def browser_use(order: str):
     if cooldown_flag:
         cooldowns["browser_use"] = time_now + timedelta(seconds=200)
 
-    print(f"\n{cooldowns}\n")
+    logger.debug(f"browser_use tool response: {result}, cooldowns: {cooldowns}")
 
     return {
         "result": f"Resultado browser_use:\n{result}",
@@ -113,9 +118,11 @@ def ScreenInterpreter(order: str):
     Returns:
             message: LLM answer
     """
+    logger.info(f"ScreenInterpreter user order: {order}")
     message = Assistant.interpret_screen(order)
 
-    # print(f"{message}\n") #For debugging
+    #Tool response for debugging
+    logger.debug(f"ScreenInterpreter response: {message}")
 
     return message
 
@@ -137,9 +144,11 @@ def SimpleScreenInterpreter(order: str):
     Returns:
         message: LLM answer
     """
+    logger.info(f"SimpleScreenInterpreter user order: {order}")
     message = Assistant.simple_interpreter(order)
 
-    # print(f"{message}\n") #For debugging
+    #Tool response for debugging
+    logger.debug(f"SimpleScreenInterpreter response: {message}")
 
     return message
 
@@ -151,6 +160,7 @@ def OpenChrome():
     Returns:
         msg: result of execution of tool
     """
+    #URL only available if debug mode activated.
     url_debug = "http://localhost:9222/json"
 
     chrome_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
@@ -160,6 +170,7 @@ def OpenChrome():
         if response.status_code == 200:
             return "Ya hay una instancia de Chrome abierta."
     except requests.exceptions.RequestException:
+        logger.warning("No se pudo conectar a Chrome vía puerto 9222. Se asumirá que no está abierto.", exc_info=True)
         pass
 
     cmd = [
@@ -186,7 +197,6 @@ tools = [
 
 load_dotenv()
 model = "claude-3-7-sonnet-latest"
-model2 = "claude-3-5-sonnet-20240620"
 
 llm = ChatAnthropic(
     model=model,  # type: ignore
@@ -257,10 +267,10 @@ def call_model(state: State):
 
     else:
         messages = state["messages"]
-
     response = llm_with_tools.invoke([sys_msg] + messages)
 
-    # print(f"{response}\n") #For Debugging
+    #Agent response for debugging
+    logger.debug(f"Agent response:{response}")
 
     return {"messages": response}
 
@@ -271,6 +281,7 @@ def summarize_conversation(state: State):
     Returns:
         Summary: summary of the conversation
     """
+    logger.info(f"summarize_conversation state: {state}")
     summary = state.get("summary", "")
 
     if summary:
@@ -286,6 +297,7 @@ def summarize_conversation(state: State):
     response = llm_with_tools.invoke(messages)
 
     delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]]  # type: ignore
+    logger.debug(f"summarize_conversation return: summary: {response.content} messages: {delete_messages}")
     return {"summary": response.content, "messages": delete_messages}
 
 
@@ -309,7 +321,7 @@ def router(state: State):
         state (State): state
 
     """
-
+    logger.debug(f"router steps remaining :{state["remaining_steps"]}")
     if state["remaining_steps"] <= 10:
         return {
             "messages": [
@@ -400,6 +412,4 @@ while flag:
     #     print("\n")
     # end = time.time()
 
-    print("\n///////////////////////////////////////////////////////////")
-    print(f"Tiempo de ejecucion de el prompt: {end - start} segundos")
-    print("///////////////////////////////////////////////////////////\n")
+    logger.info("Agent task execution time: {end - start} seconds")

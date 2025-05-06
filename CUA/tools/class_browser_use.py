@@ -4,6 +4,8 @@ from browser_use import Agent, Browser, BrowserConfig, BrowserContextConfig
 from dotenv import load_dotenv
 
 
+from CUA.util.logger import logger
+
 load_dotenv()
 
 
@@ -105,11 +107,15 @@ class browser:
                 break
 
             last = agent.state.history.history[-1]
+            logger.info(f"brower_executable state previous goal info: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
+
             if "Failed:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
+                logger.error(f"brower_executable state previous goal failed: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
                 fail_reason = last.model_output.current_state.evaluation_previous_goal  # type:ignore
                 break
             
             if "Error:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore
+                logger.info(f"brower_executable state previous goal error: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
                 fail_reason = last.model_output.current_state.evaluation_previous_goal  # type:ignore
                 break
 

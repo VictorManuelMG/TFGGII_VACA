@@ -14,6 +14,9 @@ from pathlib import Path
 from CUA.tools.class_florence import florence_captioner
 
 
+from CUA.util.logger import logger
+
+
 class screen_assistant:
     def __init__(
         self,
@@ -232,15 +235,10 @@ class screen_assistant:
             )
 
             end = time.time()
-            print(
-                "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            )
-            print(
-                f"Tiempo de ejecucion de razonamiendo screenshot: {end - start} segundos"
-            )
-            print(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-            )
+
+
+            logger.info(f"interpret_screen Claude image inference duration: {end - start} seconds")
+
 
             return message
         
@@ -324,15 +322,8 @@ class screen_assistant:
             ], max_tokens=1024
             )
             end = time.time()
-            print(
-                "\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            )
-            print(
-                f"Tiempo de ejecucion de razonamiendo screenshot: {end - start} segundos"
-            )
-            print(
-                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
-            )
+
+            logger.info(f"interpret_screen OpenAI image inference duration: {end - start} seconds")
 
             return(response.model_dump())
 
@@ -363,6 +354,8 @@ class screen_assistant:
         )
 
         coords = self._Yolo_boxes_coord(image, resultsOriginal)
+
+        logger.debug(f"class_screen_assistant.screen_assistant._image_YOLOED coordinates infered : {coords}")
 
         return coords
 
@@ -434,5 +427,5 @@ class screen_assistant:
             }
 
         cv2.imwrite("Yoloed.jpeg", image)
-
+        logger.debug(f"class_screen_assistant.screen_assistant._YoloBoxes_coord coordinates and caption results: {complete_dict}")
         return complete_dict

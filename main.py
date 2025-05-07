@@ -431,24 +431,41 @@ root.grid_rowconfigure(1, weight=1)
 entry = tk.Entry(root,width=80)
 entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
+agent_chat = st.ScrolledText(root,wrap="word",font=("Courier New",11))
+agent_chat.grid(row=1,column=0,padx=10,pady=10,sticky="nsew")
+agent_chat.insert(tk.END,"Este es el inicio de su conversación.\n")
+agent_chat.config(state="disabled")
+
+
+agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
+agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
+
+
 def clicked():
-    res = react_graph.invoke({"messages": entry.get()}, config)#type: ignore
-    #Enable edit of tk.text
-    output.config(state="normal")
-    output.delete("1.0", tk.END)
-    output.insert(tk.END, res["messages"][-1].content)
-    #diable edit of tk.text
-    output.config(state="disabled")
+    user_prompt = entry.get().strip()
+    if not user_prompt:
+        return 
+    
+    entry.delete(0, tk.END)
+
+    agent_chat.config(state="normal")
+    agent_chat.insert(tk.END,f"\n 😃 : {user_prompt}\n","usuario")
+
+    res = react_graph.invoke({"messages": user_prompt}, config)#type: ignore
+    agent_chat.insert(tk.END,"\n")
+
+
+    agent_chat.see(tk.END)
+    agent_chat.insert(tk.END, f" 🐄 : {res["messages"][-1].content}","asistente")
+    agent_chat.config(state="disabled")
+    agent_chat.see(tk.END)
 
 
 btn = tk.Button(root, text = "Enviar" ,
              fg = "red", command=clicked)
-
 btn.grid(row=0, column=1, padx=10, pady=10)
 
-output = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
-output.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
-output.config(state="disabled")
+
 root.mainloop()
 
 

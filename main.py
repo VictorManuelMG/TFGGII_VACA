@@ -17,6 +17,11 @@ from CUA.tools.class_screen_assistant import screen_assistant
 from CUA.tools.class_whisper import whisper_asr
 from CUA.tools.class_browser_use import browser
 
+
+import tkinter as tk
+
+from tkinter import scrolledtext as st
+
 # import for debugging and testing
 import time
 import subprocess
@@ -372,44 +377,78 @@ end = time.time()
 flag_tts = False
 
 
-while flag:
-    print(
-        "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA, ',,' para desactivarlo.)"
-    )
-    order = input()
+# while flag:
+#     print(
+#         "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA, ',,' para desactivarlo.)"
+#     )
+#     order = input()
 
-    if order == ",":
-        flag_tts = True
-        continue
+#     if order == ",":
+#         flag_tts = True
+#         continue
 
-    if order == ",,":
-        flag_tts = False
-        continue
+#     if order == ",,":
+#         flag_tts = False
+#         continue
 
-    if order.lower() == "exit":
-        flag = False
-        continue
+#     if order.lower() == "exit":
+#         flag = False
+#         continue
 
-    if order == ".":
-        print("Se realizará una grabación")
-        time.sleep(2)
-        order = Whisper.whisper_SST()
+#     if order == ".":
+#         print("Se realizará una grabación")
+#         time.sleep(2)
+#         order = Whisper.whisper_SST()
 
-    start = time.time()
-    messages = react_graph.invoke({"messages": order}, config)  # type: ignore
-    end = time.time()
+#     start = time.time()
+#     messages = react_graph.invoke({"messages": order}, config)  # type: ignore
+#     end = time.time()
 
-    for m in messages["messages"]:
-        m.pretty_print()
+#     for m in messages["messages"]:
+#         m.pretty_print()
 
-    if flag_tts:
-        last_message = messages["messages"][-1]
-        Whisper.whisper_TTS(last_message.content)
+#     if flag_tts:
+#         last_message = messages["messages"][-1]
+#         Whisper.whisper_TTS(last_message.content)
 
-    # start = time.time()
-    # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
-    #     print(messages)
-    #     print("\n")
-    # end = time.time()
+#     # start = time.time()
+#     # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
+#     #     print(messages)
+#     #     print("\n")
+#     # end = time.time()
 
-    logger.info("Agent task execution time: {end - start} seconds")
+#     logger.info("Agent task execution time: {end - start} seconds")
+
+#GUI tkinter
+root = tk.Tk()
+root.title("Voice-Assisted Computer Accessibility")
+
+root.geometry('1280x720')
+
+root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(1, weight=1)
+
+entry = tk.Entry(root,width=80)
+entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+
+def clicked():
+    res = react_graph.invoke({"messages": entry.get()}, config)#type: ignore
+    #Enable edit of tk.text
+    output.config(state="normal")
+    output.delete("1.0", tk.END)
+    output.insert(tk.END, res["messages"][-1].content)
+    #diable edit of tk.text
+    output.config(state="disabled")
+
+
+btn = tk.Button(root, text = "Enviar" ,
+             fg = "red", command=clicked)
+
+btn.grid(row=0, column=1, padx=10, pady=10)
+
+output = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+output.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=10, pady=10)
+output.config(state="disabled")
+root.mainloop()
+
+

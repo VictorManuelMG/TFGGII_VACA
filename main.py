@@ -395,55 +395,6 @@ react_graph = builder.compile(checkpointer=memory)
 
 config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
 
-
-flag = True
-start = time.time()
-end = time.time()
-flag_tts = False
-
-
-# while flag:
-#     print(
-#         "Escriba su orden (Escriba exit para salir o '.' para pasar prompt mediante voz o ',' para activar transcripciones por voz de los mensajes de la IA, ',,' para desactivarlo.)"
-#     )
-#     order = input()
-
-#     if order == ",":
-#         flag_tts = True
-#         continue
-
-#     if order == ",,":
-#         flag_tts = False
-#         continue
-
-#     if order.lower() == "exit":
-#         flag = False
-#         continue
-
-#     if order == ".":
-#         print("Se realizará una grabación")
-#         time.sleep(2)
-#         order = Whisper.whisper_SST()
-
-#     start = time.time()
-#     messages = react_graph.invoke({"messages": order}, config)  # type: ignore
-#     end = time.time()
-
-#     for m in messages["messages"]:
-#         m.pretty_print()
-
-#     if flag_tts:
-#         last_message = messages["messages"][-1]
-#         Whisper.whisper_TTS(last_message.content)
-
-#     # start = time.time()
-#     # for messages in react_graph.stream({"messages":order},config,stream_mode = "messages"):
-#     #     print(messages)
-#     #     print("\n")
-#     # end = time.time()
-
-#     logger.info("Agent task execution time: {end - start} seconds")
-
 # GUI tkinter
 root = tk.Tk()
 root.title("Voice-Assisted Computer Accessibility")
@@ -464,28 +415,26 @@ agent_chat.config(state="disabled")
 
 agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
 agent_thinking.grid(row=1, column=1, padx=5, pady=10, stick="nsew")
+agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
 agent_thinking.config(state="disabled")
 
 agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
 agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
 
 
-def clicked():
+
+def agent_response(user_prompt):
     agent_thinking.config(state="normal")
     agent_chat.config(state="normal")
-    agent_thinking.delete("1.0", tk.END)
-    user_prompt = entry.get().strip()
+    
     if not user_prompt:
         return
-
-    entry.delete(0, tk.END)
-
+    
     agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
     agent_chat.insert(tk.END, "\n")
 
     res = react_graph.invoke({"messages": user_prompt}, config)  # type: ignore
 
-    agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
     tool = None
 
     #Agent thinking log extraction.
@@ -504,11 +453,11 @@ def clicked():
 
         elif hasattr(msg, "tool_call_id"):
             agent_thinking.insert(
-                tk.END, f"✉ Respuesta de herramienta: {msg.content}\n"
+                tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n"
             )
             agent_thinking.insert(tk.END, "-----------------------------\n")
 
-    agent_thinking.insert(tk.END, "🧠 mente en frío\n")
+    agent_thinking.insert(tk.END, " 🧠 mente en frío\n")
     agent_thinking.insert(tk.END, "-----------------------------\n")
 
     agent_chat.insert(tk.END, f" 🐄 : {res["messages"][-1].content}\n", "asistente")
@@ -518,8 +467,33 @@ def clicked():
     agent_thinking.see(tk.END)
 
 
-btn = tk.Button(root, text="Enviar", fg="red", command=clicked)
+
+def clicked():
+    user_prompt = entry.get().strip()
+    entry.delete(0, tk.END)
+    agent_response(user_prompt=user_prompt)
+
+
+
+
+def fading_popup(title:str,message:str,time_alive:int):
+    top=tk.Toplevel()
+    top.title(title)
+    tk.Message(top,text=message,padx=20,pady=20).pack()
+    top.after(time_alive,top.destroy)
+
+
+def record_clicked():
+    fading_popup("Grabando","Se procedera a grabar durante 5 segundos",5000)
+    user_prompt = Whisper.whisper_SST()
+    agent_response(user_prompt=user_prompt)
+    
+
+btn = tk.Button(root, text="Enviar", fg="red", command = clicked)
 btn.grid(row=0, column=1, padx=10, pady=10)
+
+record_btn = tk.Button(root,text="prompt de voz",fg="green",command = record_clicked)
+record_btn.grid(row=0, column=2, padx=10,pady=10)
 
 
 root.mainloop()

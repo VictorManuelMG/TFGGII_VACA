@@ -31,7 +31,7 @@ import requests
 from datetime import datetime, timedelta
 
 from CUA.util.logger import logger
- 
+
 print("Cargando modelos para captioning y screen interpreter")
 
 Florence = florence_captioner()
@@ -39,20 +39,26 @@ Whisper = whisper_asr()
 Browser = browser()
 
 
-#Model selection prototype, it shall be upgraded in the future.
-print("Elija que modelo querra usar para la inferencia de imagenes: 1.- OpenAI, 2.-Anthropic 3.- Predeterminado")
+# Model selection prototype, it shall be upgraded in the future.
+print(
+    "Elija que modelo querra usar para la inferencia de imagenes: 1.- OpenAI, 2.-Anthropic 3.- Predeterminado"
+)
 while True:
     try:
         opcion = int(input())
-        break 
+        break
     except ValueError as e:
-        logger.error(f"Introducido un caracter diferente a un numero: {e}", exc_info=True)
+        logger.error(
+            f"Introducido un caracter diferente a un numero: {e}", exc_info=True
+        )
         print("Por favor, ingrese un número válido.")
 
 if opcion == 1:
     Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="gpt-4o")
 elif opcion == 2:
-    Assistant = screen_assistant(captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest")
+    Assistant = screen_assistant(
+        captioner=Florence, model_screen_interpreter="claude-3-7-sonnet-latest"
+    )
 else:
     Assistant = screen_assistant(captioner=Florence)
 
@@ -123,10 +129,11 @@ def ScreenInterpreter(order: str):
     Returns:
             message: LLM answer
     """
+
     logger.info(f"ScreenInterpreter user order: {order}")
     message = Assistant.interpret_screen(order)
 
-    #Tool response for debugging
+    # Tool response for debugging
     logger.debug(f"ScreenInterpreter response: {message}")
 
     return message
@@ -152,7 +159,7 @@ def SimpleScreenInterpreter(order: str):
     logger.info(f"SimpleScreenInterpreter user order: {order}")
     message = Assistant.simple_interpreter(order)
 
-    #Tool response for debugging
+    # Tool response for debugging
     logger.debug(f"SimpleScreenInterpreter response: {message}")
 
     return message
@@ -165,7 +172,7 @@ def OpenChrome():
     Returns:
         msg: result of execution of tool
     """
-    #URL only available if debug mode activated.
+    # URL only available if debug mode activated.
     url_debug = "http://localhost:9222/json"
 
     chrome_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
@@ -175,7 +182,10 @@ def OpenChrome():
         if response.status_code == 200:
             return "Ya hay una instancia de Chrome abierta."
     except requests.exceptions.RequestException:
-        logger.warning("No se pudo conectar a Chrome vía puerto 9222. Se asumirá que no está abierto.", exc_info=True)
+        logger.warning(
+            "No se pudo conectar a Chrome vía puerto 9222. Se asumirá que no está abierto.",
+            exc_info=True,
+        )
         pass
 
     cmd = [
@@ -185,6 +195,18 @@ def OpenChrome():
     subprocess.Popen(cmd)
 
     return "Inicializado Chrome"
+
+
+@tool
+def sumas(a: int, b: int):
+    """tool that return the addition of two numbers
+
+    Returns:
+        result: result of said addition between two numbers
+    """
+    result = a + b
+
+    return result
 
 
 tools = [
@@ -197,6 +219,7 @@ tools = [
     computer.keyboard_input,
     computer.keyboard_hotkey,
     computer.delete_text,
+    sumas,
 ]
 
 
@@ -274,7 +297,7 @@ def call_model(state: State):
         messages = state["messages"]
     response = llm_with_tools.invoke([sys_msg] + messages)
 
-    #Agent response for debugging
+    # Agent response for debugging
     logger.debug(f"Agent response:{response}")
 
     return {"messages": response}
@@ -302,7 +325,9 @@ def summarize_conversation(state: State):
     response = llm_with_tools.invoke(messages)
 
     delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]]  # type: ignore
-    logger.debug(f"summarize_conversation return: summary: {response.content} messages: {delete_messages}")
+    logger.debug(
+        f"summarize_conversation return: summary: {response.content} messages: {delete_messages}"
+    )
     return {"summary": response.content, "messages": delete_messages}
 
 
@@ -419,53 +444,82 @@ flag_tts = False
 
 #     logger.info("Agent task execution time: {end - start} seconds")
 
-#GUI tkinter
+# GUI tkinter
 root = tk.Tk()
 root.title("Voice-Assisted Computer Accessibility")
 
-root.geometry('1280x720')
+root.geometry("1280x720")
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(1, weight=1)
 
-entry = tk.Entry(root,width=80)
+entry = tk.Entry(root, width=80)
 entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
-agent_chat = st.ScrolledText(root,wrap="word",font=("Courier New",11))
-agent_chat.grid(row=1,column=0,padx=10,pady=10,sticky="nsew")
-agent_chat.insert(tk.END,"Este es el inicio de su conversación.\n")
+agent_chat = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_chat.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+agent_chat.insert(tk.END, "Este es el inicio de su conversación.\n")
 agent_chat.config(state="disabled")
 
+
+agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_thinking.grid(row=1, column=1, padx=5, pady=10, stick="nsew")
+agent_thinking.config(state="disabled")
 
 agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
 agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
 
 
 def clicked():
+    agent_thinking.config(state="normal")
+    agent_chat.config(state="normal")
+    agent_thinking.delete("1.0", tk.END)
     user_prompt = entry.get().strip()
     if not user_prompt:
-        return 
-    
+        return
+
     entry.delete(0, tk.END)
 
-    agent_chat.config(state="normal")
-    agent_chat.insert(tk.END,f"\n 😃 : {user_prompt}\n","usuario")
+    agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
+    agent_chat.insert(tk.END, "\n")
 
-    res = react_graph.invoke({"messages": user_prompt}, config)#type: ignore
-    agent_chat.insert(tk.END,"\n")
+    res = react_graph.invoke({"messages": user_prompt}, config)  # type: ignore
 
+    agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
+    tool = None
 
-    agent_chat.see(tk.END)
-    agent_chat.insert(tk.END, f" 🐄 : {res["messages"][-1].content}","asistente")
+    #Agent thinking log extraction.
+    for msg in res["messages"]:
+        if hasattr(msg, "content") and isinstance(msg.content, list):
+            for block in msg.content:
+                if isinstance(block, dict):
+                    if block["type"] == "text":
+                        agent_thinking.insert(tk.END, f" 🤔 : {block["text"]}\n")
+                    elif block["type"] == "tool_use":
+                        tool = block["name"]
+                        inputs = block["input"]
+                        agent_thinking.insert(tk.END, f" 🔧 Herramienta: {tool}\n")
+                        agent_thinking.insert(tk.END, f" 🔢 Parámetros: {inputs}\n")
+            agent_thinking.insert(tk.END, "-----------------------------\n")
+
+        elif hasattr(msg, "tool_call_id"):
+            agent_thinking.insert(
+                tk.END, f"✉ Respuesta de herramienta: {msg.content}\n"
+            )
+            agent_thinking.insert(tk.END, "-----------------------------\n")
+
+    agent_thinking.insert(tk.END, "🧠 mente en frío\n")
+    agent_thinking.insert(tk.END, "-----------------------------\n")
+
+    agent_chat.insert(tk.END, f" 🐄 : {res["messages"][-1].content}\n", "asistente")
+    agent_thinking.config(state="disabled")
     agent_chat.config(state="disabled")
     agent_chat.see(tk.END)
+    agent_thinking.see(tk.END)
 
 
-btn = tk.Button(root, text = "Enviar" ,
-             fg = "red", command=clicked)
+btn = tk.Button(root, text="Enviar", fg="red", command=clicked)
 btn.grid(row=0, column=1, padx=10, pady=10)
 
 
 root.mainloop()
-
-

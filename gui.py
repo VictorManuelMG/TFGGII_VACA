@@ -2,10 +2,13 @@
 import tkinter as tk
 
 from tkinter import scrolledtext as st
+
 from CUA.tools.class_browser_use import browser
 from CUA.tools.class_florence import florence_captioner
 from CUA.tools.class_whisper import whisper_asr
 from loop import loop
+
+from threading import Thread
 
 Florence = florence_captioner()
 Whisper = whisper_asr()
@@ -45,47 +48,54 @@ agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 
 
 
 def agent_response(user_prompt):
-    agent_thinking.config(state="normal")
-    agent_chat.config(state="normal")
-    
-    if not user_prompt:
-        return
-    
-    agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
-    agent_chat.insert(tk.END, "\n")
+    def task():
+        btn.config(state="disabled")
+        record_btn.config(state="disabled")
 
-    res = CUA_loop.run(user_prompt)
+        agent_thinking.config(state="normal")
+        agent_chat.config(state="normal")
+        
+        if not user_prompt:
+            return
+        
+        agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
+        agent_chat.insert(tk.END, "\n")
 
-    tool = None
+        res = CUA_loop.run(user_prompt)
 
-    #Agent thinking log extraction.
-    for msg in res["messages"]:
-        if hasattr(msg, "content") and isinstance(msg.content, list):
-            for block in msg.content:
-                if isinstance(block, dict):
-                    if block["type"] == "text":
-                        agent_thinking.insert(tk.END, f" 🤔 : {block["text"]}\n")
-                    elif block["type"] == "tool_use":
-                        tool = block["name"]
-                        inputs = block["input"]
-                        agent_thinking.insert(tk.END, f" 🔧 Herramienta: {tool}\n")
-                        agent_thinking.insert(tk.END, f" 🔢 Parámetros: {inputs}\n")
-            agent_thinking.insert(tk.END, "-----------------------------\n")
+        tool = None
 
-        elif hasattr(msg, "tool_call_id"):
-            agent_thinking.insert(
-                tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n"
-            )
-            agent_thinking.insert(tk.END, "-----------------------------\n")
+        # Agent thinking log extraction
+        for msg in res["messages"]:
+            if hasattr(msg, "content") and isinstance(msg.content, list):
+                for block in msg.content:
+                    if isinstance(block, dict):
+                        if block["type"] == "text":
+                            agent_thinking.insert(tk.END, f" 🤔 : {block['text']}\n")
+                        elif block["type"] == "tool_use":
+                            tool = block["name"]
+                            inputs = block["input"]
+                            agent_thinking.insert(tk.END, f" 🔧 Herramienta: {tool}\n")
+                            agent_thinking.insert(tk.END, f" 🔢 Parámetros: {inputs}\n")
+                agent_thinking.insert(tk.END, "-----------------------------\n")
 
-    agent_thinking.insert(tk.END, " 🧠 mente en frío\n")
-    agent_thinking.insert(tk.END, "-----------------------------\n")
+            elif hasattr(msg, "tool_call_id"):
+                agent_thinking.insert(tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n")
+                agent_thinking.insert(tk.END, "-----------------------------\n")
 
-    agent_chat.insert(tk.END, f" 🐄 : {res["messages"][-1].content}\n", "asistente")
-    agent_thinking.config(state="disabled")
-    agent_chat.config(state="disabled")
-    agent_chat.see(tk.END)
-    agent_thinking.see(tk.END)
+        agent_thinking.insert(tk.END, " 🧠 mente en frío\n")
+        agent_thinking.insert(tk.END, "-----------------------------\n")
+
+        agent_chat.insert(tk.END, f" 🐄 : {res['messages'][-1].content}\n", "asistente")
+        agent_thinking.config(state="disabled")
+        agent_chat.config(state="disabled")
+        agent_chat.see(tk.END)
+        agent_thinking.see(tk.END)
+
+        btn.config(state="normal")
+        record_btn.config(state="normal")
+
+    Thread(target=task, daemon=True).start()
 
 
 

@@ -122,6 +122,7 @@ class whisper_asr:
         with open("./CUA/tools/output.wav", "rb") as f:
             audio_bytes = f.read()
         transcription = self._request_asr_inference(audio_bytes)
+        logger.debug(f"Whisper inference result: {transcription}")
         return transcription
 
     def _request_tts_inference(self, text: str):

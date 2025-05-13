@@ -7214,6 +7214,38 @@ doc = ["reno", "sphinx"]
 test = ["pytest", "tornado (>=4.5)", "typeguard"]
 
 [[package]]
+name = "threaded"
+version = "4.2.0"
+description = "Decorators for running functions in Thread/ThreadPool/IOLoop"
+optional = false
+python-versions = ">=3.8.0"
+groups = ["main"]
+files = [
+    {file = "threaded-4.2.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:289b4b43a3675ddec5fcff189e53b0d42044b61d4fd2241e35ead5abc15db439"},
+    {file = "threaded-4.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7550d788bc96e73a70821b481f376f2ebd7afdb40f395651374318cecdebe8e7"},
+    {file = "threaded-4.2.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:97418c1029796b35b709915435ea77443ef2565e07ac0c2e2bc6d76a9f013317"},
+    {file = "threaded-4.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:6f4360a4ab56ac24450ef5a8696cb8defbdd11b0a9efe8cbc03213776e3d19d6"},
+    {file = "threaded-4.2.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c8bc318d37078af559ccb5fcf63cfb979aa5207fa7a5e6e136aab546762884a4"},
+    {file = "threaded-4.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3ed7419f4409b20b45ec07c8c8dbc59d47f86f8735871b7e1d995b22b548226c"},
+    {file = "threaded-4.2.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:14d59d028947221422b480eed89c86aca5a5015d70d59f1508a49c6be179c001"},
+    {file = "threaded-4.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:04f769a5e5c3c251e64f4cf2c5d099d1327277fd7ab5874749501f1599f65de4"},
+    {file = "threaded-4.2.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0d047f61d8df945af3904a233e094ae7ae285c7baefb97bac2b2ba9cee60d463"},
+    {file = "threaded-4.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ee692bc4e8fd833dad32610342a6a0ede9e5dbd26e080abf56e9f62d322b05a5"},
+    {file = "threaded-4.2.0-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4edbf0ccf76ac77b03334703ed85a8db25185405370c10a493bded70f3572ad3"},
+    {file = "threaded-4.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:1ca6e8a3cc8886ce7a64eab9c477577220164aee9fdd27decfe20fb5e78e2871"},
+    {file = "threaded-4.2.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:93f36eaf4b6880fc373633d2b4740be798d58298ae0b6b6dc598a1ded901922d"},
+    {file = "threaded-4.2.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b23ff0545f7b6458463c6d9baefee9239b9e6bf721d65099f173a4a5690eba63"},
+    {file = "threaded-4.2.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7c52ea5c2d631b64d8f616fc9360320844087fa5257353edc2d360330cbc467d"},
+    {file = "threaded-4.2.0-cp38-cp38-win_amd64.whl", hash = "sha256:a3fde9845f7704110d936687fd2b2b013e0822e5000907e05a900d98fd687ef9"},
+    {file = "threaded-4.2.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7a8839c74e5d88ca7cba346cec394d30e5ec0002e7a59d718df9f2dd331d653d"},
+    {file = "threaded-4.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0a85db2d603bdb4da5ab6fdd475ade0f56820fe6d191bc647ef68b3983aa2f98"},
+    {file = "threaded-4.2.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:00c1910f722d50e2717ffd5fe8c66e137766eb9c6d78a13992fec11697dc68b0"},
+    {file = "threaded-4.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:bbb618a80d79caadd7adfb3dff192681e363871fa12bf3e4ef49ee874e55fa91"},
+    {file = "threaded-4.2.0-py3-none-any.whl", hash = "sha256:38c1a05f30597b45f5fe83d561387626f6f24ff5954567e0a29d90083df22c1b"},
+    {file = "threaded-4.2.0.tar.gz", hash = "sha256:83ad4f3826b465af8b56b373589b13eaebe2733a8772201ce4d1ad2ad2c52515"},
+]
+
+[[package]]
 name = "tiktoken"
 version = "0.9.0"
 description = "tiktoken is a fast BPE tokeniser for use with OpenAI's models"
@@ -8016,4 +8048,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "59743babd95fa0226bae13114952a339f38fcb6c8c0036d09a57514d915077a1"
+content-hash = "7eba17691d03e274b2bf7450f10b8af5197daa5fb2cc15b2ba385f234062a6c0"

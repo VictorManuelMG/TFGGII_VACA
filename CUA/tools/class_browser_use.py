@@ -28,8 +28,8 @@ class browser:
             max_steps (int, optional): Max steps given by the user for the agent. Defaults to 8.
         """
         self.llm = ChatAnthropic(
-            model_name=anthropic_model, temperature=temperature, timeout=timeout
-        )  # type: ignore
+            model_name=anthropic_model, temperature=temperature, timeout=timeout #type: ignore
+        ) 
         self.chrome_path = chrome_instance_path
 
         self.browser = Browser(
@@ -80,7 +80,9 @@ class browser:
             order (str): Order given by the user to do over the web browser.
 
         Returns:
-            final_result: returns the final result of the search or a message telling the user it couldn't do what he told it to.
+            final_result(str): returns the final result of the search or a message telling the user it couldn't do what he told it to.
+            cooldown_flag(bool): incase of error executing the browser or failing trying to achieve a goal, it shall return a cooldown_flag so the tool can't be used 
+            for the same user prompt and the agents uses other tools as a workaround
         """
         cooldown_flag = False
         await self._init_context()
@@ -98,6 +100,7 @@ class browser:
             prev_len = len(agent.state.history.history)
             await agent.step()
 
+            #Wait time for history state to update
             for loop in range(10):
                 await asyncio.sleep(0.1)
                 if len(agent.state.history.history) > prev_len:

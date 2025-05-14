@@ -63,7 +63,7 @@ def agent_response(user_prompt):
 
         res = CUA_loop.run(user_prompt)
 
-        tool = None
+        tool = None # Clear tool str to just push actual tool usage.
 
         # Agent thinking log extraction
         for msg in res["messages"]:
@@ -98,6 +98,13 @@ def agent_response(user_prompt):
     Thread(target=task, daemon=True).start()
 
 
+def agent_sst():
+    def task():
+        user_prompt = CUA_loop.get_whisper_prompt()
+        agent_response(user_prompt=user_prompt)
+
+    Thread(target=task, daemon=True).start()
+
 
 def clicked():
     user_prompt = entry.get().strip()
@@ -116,8 +123,10 @@ def fading_popup(title:str,message:str,time_alive:int):
 
 def record_clicked():
     fading_popup("Grabando","Se procedera a grabar durante 5 segundos",5000)
-    user_prompt = CUA_loop.get_whisper_prompt()
-    agent_response(user_prompt=user_prompt)
+    agent_sst()
+
+def abort_click():
+    fading_popup("You got pranked","This is not working brother",2000)
     
 
 btn = tk.Button(root, text="Enviar", fg="red", command = clicked)
@@ -125,6 +134,9 @@ btn.grid(row=0, column=1, padx=10, pady=10)
 
 record_btn = tk.Button(root,text="prompt de voz",fg="green",command = record_clicked)
 record_btn.grid(row=0, column=2, padx=10,pady=10)
+
+abort_btn = tk.Button(root,text="Abortar!",fg="red",command=abort_click)
+abort_btn.grid(row=0,column=3,padx=5,pady=5)
 
 
 root.mainloop()

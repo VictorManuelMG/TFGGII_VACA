@@ -1,50 +1,23 @@
-
+import os
+import sys
 import tkinter as tk
 
 from tkinter import scrolledtext as st
 
-from CUA.tools.class_browser_use import browser
-from CUA.tools.class_florence import florence_captioner
-from CUA.tools.class_whisper import whisper_asr
-from loop import loop
+from CUA.tools.class_browser_use import BrowserUse
+from CUA.tools.class_florence import FlorenceCaptioner
+from CUA.tools.class_whisper import WhisperASR
+from main_loop import Loop
 
 from threading import Thread
 
-Florence = florence_captioner()
-Whisper = whisper_asr()
-Browser = browser()
+Florence = FlorenceCaptioner()
+Whisper = WhisperASR()
+Browser = BrowserUse()
 
-CUA_loop = loop(Florence,Whisper,Browser)
+CUA_loop = Loop(Florence, Whisper, Browser)
 CUA_loop.select_screen_captioner(2)
 CUA_loop.select_agent_model(2)
-
-
-# GUI tkinter
-root = tk.Tk()
-root.title("Voice-Assisted Computer Accessibility")
-
-root.geometry("1280x720")
-
-root.grid_columnconfigure(0, weight=1)
-root.grid_rowconfigure(1, weight=1)
-
-entry = tk.Entry(root, width=80)
-entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
-
-agent_chat = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
-agent_chat.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-agent_chat.insert(tk.END, "Este es el inicio de su conversación.\n")
-agent_chat.config(state="disabled")
-
-
-agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
-agent_thinking.grid(row=1, column=1, padx=5, pady=10, stick="nsew")
-agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
-agent_thinking.config(state="disabled")
-
-agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
-agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
-
 
 
 def agent_response(user_prompt):
@@ -54,16 +27,16 @@ def agent_response(user_prompt):
 
         agent_thinking.config(state="normal")
         agent_chat.config(state="normal")
-        
+
         if not user_prompt:
             return
-        
+
         agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
         agent_chat.insert(tk.END, "\n")
 
         res = CUA_loop.run(user_prompt)
 
-        tool = None # Clear tool str to just push actual tool usage.
+        tool = None  # Clear tool str to just push actual tool usage.
 
         # Agent thinking log extraction
         for msg in res["messages"]:
@@ -80,7 +53,9 @@ def agent_response(user_prompt):
                 agent_thinking.insert(tk.END, "-----------------------------\n")
 
             elif hasattr(msg, "tool_call_id"):
-                agent_thinking.insert(tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n")
+                agent_thinking.insert(
+                    tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n"
+                )
                 agent_thinking.insert(tk.END, "-----------------------------\n")
 
         agent_thinking.insert(tk.END, " 🧠 mente en frío\n")
@@ -112,31 +87,71 @@ def clicked():
     agent_response(user_prompt=user_prompt)
 
 
-
-
-def fading_popup(title:str,message:str,time_alive:int):
-    top=tk.Toplevel()
+def fading_popup(title: str, message: str, time_alive: int):
+    top = tk.Toplevel()
     top.title(title)
-    tk.Message(top,text=message,padx=20,pady=20).pack()
-    top.after(time_alive,top.destroy)
+    tk.Message(top, text=message, padx=20, pady=20).pack()
+    top.after(time_alive, top.destroy)
+
+
+def abort_popup():
+    def abort():
+        os.execv(sys.executable, ["python"] + sys.argv)
+
+    top = tk.Toplevel()
+    top.title("ABORTANDO!!")
+    tk.Message(
+        top,
+        text="Se procedera a abortar y reiniciarse en 5 segundos.",
+        padx=40,
+        pady=40,
+        font="30",
+    ).pack()
+    top.after(5000, abort)
 
 
 def record_clicked():
-    fading_popup("Grabando","Se procedera a grabar durante 5 segundos",5000)
+    fading_popup("Grabando", "Se procedera a grabar durante 5 segundos", 5000)
     agent_sst()
 
-def abort_click():
-    fading_popup("You got pranked","This is not working brother",2000)
-    
 
-btn = tk.Button(root, text="Enviar", fg="red", command = clicked)
+def abort_click():
+    abort_popup()
+
+
+# GUI tkinter
+root = tk.Tk()
+root.title("Voice-Assisted Computer Accessibility")
+
+root.geometry("1280x720")
+
+root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(1, weight=1)
+
+entry = tk.Entry(root, width=80)
+entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+
+agent_chat = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_chat.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+agent_chat.insert(tk.END, "Este es el inicio de su conversación.\n")
+agent_chat.config(state="disabled")
+
+agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_thinking.grid(row=1, column=1, padx=5, pady=10, stick="nsew")
+agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
+agent_thinking.config(state="disabled")
+
+agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
+agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
+
+btn = tk.Button(root, text="Enviar", fg="red", command=clicked)
 btn.grid(row=0, column=1, padx=10, pady=10)
 
-record_btn = tk.Button(root,text="prompt de voz",fg="green",command = record_clicked)
-record_btn.grid(row=0, column=2, padx=10,pady=10)
+record_btn = tk.Button(root, text="prompt de voz", fg="green", command=record_clicked)
+record_btn.grid(row=0, column=2, padx=10, pady=10)
 
-abort_btn = tk.Button(root,text="Abortar!",fg="red",command=abort_click)
-abort_btn.grid(row=0,column=3,padx=5,pady=5)
+abort_btn = tk.Button(root, text="Abortar!", fg="red", command=abort_click)
+abort_btn.grid(row=0, column=3, padx=5, pady=5)
 
 
 root.mainloop()

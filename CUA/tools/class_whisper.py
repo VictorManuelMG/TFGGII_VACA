@@ -10,7 +10,7 @@ from CUA.util.logger import logger
 load_dotenv()
 
 
-class whisper_asr:
+class WhisperASR:
     def __init__(
         self,
         CHUNK=1024,

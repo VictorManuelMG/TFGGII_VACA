@@ -11,7 +11,7 @@ import time
 
 from CUA.util.logger import logger
 
-class florence_captioner:
+class FlorenceCaptioner:
     def __init__(
         self,
         model_dir: str = "Florence2",

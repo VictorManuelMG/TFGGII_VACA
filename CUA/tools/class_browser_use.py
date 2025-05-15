@@ -9,7 +9,7 @@ from CUA.util.logger import logger
 load_dotenv()
 
 
-class browser:
+class BrowserUse:
     def __init__(
         self,
         anthropic_model: str = "claude-3-7-sonnet-latest",

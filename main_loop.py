@@ -12,10 +12,10 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_core.tools import tool
 from langgraph.managed.is_last_step import RemainingSteps
-from CUA.tools.class_florence import florence_captioner
+from CUA.tools.class_florence import FlorenceCaptioner
 from CUA.tools.class_screen_assistant import screen_assistant
-from CUA.tools.class_whisper import whisper_asr
-from CUA.tools.class_browser_use import browser
+from CUA.tools.class_whisper import WhisperASR
+from CUA.tools.class_browser_use import BrowserUse
 
 import subprocess
 import requests
@@ -26,49 +26,57 @@ from datetime import datetime, timedelta
 from CUA.util.logger import logger
 
 
-class loop:
-    def __init__(self,Florence: florence_captioner,Whisper: whisper_asr, Browser:browser, ):
+class Loop:
+    def __init__(
+        self,
+        Florence: FlorenceCaptioner,
+        Whisper: WhisperASR,
+        Browser: BrowserUse,
+    ):
         """_summary_
 
         Args:
             Florence (florence_captioner): Florence model
             Whisper (whisper_asr): Whisper model
             Browser (browser): browser_use tool
-        """        
+        """
         load_dotenv()
         self.Florence = Florence
         self.Whisper = Whisper
-        self.Browser= Browser
-        self.cooldowns={}
+        self.Browser = Browser
+        self.cooldowns = {}
         self.tools = self._load_tools()
         self.react_graph = self._build_graph()
         self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
 
-    def select_screen_captioner(self,option:int):
+    def select_screen_captioner(self, option: int):
         """Selects screen_assistant screen captioner
 
         Args:
             option (int): option for gpt,claude or default -> to be opensource models in the future.
-        """        
+        """
         if option == 1:
-            self.Assistant = screen_assistant(captioner=self.Florence, model_screen_interpreter="gpt-4o")
+            self.Assistant = screen_assistant(
+                captioner=self.Florence, model_screen_interpreter="gpt-4o"
+            )
             return
         elif option == 2:
             self.Assistant = screen_assistant(
-                captioner=self.Florence, model_screen_interpreter="claude-3-7-sonnet-latest"
+                captioner=self.Florence,
+                model_screen_interpreter="claude-3-7-sonnet-latest",
             )
             return
         else:
             self.Assistant = screen_assistant(captioner=self.Florence)
             return
-        
-        
+
     def _load_tools(self):
         """Load of tools for the llm.
 
         Returns:
             list[BaseTool]: list of tools
-        """  
+        """
+
         @tool
         def browser_use(order: str):
             """Tool mainly focused on browsing over the internet
@@ -82,7 +90,10 @@ class loop:
             time_now = datetime.now()
 
             # Cooldown on browser_use to forbid the use of this tool in case of failure on search so it uses other available tools that have the same purpouse or can do the same.
-            if "browser_use" in self.cooldowns and time_now < self.cooldowns["browser_use"]:
+            if (
+                "browser_use" in self.cooldowns
+                and time_now < self.cooldowns["browser_use"]
+            ):
                 remaining = (self.cooldowns["browser_use"] - time_now).seconds
                 print(f"\n{self.cooldowns}+ le queda: {remaining}\n")
                 return {
@@ -99,7 +110,9 @@ class loop:
             if cooldown_flag:
                 self.cooldowns["browser_use"] = time_now + timedelta(seconds=200)
 
-            logger.debug(f"browser_use tool response: {result}, cooldowns: {self.cooldowns}")
+            logger.debug(
+                f"browser_use tool response: {result}, cooldowns: {self.cooldowns}"
+            )
 
             return {
                 "result": f"Resultado browser_use:\n{result}",
@@ -191,8 +204,7 @@ class loop:
 
             return "Inicializado Chrome"
 
-
-        #debugging tool
+        # debugging tool
         @tool
         def sumas(a: int, b: int):
             """tool that return the addition of two numbers
@@ -216,42 +228,42 @@ class loop:
             computer.delete_text,
             sumas,
         ]
-    
-    def select_agent_model(self,option:int) :
+
+    def select_agent_model(self, option: int):
         """Select the CUA model.
 
         Args:
             option (int): Option from 1 to 3 being 1 -> gpt, 2 -> claude, 3 -> local model #(to be implemented)
-        """        
+        """
         if option == 1:
             self.CUA_model = "gpt-4o"
             llm = ChatOpenAI(
-                model = self.CUA_model, #type: ignore
-                api_key=os.getenv("OPENAI_API_KEY"),#type: ignore
-                timeout = None,
-                temperature=0, 
-                max_tokens = 2000, #type: ignore
+                model=self.CUA_model,  # type: ignore
+                api_key=os.getenv("OPENAI_API_KEY"),  # type: ignore
+                timeout=None,
+                temperature=0,
+                max_tokens=2000,  # type: ignore
             )
             self.llm_with_tools = llm.bind_tools(self.tools)
         elif option == 2:
             self.CUA_model = "claude-3-7-sonnet-latest"
             llm = ChatAnthropic(
-            model=self.CUA_model,  # type: ignore
-            api_key=os.getenv("ANTHROPIC_API_KEY"),
-            timeout=None,
-            temperature=0,
-            max_tokens=2000,  # type: ignore
-        )  # type: ignore
+                model=self.CUA_model,  # type: ignore
+                api_key=os.getenv("ANTHROPIC_API_KEY"),
+                timeout=None,
+                temperature=0,
+                max_tokens=2000,  # type: ignore
+            )  # type: ignore
             self.llm_with_tools = llm.bind_tools(self.tools)
         else:
             "Por incorporar"
             return
-        
-    def _build_graph(self) :
+
+    def _build_graph(self):
         """build a react graph from langgraph for the agent.
         Returns:
             CompiledStateGraph: builded graph.
-        """        
+        """
 
         class State(MessagesState):
             """Saves the actual summary of the conversation
@@ -316,7 +328,7 @@ class loop:
             logger.debug(f"Agent response:{response}")
 
             return {"messages": response}
-        
+
         def summarize_conversation(state: State):
             """Node that generates the summary of the conversation
 
@@ -343,7 +355,7 @@ class loop:
                 f"summarize_conversation return: summary: {response.content} messages: {delete_messages}"
             )
             return {"summary": response.content, "messages": delete_messages}
-        
+
         def should_continue(state: State):
             """Condition to continue or generate a summary, by default it generates a summary after 6 exchanges
 
@@ -355,7 +367,6 @@ class loop:
             if len(messages) > 12:
                 return "summarize_conversation"
             return END
-        
 
         def router(state: State):
             """Node to stop once recursion limit is approximating to the stopping point so the agent doesn't die due to recursion limit error.
@@ -386,7 +397,6 @@ class loop:
         builder.add_edge(START, "returnOnLimit")
         builder.add_edge("returnOnLimit", "assistant")
 
-
         builder.add_conditional_edges("assistant", tools_condition)
         builder.add_edge("tools", "returnOnLimit")
 
@@ -398,15 +408,14 @@ class loop:
         return builder.compile(checkpointer=memory)
 
     def draw_graph(self):
-        """Draws the current graph flow
-        """        
+        """Draws the current graph flow"""
         png_bytes = self.react_graph.get_graph().draw_mermaid_png()
 
         with open("graph.png", "wb") as f:
             f.write(png_bytes)
 
         return
-    
+
     def run(self, user_prompt: str):
         """Given a user prompt calls the model to do the task given.
 
@@ -415,13 +424,13 @@ class loop:
 
         Returns:
             dict: dictionary with the result of the model after completing the task.
-        """        
-        return self.react_graph.invoke({"messages": user_prompt}, self.config) #type: ignore
-    
+        """
+        return self.react_graph.invoke({"messages": user_prompt}, self.config)  # type: ignore
+
     def get_whisper_prompt(self):
         """Transcribes the user's voice prompt
 
         Returns:
             str: returns string of the transcription.
-        """        
+        """
         return self.Whisper.whisper_SST()

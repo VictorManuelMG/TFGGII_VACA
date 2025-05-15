@@ -1,4 +1,4 @@
-from CUA.tools.class_florence import florence_captioner
+from CUA.tools.class_florence import FlorenceCaptioner
 from PIL import JpegImagePlugin
 
 #Ignore the warning in test abput timm.layers as it's a warnin for Florence2,problem with Microsoft code not from the programm.!!!!
@@ -7,7 +7,7 @@ def test_FlorenceCaptionez_initialization():
     """Test of initialization of ClassFlorence class
     """    
     
-    florence = florence_captioner(
+    florence = FlorenceCaptioner(
         model_dir="Florence2",
         crop_dir="tmpcrops",
         batch_size=128,
@@ -19,7 +19,7 @@ def test_FlorenceCaptionez_initialization():
 def test_crops_and_ids():
     """Tests if crops and ids are recovered from the function
     """    
-    florence = florence_captioner(
+    florence = FlorenceCaptioner(
         model_dir="Florence2",
         crop_dir="tmpcrops",
         batch_size=128,
@@ -31,7 +31,7 @@ def test_crops_and_ids():
     assert isinstance(crops[0],JpegImagePlugin.JpegImageFile) ,f"Doesn't correspond to the type of param expected, expected PIL.JpegImagePlugin.JpegImageFile got : {type(crops[0])}"
 
 def test_caption_batch():
-    florence = florence_captioner(
+    florence = FlorenceCaptioner(
         model_dir="Florence2",
         crop_dir="tmpcrops",
         batch_size=128,

@@ -11,7 +11,7 @@ import cv2
 import copy
 import openai
 from pathlib import Path
-from CUA.tools.class_florence import florence_captioner
+from CUA.tools.class_florence import FlorenceCaptioner
 
 
 from CUA.util.logger import logger
@@ -20,7 +20,7 @@ from CUA.util.logger import logger
 class screen_assistant:
     def __init__(
         self,
-        captioner: florence_captioner,
+        captioner: FlorenceCaptioner,
         model_dir: str = "model.pt",
         model_screen_interpreter: str = "claude-3-7-sonnet-latest",
         max_tokens_SI: int = 1024,

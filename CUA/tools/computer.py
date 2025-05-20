@@ -12,6 +12,7 @@ def move_mouse(x: int, y: int):
         y (int): coord y from screen
     """
     pyautogui.moveTo(x, y, 0.5)
+    return f"Moved mouse to {x},{y}"
 
 
 @tool
@@ -33,6 +34,7 @@ def mouse_clicker(action: str):
         pyautogui.click(button="right")
     if "double_clickright" == action:
         pyautogui.click(button="right", clicks=2)
+    return f"Performed {action} action."
 
 
 @tool
@@ -43,6 +45,7 @@ def keyboard_input(text: str):
         text (str): string to input
     """
     keyboard.write(text, delay=0.02)
+    return f"Inputed {text}"
 
 
 @tool
@@ -74,6 +77,7 @@ def keyboard_hotkey(action: str):
         pyautogui.press("browserrefresh")
     if "tab" == action:
         pyautogui.press("tab")
+    return f"Pressed {action}"
 
 
 @tool
@@ -83,3 +87,4 @@ def delete_text():
     pyautogui.press("a")
     pyautogui.keyUp("ctrl")
     pyautogui.press("backspace")
+    return "Deleted text."

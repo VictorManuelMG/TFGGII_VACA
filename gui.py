@@ -19,8 +19,15 @@ CUA_loop = Loop(Florence, Whisper, Browser)
 CUA_loop.select_screen_captioner(2)
 CUA_loop.select_agent_model(2)
 
+tts_status = False
 
-def agent_response(user_prompt):
+
+def agent_response(user_prompt:str):
+    """Sends a prompt to the CUA and parses it's last response and thinking of the whole process.
+
+    Args:
+        user_prompt (str): User prompt
+    """    
     def task():
         btn.config(state="disabled")
         record_btn.config(state="disabled")
@@ -34,10 +41,9 @@ def agent_response(user_prompt):
         agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
         agent_chat.insert(tk.END, "\n")
 
-        res = CUA_loop.run(user_prompt)
+        res = CUA_loop.run(user_prompt,True)
 
         tool = None  # Clear tool str to just push actual tool usage.
-
         # Agent thinking log extraction
         for msg in res["messages"]:
             if hasattr(msg, "content") and isinstance(msg.content, list):
@@ -67,6 +73,9 @@ def agent_response(user_prompt):
         agent_chat.see(tk.END)
         agent_thinking.see(tk.END)
 
+        if tts_status:
+            CUA_loop.text_to_speech(res['messages'][-1].content)
+
         btn.config(state="normal")
         record_btn.config(state="normal")
 
@@ -74,6 +83,8 @@ def agent_response(user_prompt):
 
 
 def agent_sst():
+    """Call to whisper for obtaining the text of the invoice prompt
+    """    
     def task():
         user_prompt = CUA_loop.get_whisper_prompt()
         agent_response(user_prompt=user_prompt)
@@ -82,20 +93,32 @@ def agent_sst():
 
 
 def clicked():
+    """ Action after clicking "Enviar" button.
+    """    
     user_prompt = entry.get().strip()
     entry.delete(0, tk.END)
     agent_response(user_prompt=user_prompt)
 
 
 def fading_popup(title: str, message: str, time_alive: int,font:str = "15"):
+    """Generic fading popups
+
+    Args:
+        title (str): popup title
+        message (str): popup message
+        time_alive (int): time alive before fading in ms
+        font (str, optional): font size. Defaults to "15".
+    """    
     top = tk.Toplevel()
     top.title(title)
     tk.Message(top, text=message, padx=20, pady=20,font=font).pack()
     top.after(time_alive, top.destroy)
 
 
-def abort_popup():
-    def abort():
+def reset_popup():
+    """Opens a popup informing the user that the program will reset in 5 seconds and procceeds to reset.
+    """    
+    def reset():
         os.execv(sys.executable, ["python"] + sys.argv)
 
     top = tk.Toplevel()
@@ -107,23 +130,38 @@ def abort_popup():
         pady=40,
         font="30",
     ).pack()
-    top.after(5000, abort)
+    top.after(5000, reset)
 
 
 def safe_abort():
+    """Abort CUA actual execution, it waits for the actual execution to end to exit safely.
+    """    
     fading_popup("Abortando de manera segura.","Abortando la ejecucion del agente de manera segura, espere un momento.",10000)
     CUA_loop.set_stoppable(True)
     
 
 
 def record_clicked():
+    """Records a prompt of 5 seconds and sends it to the CUA agent
+    """    
     fading_popup("Grabando", "Se procedera a grabar durante 5 segundos", time_alive=5000)
     agent_sst()
 
 
-def abort_click():
-    abort_popup()
+def reset_click():
+    """resets the whole program instantly after waiting 5 seconds.
+    """    
+    reset_popup()
 
+def toggle_tts():
+    """text to speech toggle of IA response
+    """    
+    global tts_status
+    tts_status = not tts_status
+    toggle_btn.config(
+        text=f"TTS: {'ON ' if tts_status else 'OFF '}",
+        bg="green" if tts_status else "red"
+    )
 
 # GUI tkinter
 root = tk.Tk()
@@ -159,7 +197,10 @@ record_btn.grid(row=0, column=3, padx=5, pady=10)
 abort_btn = tk.Button(root, text="Abortar!", fg="red", command=safe_abort)
 abort_btn.grid(row=0, column=4, padx=5, pady=10)
 
-reset_btn = tk.Button(root, text="Reiniciar!", fg="red", command=abort_click)
+reset_btn = tk.Button(root, text="Reiniciar!", fg="red", command=reset_click)
 reset_btn.grid(row=0, column=5, padx=5, pady=10)
+
+toggle_btn = tk.Button(root, text="TTS: OFF 🔇", bg="red", command=toggle_tts)
+toggle_btn.grid(row=0,column=6,padx=5,pady=15)
 
 root.mainloop()

@@ -3,6 +3,7 @@ import asyncio
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
+from sympy import false
 from CUA.tools import computer
 from langgraph.graph import MessagesState
 from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
@@ -32,7 +33,7 @@ class Loop:
         Florence: FlorenceCaptioner,
         Whisper: WhisperASR,
         Browser: BrowserUse,
-        stoppable: bool = False
+        stoppable: bool = False,
     ):
         """_summary_
 
@@ -448,7 +449,7 @@ class Loop:
 
         return
 
-    def run(self, user_prompt: str):
+    def run(self, user_prompt: str,TTS=false):
         """Given a user prompt calls the model to do the task given.
 
         Args:
@@ -467,5 +468,18 @@ class Loop:
         """
         return self.Whisper.whisper_SST()
     
-    def set_stoppable(self,status):
+    def set_stoppable(self,status:bool):
+        """Sets the stoppable param for the program to decide if it has to stop execution or not.
+
+        Args:
+            status (bool): status input.
+        """        
         self.stoppable = status
+
+    def text_to_speech(self,text:str):
+        """Transforms a text into speech.
+
+        Args:
+            text (str): text to transform into speech
+        """        
+        self.Whisper.whisper_TTS(text)

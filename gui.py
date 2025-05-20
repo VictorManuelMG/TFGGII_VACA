@@ -87,10 +87,10 @@ def clicked():
     agent_response(user_prompt=user_prompt)
 
 
-def fading_popup(title: str, message: str, time_alive: int):
+def fading_popup(title: str, message: str, time_alive: int,font:str = "15"):
     top = tk.Toplevel()
     top.title(title)
-    tk.Message(top, text=message, padx=20, pady=20).pack()
+    tk.Message(top, text=message, padx=20, pady=20,font=font).pack()
     top.after(time_alive, top.destroy)
 
 
@@ -110,8 +110,14 @@ def abort_popup():
     top.after(5000, abort)
 
 
+def safe_abort():
+    fading_popup("Abortando de manera segura.","Abortando la ejecucion del agente de manera segura, espere un momento.",10000)
+    CUA_loop.set_stoppable(True)
+    
+
+
 def record_clicked():
-    fading_popup("Grabando", "Se procedera a grabar durante 5 segundos", 5000)
+    fading_popup("Grabando", "Se procedera a grabar durante 5 segundos", time_alive=5000)
     agent_sst()
 
 
@@ -129,7 +135,7 @@ root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(1, weight=1)
 
 entry = tk.Entry(root, width=80)
-entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew", columnspan=2)
 
 agent_chat = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
 agent_chat.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
@@ -137,7 +143,7 @@ agent_chat.insert(tk.END, "Este es el inicio de su conversación.\n")
 agent_chat.config(state="disabled")
 
 agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
-agent_thinking.grid(row=1, column=1, padx=5, pady=10, stick="nsew")
+agent_thinking.grid(row=1, column=1, padx=5, pady=10, sticky="nsew", columnspan=5)
 agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
 agent_thinking.config(state="disabled")
 
@@ -145,13 +151,15 @@ agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "
 agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
 
 btn = tk.Button(root, text="Enviar", fg="red", command=clicked)
-btn.grid(row=0, column=1, padx=10, pady=10)
+btn.grid(row=0, column=2, padx=5, pady=10)
 
-record_btn = tk.Button(root, text="prompt de voz", fg="green", command=record_clicked)
-record_btn.grid(row=0, column=2, padx=10, pady=10)
+record_btn = tk.Button(root, text="Prompt de voz", fg="green", command=record_clicked)
+record_btn.grid(row=0, column=3, padx=5, pady=10)
 
-abort_btn = tk.Button(root, text="Abortar!", fg="red", command=abort_click)
-abort_btn.grid(row=0, column=3, padx=5, pady=5)
+abort_btn = tk.Button(root, text="Abortar!", fg="red", command=safe_abort)
+abort_btn.grid(row=0, column=4, padx=5, pady=10)
 
+reset_btn = tk.Button(root, text="Reiniciar!", fg="red", command=abort_click)
+reset_btn.grid(row=0, column=5, padx=5, pady=10)
 
 root.mainloop()

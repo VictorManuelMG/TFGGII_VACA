@@ -32,6 +32,7 @@ class Loop:
         Florence: FlorenceCaptioner,
         Whisper: WhisperASR,
         Browser: BrowserUse,
+        stoppable: bool = False
     ):
         """_summary_
 
@@ -48,6 +49,7 @@ class Loop:
         self.tools = self._load_tools()
         self.react_graph = self._build_graph()
         self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
+        self.stoppable = stoppable
 
     def select_screen_captioner(self, option: int):
         """Selects screen_assistant screen captioner
@@ -316,16 +318,46 @@ class Loop:
 
             summary = state.get("summary", "")
 
-            if summary:
-                system_message = f"Resumen de la conversacion anterior: {summary}"
-                messages = [SystemMessage(content=system_message)] + state["messages"]
+            if self.stoppable:
+                response_text = (
+                    """La ejecución ha sido abortada por solicitud del usuario. 
+                    Se han detenido todas las operaciones en curso y el sistema ha vuelto a su estado de espera. 
+                    Si deseas iniciar una nueva tarea o consulta, por favor indícamelo y estaré listo para asistirte."""
+                )
+
+
+                logger.debug(f"Agent stoppable (manual): {response_text}")
+                self.stoppable = False
+                return {"messages": response_text}
+
+                # stoppable_message = (
+                #     "Se ha abortado la ejecución por el usuario. "
+                #     "Haz un resumen de lo que estabas haciendo y lo que has conseguido hasta ahora."
+                # )
+
+                # messages = state["messages"] + [SystemMessage(content=stoppable_message)]
+
+                # response = self.llm_with_tools.invoke(messages)
+
+                # logger.debug(f"Agent response:{response}")
+
+                # return {"messages": response}
 
             else:
-                messages = state["messages"]
+
+                if summary:
+                    system_message = f"Resumen de la conversacion anterior: {summary}"
+                    messages = [SystemMessage(content=system_message)] + state["messages"]
+
+                else:
+                    messages = state["messages"]
+
+
             response = self.llm_with_tools.invoke([sys_msg] + messages)
 
             # Agent response for debugging
             logger.debug(f"Agent response:{response}")
+
 
             return {"messages": response}
 
@@ -434,3 +466,6 @@ class Loop:
             str: returns string of the transcription.
         """
         return self.Whisper.whisper_SST()
+    
+    def set_stoppable(self,status):
+        self.stoppable = status

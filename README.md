@@ -48,6 +48,11 @@ El agente VACA se apoya en diversos modelos de inteligencia artificial, cada uno
 - **Herramientas propias**
 
 ---
+# Diagrama simple del funcionamiento:
+
+![Diagrama CUA](assets/CUA%20FLOW.png)
+
+---
 
 # Ejemplo de captación del interfaz :
 

@@ -201,8 +201,10 @@ class Loop:
 
             cmd = [
                 chrome_path,
+                "--user-data-dir=C:\\ChromeDebugProfile",
                 "--remote-debugging-port=9222",
             ]
+            
             subprocess.Popen(cmd)
 
             return "Inicializado Chrome"

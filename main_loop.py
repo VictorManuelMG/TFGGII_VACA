@@ -25,6 +25,10 @@ import requests
 from datetime import datetime, timedelta
 
 from CUA.util.logger import logger
+from CUA.util.path import project_root_path
+
+
+root_path = project_root_path()
 
 
 class Loop:
@@ -261,7 +265,7 @@ class Loop:
             )  # type: ignore
             self.llm_with_tools = llm.bind_tools(self.tools)
         else:
-            "Por incorporar"
+            print("Por incorporar")
             return
 
     def _build_graph(self):
@@ -332,7 +336,8 @@ class Loop:
                 logger.debug(f"Agent stoppable (manual): {response_text}")
                 self.stoppable = False
                 return {"messages": response_text}
-
+                
+                ## Trying to make abort with memory, not working atm
                 # stoppable_message = (
                 #     "Se ha abortado la ejecución por el usuario. "
                 #     "Haz un resumen de lo que estabas haciendo y lo que has conseguido hasta ahora."
@@ -400,7 +405,7 @@ class Loop:
 
             messages = state["messages"]
             if len(messages) > 12:
-                return "summarize_conversation"
+                return "summarize"
             return END
 
         def router(state: State):
@@ -435,18 +440,19 @@ class Loop:
         builder.add_conditional_edges("assistant", tools_condition)
         builder.add_edge("tools", "returnOnLimit")
 
-        builder.add_conditional_edges("assistant", should_continue)
+        builder.add_conditional_edges("assistant",should_continue,{"summarize": "summarize",END: END,})
         builder.add_edge("summarize", "returnOnLimit")
 
         memory = MemorySaver()
 
         return builder.compile(checkpointer=memory)
 
-    def draw_graph(self):
+    def draw_graph(self,path=root_path):
         """Draws the current graph flow"""
         png_bytes = self.react_graph.get_graph().draw_mermaid_png()
+        full_path = path / "graph.png"
 
-        with open("graph.png", "wb") as f:
+        with open(full_path, "wb") as f:
             f.write(png_bytes)
 
         return

@@ -67,3 +67,11 @@ El agente VACA se apoya en diversos modelos de inteligencia artificial, cada uno
 |:-------------:|:-------------:|:-----------:|
 | ![Pensamiento 1](assets/Pensamientos_1.png) | ![Pensamiento 2](assets/Pensamientos_2.png) | ![YOLO](assets/ejemplo_yoloed.jpeg) |
 
+---
+
+# Ejemplos de uso del agente:
+
+| Caso | Enlace al video |
+|------|------------------|
+| 🎬 Caso número 1 | [Ver video](assets/cua_example1.mp4) |
+| 🎬 Caso número 2 | [Ver video](assets/cua_example2.mp4) |

@@ -20,7 +20,7 @@ def test_screen_assistant_initialization():
         crop_dir="tmpcrops"
     )
 
-    assert assistant.model_screen_interpreter == "claude-3-7-sonnet-20250219"
+    assert assistant.model_screen_interpreter == "claude-3-7-sonnet-latest"
     assert assistant.captioner == mock_captioner
     assert str(assistant.crop_dir).endswith("tmpcrops")
 

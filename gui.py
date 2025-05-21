@@ -43,7 +43,9 @@ def agent_response(user_prompt:str):
 
         res = CUA_loop.run(user_prompt,True)
 
-        tool = None  # Clear tool str to just push actual tool usage.
+        agent_thinking.delete(2.0,tk.END)
+        agent_thinking.insert(tk.END,"\n")
+        
         # Agent thinking log extraction
         for msg in res["messages"]:
             if hasattr(msg, "content") and isinstance(msg.content, list):

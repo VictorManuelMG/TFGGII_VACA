@@ -490,4 +490,5 @@ class Loop:
         Args:
             text (str): text to transform into speech
         """        
+        
         self.Whisper.whisper_TTS(text)

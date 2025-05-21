@@ -431,7 +431,7 @@ class Loop:
 
         builder.add_node("assistant", call_model)
         builder.add_node("tools", ToolNode(self.tools))
-        builder.add_node("summarize", summarize_conversation)
+        # builder.add_node("summarize", summarize_conversation)
         builder.add_node("returnOnLimit", router)
 
         builder.add_edge(START, "returnOnLimit")
@@ -440,8 +440,8 @@ class Loop:
         builder.add_conditional_edges("assistant", tools_condition)
         builder.add_edge("tools", "returnOnLimit")
 
-        builder.add_conditional_edges("assistant",should_continue,{"summarize": "summarize",END: END,})
-        builder.add_edge("summarize", "returnOnLimit")
+        # builder.add_conditional_edges("assistant",should_continue,{"summarize": "summarize",END: END,})
+        # builder.add_edge("summarize", "returnOnLimit")
 
         memory = MemorySaver()
 

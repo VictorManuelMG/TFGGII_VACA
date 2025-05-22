@@ -10,6 +10,7 @@
 /logs
 #Ignore .py file
 mouse_move.py
+pruebas.py
 
 #Ignore py cache
 __pycache__

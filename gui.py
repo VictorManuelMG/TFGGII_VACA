@@ -5,18 +5,15 @@ import tkinter as tk
 from tkinter import scrolledtext as st
 
 from CUA.tools.class_browser_use import BrowserUse
-from CUA.tools.class_florence import FlorenceCaptioner
 from CUA.tools.class_whisper import WhisperASR
 from main_loop import Loop
 
 from threading import Thread
 
-Florence = FlorenceCaptioner()
 Whisper = WhisperASR()
 Browser = BrowserUse()
 
-CUA_loop = Loop(Florence, Whisper, Browser)
-CUA_loop.select_screen_captioner(2)
+CUA_loop = Loop( Whisper, Browser)
 CUA_loop.select_agent_model(2)
 
 tts_status = False
@@ -45,7 +42,7 @@ def agent_response(user_prompt:str):
 
         agent_thinking.delete(2.0,tk.END)
         agent_thinking.insert(tk.END,"\n")
-        
+
         # Agent thinking log extraction
         for msg in res["messages"]:
             if hasattr(msg, "content") and isinstance(msg.content, list):

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from sympy import false
 from CUA.tools import computer
+from CUA.tools.endpoint_yolo_florence import yolo_florence_inference
 from langgraph.graph import MessagesState
 from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
 from langgraph.graph import START, StateGraph, END
@@ -13,8 +14,6 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_core.tools import tool
 from langgraph.managed.is_last_step import RemainingSteps
-from CUA.tools.class_florence import FlorenceCaptioner
-from CUA.tools.class_screen_assistant import screen_assistant
 from CUA.tools.class_whisper import WhisperASR
 from CUA.tools.class_browser_use import BrowserUse
 
@@ -34,7 +33,6 @@ root_path = project_root_path()
 class Loop:
     def __init__(
         self,
-        Florence: FlorenceCaptioner,
         Whisper: WhisperASR,
         Browser: BrowserUse,
         stoppable: bool = False,
@@ -47,7 +45,6 @@ class Loop:
             Browser (browser): browser_use tool
         """
         load_dotenv()
-        self.Florence = Florence
         self.Whisper = Whisper
         self.Browser = Browser
         self.cooldowns = {}
@@ -55,27 +52,6 @@ class Loop:
         self.react_graph = self._build_graph()
         self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
         self.stoppable = stoppable
-
-    def select_screen_captioner(self, option: int):
-        """Selects screen_assistant screen captioner
-
-        Args:
-            option (int): option for gpt,claude or default -> to be opensource models in the future.
-        """
-        if option == 1:
-            self.Assistant = screen_assistant(
-                captioner=self.Florence, model_screen_interpreter="gpt-4o"
-            )
-            return
-        elif option == 2:
-            self.Assistant = screen_assistant(
-                captioner=self.Florence,
-                model_screen_interpreter="claude-3-7-sonnet-latest",
-            )
-            return
-        else:
-            self.Assistant = screen_assistant(captioner=self.Florence)
-            return
 
     def _load_tools(self):
         """Load of tools for the llm.
@@ -149,7 +125,7 @@ class Loop:
             """
 
             logger.info(f"ScreenInterpreter user order: {order}")
-            message = self.Assistant.interpret_screen(order)
+            message = yolo_florence_inference(order,False)
 
             # Tool response for debugging
             logger.debug(f"ScreenInterpreter response: {message}")
@@ -174,7 +150,7 @@ class Loop:
                 message: LLM answer
             """
             logger.info(f"SimpleScreenInterpreter user order: {order}")
-            message = self.Assistant.simple_interpreter(order)
+            message = yolo_florence_inference(order,True)
 
             # Tool response for debugging
             logger.debug(f"SimpleScreenInterpreter response: {message}")
@@ -337,7 +313,7 @@ class Loop:
                 self.stoppable = False
                 return {"messages": response_text}
                 
-                ## Trying to make abort with memory, not working atm
+                # # Trying to make abort with memory, not working atm
                 # stoppable_message = (
                 #     "Se ha abortado la ejecución por el usuario. "
                 #     "Haz un resumen de lo que estabas haciendo y lo que has conseguido hasta ahora."

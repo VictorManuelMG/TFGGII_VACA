@@ -18,7 +18,7 @@ class ContinuousRecorder():
         self.RECORD_SECONDS=1
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 2
-        self.SILENCE_THRESHOLD = 65
+        self.SILENCE_THRESHOLD = 60
         self.SILENCE_CHUNKS = 2
         self.root = project_root_path() / "CUA/tools/output.wav"
         self.result_inference = ""
@@ -90,7 +90,7 @@ class ContinuousRecorder():
                 else:
                     silent_count = 0
 
-                if silent_count >= 15:
+                if silent_count >= 4:
                     recording_status = False
                     logger.info("Sending audio to transcript...")
                     response = self._format_chunks_and_send(self.root,recording_buffer)

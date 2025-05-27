@@ -22,7 +22,7 @@ stt = ContinuousRecorder()
 
 
 #Global variables
-tts_status = False
+tts_status = True
 last_result_stt = ""
 result_stt = ""
 prompt_accept_flag = False
@@ -251,6 +251,7 @@ reset_btn.grid(row=0, column=5, padx=5, pady=10)
 
 toggle_btn = tk.Button(root, text="TTS: OFF 🔇", bg="red", command=toggle_tts)
 toggle_btn.grid(row=0,column=6,padx=5,pady=15)
+toggle_btn.config(text="TTS: ON 🔊", bg="green")
 
 
 def stt_thread():
@@ -285,9 +286,9 @@ def stt_thread():
                         reset_popup()
                     elif "abortar" in parsed_response:
                         safe_abort()
-                    else:
-                        # fading_popup("ASR Inference",f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",3000)
-                        create_centered_popup("ASR Inference",f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",time_alive=3000)
+                    # else:
+                    #     # fading_popup("ASR Inference",f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",3000)
+                    #     create_centered_popup("ASR Inference",f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",time_alive=5000)
 
                 else:
                     entry.delete(0, tk.END)

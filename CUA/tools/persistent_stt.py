@@ -18,9 +18,10 @@ class ContinuousRecorder():
         self.RECORD_SECONDS=1
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 2
-        self.SILENCE_THRESHOLD = 50
+        self.SILENCE_THRESHOLD = 65
         self.SILENCE_CHUNKS = 2
         self.root = project_root_path() / "CUA/tools/output.wav"
+        self.result_inference = ""
         
 
     def _is_silent(self,audio_data):
@@ -34,8 +35,9 @@ class ContinuousRecorder():
         """        
         #RMS algorithm = audio_data ^ 2 -> average of audio data -> root of average -> RMS
         rms = np.sqrt(np.mean(np.square(np.frombuffer(audio_data, dtype=np.int16))))
-        # logger.debug(f"RMS from 0.33 seconds of audio: {rms}") # Uncomment in case of needed otherwhise mantain this line commented as it generates a lot of logs
-        # logger.debug(f"Result of comparation between silence threshhold and rms : {rms < self.SILENCE_THRESHOLD}") # Uncomment in case of needed otherwhise mantain this line commented as it generates a lot of logs
+        # Uncomment loggers in case of needed otherwhise mantain this line commented as it generates a lot of logs
+        # logger.debug(f"RMS from 0.33 seconds of audio: {rms}") 
+        # logger.debug(f"Result of comparation between silence threshhold and rms : {rms < self.SILENCE_THRESHOLD}")
         return rms < self.SILENCE_THRESHOLD
     
     def _send_audio_endpoint(self,audio_bytes):
@@ -47,10 +49,9 @@ class ContinuousRecorder():
         Returns:
             response(str): whisper inference speech to text
         """        
-        print(whisper._request_asr_inference(audio_bytes))
         return whisper._request_asr_inference(audio_bytes)
 
-    def permanent_sst(self):
+    def permanent_stt(self):
         """Permanent speech to text function, after detecting audio sound (assuming it's a voice) generates chunks of audio and composes it on a .wav to be send to whisper endpoint.
         """        
         silent_count = 0
@@ -92,7 +93,9 @@ class ContinuousRecorder():
                 if silent_count >= 15:
                     recording_status = False
                     logger.info("Sending audio to transcript...")
-                    self._format_chunks_and_send(self.root,recording_buffer)
+                    response = self._format_chunks_and_send(self.root,recording_buffer)
+                    self.result_inference = response
+
                     silent_count = 0
                     recording_buffer.clear()
 
@@ -117,4 +120,6 @@ class ContinuousRecorder():
         response = self._send_audio_endpoint(audio_bytes)
 
         return response
-
+    
+    def get_result(self):
+        return self.result_inference

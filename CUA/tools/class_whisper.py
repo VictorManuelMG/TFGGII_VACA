@@ -66,6 +66,7 @@ class WhisperASR:
             response = requests.post(url, files=files, data=data, headers=headers)
 
             if response.status_code == 200:
+                logger.debug(f"Result from whisper asr inference: {response.json().get("text", "")}")
                 return response.json().get("text", "")
             else:
                 logger.error(

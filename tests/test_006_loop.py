@@ -13,10 +13,9 @@ browser_mock = MagicMock()
 def test_initialization_loop():
     """Tests the initialization of loop object
     """    
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop(whisper_mock, browser_mock)
     assert loop.config == {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
     assert loop.stoppable is False
-    assert loop.Florence == florence_mock
     assert loop.Whisper == whisper_mock
     assert loop.Browser == browser_mock
 
@@ -31,7 +30,7 @@ def test_load_tools():
     """Tests that all tools are initialized
     """    
     # Add new tools to tools_list.
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop( whisper_mock, browser_mock,)
     tools_list = [
         "browser_use",
         "OpenChrome",
@@ -42,7 +41,6 @@ def test_load_tools():
         "keyboard_input",
         "keyboard_hotkey",
         "delete_text",
-        "sumas",
     ]
 
     for tool in loop.tools:
@@ -52,7 +50,7 @@ def test_load_tools():
 def test_select_agent_model():
     """Tests the selecting model for CUA and that the model is properly set on llm_with_tools
     """    
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop( whisper_mock, browser_mock,)
     loop.select_agent_model(1)
     assert loop.CUA_model == "gpt-4o"
     assert "gpt-4o" == loop.llm_with_tools.model_name  # type: ignore
@@ -65,7 +63,7 @@ def test_select_agent_model():
 def test_build_graph():
     """tests that nodes needed exists once graph is initialized
     """    
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop( whisper_mock, browser_mock,)
     # If nodes added to graph, add to the list.
     nodes_list = ["assistant", "tools", "summarize", "returnOnLimit", "__start__"]
 
@@ -78,7 +76,7 @@ def test_draw_graph():
     """    
     root = project_root_path()
     test_path = root / "tests"
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop(florence_mock, whisper_mock, browser_mock,)
     loop.draw_graph(test_path)
     graph_path = test_path / "graph.png"
 
@@ -94,7 +92,7 @@ def test_draw_graph():
 def test_run():
     """Tests that langgrapg is returning a message with content.
     """    
-    loop = Loop(florence_mock, whisper_mock, browser_mock, False)
+    loop = Loop( whisper_mock, browser_mock,)
     loop.select_agent_model(2)
     response = loop.run("this is a test input.", False)
     assert isinstance(response["messages"][-1].content, str)
@@ -109,7 +107,7 @@ def test_whisper_prompt():
 def test_set_stoppable():
     """Tests that variable stoppable is being setted properly
     """    
-    loop = Loop(florence_mock, whisper_mock, Browser=browser_mock)
+    loop = Loop(whisper_mock, browser_mock)
     loop.set_stoppable(True)
     assert loop.stoppable is True
 

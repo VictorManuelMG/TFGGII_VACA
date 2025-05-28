@@ -190,16 +190,16 @@ class Loop:
             return "Inicializado Chrome"
 
         # debugging tool
-        @tool
-        def sumas(a: int, b: int):
-            """tool that return the addition of two numbers
+        # @tool
+        # def sumas(a: int, b: int):
+        #     """tool that return the addition of two numbers
 
-            Returns:
-                result: result of said addition between two numbers
-            """
-            result = a + b
+        #     Returns:
+        #         result: result of said addition between two numbers
+        #     """
+        #     result = a + b
 
-            return result
+        #     return result
 
         return [
             browser_use,
@@ -211,7 +211,7 @@ class Loop:
             computer.keyboard_input,
             computer.keyboard_hotkey,
             computer.delete_text,
-            sumas,
+            # sumas,
         ]
 
     def select_agent_model(self, option: int):
@@ -303,9 +303,7 @@ class Loop:
 
             if self.stoppable:
                 response_text = (
-                    """La ejecución ha sido abortada por solicitud del usuario. 
-                    Se han detenido todas las operaciones en curso y el sistema ha vuelto a su estado de espera. 
-                    Si deseas iniciar una nueva tarea o consulta, por favor indícamelo y estaré listo para asistirte."""
+                    """La ejecución ha sido abortada por solicitud del usuario.\nSe han detenido todas las operaciones en curso y el sistema ha vuelto a su estado de espera.\n Si deseas iniciar una nueva tarea o consulta, por favor indícamelo y estaré listo para asistirte."""
                 )
 
 

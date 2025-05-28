@@ -1,9 +1,9 @@
 import os
 import sys
-import tkinter as tk
+
+import customtkinter as ctk
 from screeninfo import get_monitors
 
-from tkinter import scrolledtext as st
 
 
 from CUA.tools.class_browser_use import BrowserUse
@@ -12,6 +12,8 @@ from CUA.tools.persistent_stt import ContinuousRecorder
 from main_loop import Loop
 
 from threading import Thread
+
+
 
 Whisper = WhisperASR()
 Browser = BrowserUse()
@@ -30,6 +32,8 @@ last_prompt = ""
 prompt_popup = None
 working_flag = False
 
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
 
 def agent_response(user_prompt:str):
     """Sends a prompt to the CUA and parses it's last response and thinking of the whole process.
@@ -39,22 +43,23 @@ def agent_response(user_prompt:str):
     """    
     def task():
         global working_flag
-        btn.config(state="disabled")
-        record_btn.config(state="disabled")
+        btn.configure(state="disabled")
+        #Deactivated
+        # record_btn.configure(state="disabled")
 
-        agent_thinking.config(state="normal")
-        agent_chat.config(state="normal")
+        agent_thinking.configure(state="normal")
+        agent_chat.configure(state="normal")
 
         if not user_prompt:
             return
 
-        agent_chat.insert(tk.END, f"\n 😃 : {user_prompt}\n", "usuario")
-        agent_chat.insert(tk.END, "\n")
+        agent_chat.insert(ctk.END, f"\n 😃 : {user_prompt}\n", "usuario")
+        agent_chat.insert(ctk.END, "\n")
 
         res = CUA_loop.run(user_prompt,True)
 
-        agent_thinking.delete(2.0,tk.END)
-        agent_thinking.insert(tk.END,"\n")
+        agent_thinking.delete(2.0,ctk.END)
+        agent_thinking.insert(ctk.END,"\n")
 
         # Agent thinking log extraction
         for msg in res["messages"]:
@@ -62,34 +67,37 @@ def agent_response(user_prompt:str):
                 for block in msg.content:
                     if isinstance(block, dict):
                         if block["type"] == "text":
-                            agent_thinking.insert(tk.END, f" 🤔 : {block['text']}\n")
+                            agent_thinking.insert(ctk.END, f" 🤔 : {block['text']}\n")
                         elif block["type"] == "tool_use":
                             tool = block["name"]
                             inputs = block["input"]
-                            agent_thinking.insert(tk.END, f" 🔧 Herramienta: {tool}\n")
-                            agent_thinking.insert(tk.END, f" 🔢 Parámetros: {inputs}\n")
-                agent_thinking.insert(tk.END, "-----------------------------\n")
+                            agent_thinking.insert(ctk.END, f" 🔧 Herramienta: {tool}\n")
+                            agent_thinking.insert(ctk.END, f" 🔢 Parámetros: {inputs}\n")
+                agent_thinking.insert(ctk.END, "-----------------------------\n")
 
             elif hasattr(msg, "tool_call_id"):
                 agent_thinking.insert(
-                    tk.END, f" ✉ Respuesta de herramienta: {msg.content}\n"
+                    ctk.END, f" ✉ Respuesta de herramienta: {msg.content}\n","thinking"
                 )
-                agent_thinking.insert(tk.END, "-----------------------------\n")
+                agent_thinking.insert(ctk.END, "-----------------------------\n")
 
-        agent_thinking.insert(tk.END, " 🧠 mente en frío\n")
-        agent_thinking.insert(tk.END, "-----------------------------\n")
+        agent_thinking.insert(ctk.END, " 🧠 mente en frío\n","thinking")
+        agent_thinking.insert(ctk.END, "-----------------------------\n")
 
-        agent_chat.insert(tk.END, f" 🐄 : {res['messages'][-1].content}\n", "asistente")
-        agent_thinking.config(state="disabled")
-        agent_chat.config(state="disabled")
-        agent_chat.see(tk.END)
-        agent_thinking.see(tk.END)
+        agent_chat.insert(ctk.END, f" 🐄 : {res['messages'][-1].content}\n", "asistente")
+
+        agent_thinking.configure(state="disabled")
+        agent_chat.configure(state="disabled")
+        agent_chat.see(ctk.END)
+        agent_thinking.see(ctk.END)
 
         if tts_status:
             CUA_loop.text_to_speech(res['messages'][-1].content)
 
-        btn.config(state="normal")
-        record_btn.config(state="normal")
+        btn.configure(state="normal")
+        #Deactivated
+        # record_btn.configure(state="normal")
+
         working_flag = False
 
     Thread(target=task, daemon=True).start()
@@ -109,11 +117,11 @@ def clicked():
     """ Action after clicking "Enviar" button.
     """    
     user_prompt = entry.get().strip()
-    entry.delete(0, tk.END)
+    entry.delete(0, ctk.END)
     agent_response(user_prompt=user_prompt)
 
 
-def create_centered_popup(title: str, message: str, width: int = 500, height: int = 350, font: str = "30", time_alive: int = None): #type: ignore
+def create_centered_popup(title: str, message: str, width: int = 500, height: int = 350, font: int = 30, time_alive: int = None): #type: ignore
     #Taken idea from https://stackoverflow.com/questions/3352918/how-to-center-a-window-on-the-screen-in-tkinter
     """Creates a centered popup in root window
 
@@ -128,7 +136,7 @@ def create_centered_popup(title: str, message: str, width: int = 500, height: in
     Returns:
         popup (Toplevel): Popup reference
     """
-    popup = tk.Toplevel()
+    popup = ctk.CTkToplevel()
     popup.title(title)
 
     root.update_idletasks()
@@ -143,7 +151,11 @@ def create_centered_popup(title: str, message: str, width: int = 500, height: in
 
     popup.geometry(f"{width}x{height}+{center_x}+{center_y}")
 
-    tk.Message(popup, text=message, padx=40, pady=40, font=font).pack()
+    popup.lift()
+    popup.attributes("-topmost", True)
+    popup.focus_force()
+
+    ctk.CTkLabel(popup, text=message, wraplength=width - 50, font=ctk.CTkFont(size=font),justify="left").pack()
 
     if time_alive is not None:
         popup.after(time_alive, popup.destroy)
@@ -190,16 +202,17 @@ def toggle_tts():
     """    
     global tts_status
     tts_status = not tts_status
-    toggle_btn.config(
-        text=f"TTS: {'ON ' if tts_status else 'OFF '}",
-        bg="green" if tts_status else "red"
+    toggle_btn.configure(
+        text=f"TTS: {'ON 🔊' if tts_status else 'OFF 🔇'}",
+        fg_color="#28a745" if tts_status else "#6c757d"
     )
 
 
 
 
 # GUI tkinter
-root = tk.Tk()
+
+root = ctk.CTk()
 root.title("Voice-Assisted Computer Accessibility")
 
 window_size = 0
@@ -221,37 +234,45 @@ root.after(500, lambda: root.state("zoomed"))
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(1, weight=1)
 
-entry = tk.Entry(root, width=80)
-entry.grid(row=0, column=0, padx=10, pady=10, sticky="ew", columnspan=2)
+entry = ctk.CTkEntry(root, width=150)
+entry.grid(row=0, column=0, padx=15, pady=10, sticky="ew", columnspan=1)
 
-agent_chat = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_chat = ctk.CTkTextbox(root, wrap="word", font=("Courier New", 14),fg_color="#1e1e1e",width=350)
 agent_chat.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-agent_chat.insert(tk.END, "Este es el inicio de su conversación.\n")
-agent_chat.config(state="disabled")
+agent_chat.insert(ctk.END, "Este es el inicio de su conversación.\n")
+agent_chat.configure(state="disabled")
 
-agent_thinking = st.ScrolledText(root, wrap="word", font=("Courier New", 11))
+agent_thinking = ctk.CTkTextbox(root, wrap="word", font=("Courier New", 14),fg_color="#1e1e1e")
 agent_thinking.grid(row=1, column=1, padx=5, pady=10, sticky="nsew", columnspan=5)
-agent_thinking.insert(tk.END, "Pensamientos del agente y herramientas usadas:\n\n")
-agent_thinking.config(state="disabled")
+agent_thinking.insert(ctk.END, "Pensamientos del agente y herramientas usadas:\n\n")
+agent_thinking.configure(state="disabled")
 
-agent_chat.tag_configure("usuario", foreground="red", font=("Courier New", 11, "bold"))
-agent_chat.tag_configure("asistente", foreground="purple", font=("Courier New", 11))
+agent_chat.tag_config("usuario", foreground="#F87070")
+agent_chat.tag_config("asistente", foreground="#8BE9FD")
 
-btn = tk.Button(root, text="Enviar", fg="red", command=clicked)
-btn.grid(row=0, column=2, padx=5, pady=10)
+agent_thinking.tag_config("thinking",foreground="#C3C3C3")
 
-record_btn = tk.Button(root, text="Prompt de voz", fg="green", command=record_clicked)
-record_btn.grid(row=0, column=3, padx=5, pady=10)
 
-abort_btn = tk.Button(root, text="Abortar!", fg="red", command=safe_abort)
-abort_btn.grid(row=0, column=4, padx=5, pady=10)
+control_frame = ctk.CTkFrame(root, fg_color="transparent")
+control_frame.grid(row=0, column=1, columnspan=4, padx=10, pady=(10, 5), sticky="ew")
 
-reset_btn = tk.Button(root, text="Reiniciar!", fg="red", command=reset_click)
-reset_btn.grid(row=0, column=5, padx=5, pady=10)
+btn_width = 150
 
-toggle_btn = tk.Button(root, text="TTS: OFF 🔇", bg="red", command=toggle_tts)
-toggle_btn.grid(row=0,column=6,padx=5,pady=15)
-toggle_btn.config(text="TTS: ON 🔊", bg="green")
+btn = ctk.CTkButton(control_frame, text="📤 Enviar", fg_color="#007ACC", width=btn_width, command=clicked)
+btn.pack(side="left", padx=5, pady=5)
+
+#Deactivated as persistent STT is implemented, might be changed to something else
+# record_btn = ctk.CTkButton(control_frame, text="🎤 Voz", fg_color="#28a745", width=btn_width, command=record_clicked)
+# record_btn.pack(side="left", padx=5, pady=5)
+
+abort_btn = ctk.CTkButton(control_frame, text="⛔ Abortar", fg_color="#dc3545", width=btn_width, command=safe_abort)
+abort_btn.pack(side="left", padx=5, pady=5)
+
+reset_btn = ctk.CTkButton(control_frame, text="🔄 Reiniciar", fg_color="#5116dd", width=btn_width, command=reset_click)
+reset_btn.pack(side="left", padx=5, pady=5)
+
+toggle_btn = ctk.CTkButton(control_frame, text=" TTS: ON 🔊", fg_color="#28a745", width=btn_width, command=toggle_tts)
+toggle_btn.pack(side="left", padx=5, pady=5)
 
 
 def stt_thread():
@@ -271,13 +292,13 @@ def stt_thread():
                     if "aceptar" in parsed_response:
                         prompt_accept_flag = False
                         agent_response(last_prompt)
-                        entry.delete(0, tk.END)
+                        entry.delete(0, ctk.END)
                         prompt_popup.destroy() #type: ignore
                         working_flag = True
 
                     elif "denegar" in parsed_response:
                         prompt_accept_flag = False
-                        entry.delete(0, tk.END)
+                        entry.delete(0, ctk.END)
                         prompt_popup.destroy() #type: ignore
 
 
@@ -291,8 +312,8 @@ def stt_thread():
                     #     create_centered_popup("ASR Inference",f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",time_alive=5000)
 
                 else:
-                    entry.delete(0, tk.END)
-                    entry.insert(tk.END, result)
+                    entry.delete(0, ctk.END)
+                    entry.insert(ctk.END, result)
                     last_prompt = result
                     accept_prompt()
 

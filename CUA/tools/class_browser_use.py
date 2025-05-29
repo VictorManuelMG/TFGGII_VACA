@@ -17,6 +17,7 @@ class BrowserUse:
         timeout: int = 30,
         chrome_instance_path: str = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         max_steps: int = 75,
+        thinking_callback = None
     ):
         """Initialization of browser_use agent.
 
@@ -52,6 +53,12 @@ class BrowserUse:
         )
 
         self.context = None
+
+
+
+    def send_thinking(self, thought:str ):
+        from main_loop import CUA_loop
+        CUA_loop.add_thinking(thought)
 
     async def _init_context(self):
         """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser."""
@@ -101,7 +108,7 @@ class BrowserUse:
             await agent.step()
 
             #Wait time for history state to update
-            for loop in range(10):
+            for loop in range(5):
                 await asyncio.sleep(0.1)
                 if len(agent.state.history.history) > prev_len:
                     break
@@ -110,6 +117,12 @@ class BrowserUse:
                 break
 
             last = agent.state.history.history[-1]
+
+
+
+            self.send_thinking(last.model_output.current_state.memory)
+            logger.debug(f"Browser_executable result: {last.model_output.current_state.memory}")
+
             logger.info(f"brower_executable state previous goal info: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
 
             if "Failed:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore

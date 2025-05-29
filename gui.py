@@ -197,7 +197,7 @@ def accept_prompt():
     global prompt_accept_flag, prompt_popup
     prompt_popup = create_centered_popup(
         "¿Aceptar este prompt?",
-        f"¿Quiere aceptar este prompt?: \n- {last_prompt}. \n\n\n Responda aceptar en caso afirmativo, denegar en caso negativo.",
+        f"¿Quiere aceptar este prompt?: \n- {last_prompt}. \n\n\n Responda confirmar en caso afirmativo, cancelar en caso negativo.",
     )
 
     prompt_accept_flag = True
@@ -347,21 +347,21 @@ def stt_thread():
                 parsed_response = result.lower().strip()
 
                 if prompt_accept_flag:
-                    if "aceptar" in parsed_response:
+                    if "confirmar" in parsed_response:
                         prompt_accept_flag = False
                         agent_response(last_prompt)
                         entry.delete(0, ctk.END)
                         prompt_popup.destroy()  # type: ignore
                         working_flag = True
 
-                    elif "denegar" in parsed_response:
+                    elif "cancelar" in parsed_response:
                         prompt_accept_flag = False
                         entry.delete(0, ctk.END)
                         prompt_popup.destroy()  # type: ignore
                     else:
                         create_centered_popup(
                             "ASR Inference",
-                            f"Te he entendido: {result}, los respuestas posibles solo son ACEPTAR o DENEGAR.",
+                            f"Te he entendido: {result}, los respuestas posibles solo son CONFIRMAR o CANCELAR.",
                             time_alive=5000,
                         )
 

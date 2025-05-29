@@ -52,6 +52,15 @@ class Loop:
         self.react_graph = self._build_graph()
         self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
         self.stoppable = stoppable
+        self.thinking = []
+
+
+    def add_thinking(self, thought: str):
+        if len(self.thinking) > 10:
+            self.thinking.pop()
+            self.thinking.append(thought)
+        else:
+            self.thinking.append(thought)
 
     def _load_tools(self):
         """Load of tools for the llm.
@@ -123,12 +132,14 @@ class Loop:
             Returns:
                     message: LLM answer
             """
-
+            
             logger.info(f"ScreenInterpreter user order: {order}")
+            self.add_thinking(f"Preguntandole a mi interprete de interfaz: {order}")
             message = yolo_florence_inference(order,False)
 
             # Tool response for debugging
             logger.debug(f"ScreenInterpreter response: {message}")
+            self.add_thinking("Pensando en como transmitirtelo...")
 
             return message
 
@@ -149,12 +160,17 @@ class Loop:
             Returns:
                 message: LLM answer
             """
+
+            self.add_thinking(f"Preguntandole a mi interprete simple de interfaz gráfica: {order}.")
+            logger.warning(self.thinking)
+
             logger.info(f"SimpleScreenInterpreter user order: {order}")
             message = yolo_florence_inference(order,True)
 
             # Tool response for debugging
             logger.debug(f"SimpleScreenInterpreter response: {message}")
 
+            self.add_thinking("Pensando en como transmitirte el resultado...")
             return message
 
         @tool
@@ -164,6 +180,8 @@ class Loop:
                 msg: result of execution of tool
             """
             # URL only available if debug mode activated.
+            self.add_thinking("Intentando abrir Google Chrome...")
+
             url_debug = "http://localhost:9222/json"
 
             chrome_path = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
@@ -171,6 +189,7 @@ class Loop:
             try:
                 response = requests.get(url_debug, timeout=1)
                 if response.status_code == 200:
+                    self.add_thinking("Parece que ya hay una instancia de Chrome abierta.")
                     return "Ya hay una instancia de Chrome abierta."
             except requests.exceptions.RequestException:
                 logger.warning(
@@ -190,16 +209,22 @@ class Loop:
             return "Inicializado Chrome"
 
         # debugging tool
-        # @tool
-        # def sumas(a: int, b: int):
-        #     """tool that return the addition of two numbers
+        @tool
+        def sumas(a: int, b: int):
+            """tool that return the addition of two numbers
 
-        #     Returns:
-        #         result: result of said addition between two numbers
-        #     """
-        #     result = a + b
+            Returns:
+                result: result of said addition between two numbers
+            """
+            
+            result = a + b
 
-        #     return result
+            self.add_thinking(f"Calculando cuanto es la suma de : {a} + {b}")
+            
+            self.add_thinking("Devolviendo Calculo....")
+            logger.warning(self.thinking)
+
+            return result
 
         return [
             browser_use,
@@ -211,7 +236,7 @@ class Loop:
             computer.keyboard_input,
             computer.keyboard_hotkey,
             computer.delete_text,
-            # sumas,
+            sumas,
         ]
 
     def select_agent_model(self, option: int):
@@ -336,6 +361,13 @@ class Loop:
 
 
             response = self.llm_with_tools.invoke([sys_msg] + messages)
+
+            for block in response.content:
+                if isinstance(block,dict):
+                    if block["type"] == "text":
+                        text = block["text"]
+                        self.add_thinking(text)
+                        # logger.warning(f"Agent Response esperado: {text}")
 
             # Agent response for debugging
             logger.debug(f"Agent response:{response}")

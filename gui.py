@@ -29,6 +29,7 @@ prompt_accept_flag = False
 last_prompt = ""
 prompt_popup = None
 working_flag = False
+gui_last_thinking = []
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -47,7 +48,6 @@ def agent_response(user_prompt: str):
         # Deactivated
         # record_btn.configure(state="disabled")
 
-        agent_thinking.configure(state="normal")
         agent_chat.configure(state="normal")
 
         if not user_prompt:
@@ -58,42 +58,12 @@ def agent_response(user_prompt: str):
 
         res = CUA_loop.run(user_prompt, True)
 
-        agent_thinking.delete(2.0, ctk.END)
-        agent_thinking.insert(ctk.END, "\n")
-
-        # Agent thinking log extraction
-        for msg in res["messages"]:
-            if hasattr(msg, "content") and isinstance(msg.content, list):
-                for block in msg.content:
-                    if isinstance(block, dict):
-                        if block["type"] == "text":
-                            agent_thinking.insert(ctk.END, f" 🤔 : {block['text']}\n")
-                        elif block["type"] == "tool_use":
-                            tool = block["name"]
-                            inputs = block["input"]
-                            agent_thinking.insert(ctk.END, f" 🔧 Herramienta: {tool}\n")
-                            agent_thinking.insert(
-                                ctk.END, f" 🔢 Parámetros: {inputs}\n"
-                            )
-                agent_thinking.insert(ctk.END, "-----------------------------\n")
-
-            elif hasattr(msg, "tool_call_id"):
-                agent_thinking.insert(
-                    ctk.END, f" ✉ Respuesta de herramienta: {msg.content}\n", "thinking"
-                )
-                agent_thinking.insert(ctk.END, "-----------------------------\n")
-
-        agent_thinking.insert(ctk.END, " 🧠 mente en frío\n", "thinking")
-        agent_thinking.insert(ctk.END, "-----------------------------\n")
-
         agent_chat.insert(
             ctk.END, f" 🐄 : {res['messages'][-1].content}\n", "asistente"
         )
 
-        agent_thinking.configure(state="disabled")
         agent_chat.configure(state="disabled")
         agent_chat.see(ctk.END)
-        agent_thinking.see(ctk.END)
 
         if tts_status:
             CUA_loop.text_to_speech(res["messages"][-1].content)
@@ -130,8 +100,8 @@ def create_centered_popup(
     width: int = 500,
     height: int = 350,
     font: int = 30,
-    time_alive: int = None,# type: ignore
-):  
+    time_alive: int = None,  # type: ignore
+):
     # Taken idea from https://stackoverflow.com/questions/3352918/how-to-center-a-window-on-the-screen-in-tkinter
     """Creates a centered popup in root window
 
@@ -341,6 +311,7 @@ def stt_thread():
                 last_prompt, \
                 prompt_popup, \
                 working_flag
+
             result = stt.get_result()
             if result and result != last_result_stt:
                 last_result_stt = result
@@ -384,7 +355,56 @@ def stt_thread():
     Thread(target=monitor_stt, daemon=True).start()
 
 
+def parse_duplicated_thoughts(new_thoughts, last_thoughts):
+    """Generates a new array with new thoughts taking in account duplicated thoughts from previous chains.
+
+    Args:
+        new_thoughts (list[]): New thoughts generated at loop
+        last_thoughts (list[]): Old thoughts saved.
+
+    Returns:
+        result(list[]): List of new thoughts generated from comparision between old and new thoughts
+    """
+
+    result = []
+    thoughts_aux = last_thoughts.copy()
+
+    for thought in new_thoughts:
+        if thought in thoughts_aux:
+            thoughts_aux.remove(thought)
+        else:
+            result.append(thought)
+
+    return result
+
+
+def poll_thinking():
+    """Every 1 second, extracts the thoughts of loop and inserts new thoughts into the gui."""
+    global gui_last_thinking
+
+    new_thoughts = CUA_loop.thinking
+    new_aux = []
+
+    if new_thoughts != gui_last_thinking:
+        new_aux = parse_duplicated_thoughts(CUA_loop.thinking, gui_last_thinking)
+        gui_last_thinking = CUA_loop.thinking.copy()
+
+        gui_last_thinking = new_thoughts.copy()
+
+        agent_thinking.configure(state="normal")
+        for t in new_aux:
+            agent_thinking.insert(ctk.END, t + "\n", "thinking")
+            agent_thinking.insert(
+                ctk.END, "-----------------------------------------------\n"
+            )
+        agent_thinking.configure(state="disabled")
+        agent_thinking.see(ctk.END)
+
+    root.after(1000, poll_thinking)
+
+
 stt_thread()
 
+poll_thinking()
 
 root.mainloop()

@@ -50,17 +50,23 @@ class Loop:
         self.cooldowns = {}
         self.tools = self._load_tools()
         self.react_graph = self._build_graph()
-        self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
+        self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 300}
         self.stoppable = stoppable
         self.thinking = []
 
+        #Set browser callback to loop add thinking when browser_use is called
+        self.Browser.set_callback(self.add_thinking)
+
 
     def add_thinking(self, thought: str):
+        """Adds thoughts to a list, after the 10th thought last thought is popped out.
+
+        Args:
+            thought (str): thought to be added to the list
+        """        
         if len(self.thinking) > 10:
-            self.thinking.pop()
-            self.thinking.append(thought)
-        else:
-            self.thinking.append(thought)
+            self.thinking.pop(0)
+        self.thinking.append(thought)
 
     def _load_tools(self):
         """Load of tools for the llm.
@@ -134,12 +140,12 @@ class Loop:
             """
             
             logger.info(f"ScreenInterpreter user order: {order}")
-            self.add_thinking(f"Preguntandole a mi interprete de interfaz: {order}")
+            self.add_thinking(f"📸 Consultando a mi asistente visual para interpretar: \"{order}\"")
             message = yolo_florence_inference(order,False)
 
             # Tool response for debugging
             logger.debug(f"ScreenInterpreter response: {message}")
-            self.add_thinking("Pensando en como transmitirtelo...")
+            self.add_thinking("🧠 Procesando cómo explicártelo con claridad...")
 
             return message
 
@@ -161,7 +167,7 @@ class Loop:
                 message: LLM answer
             """
 
-            self.add_thinking(f"Preguntandole a mi interprete simple de interfaz gráfica: {order}.")
+            self.add_thinking(f"🔍 Obteniendo una vista general de la pantalla para: \"{order}\"")
             logger.warning(self.thinking)
 
             logger.info(f"SimpleScreenInterpreter user order: {order}")
@@ -170,7 +176,7 @@ class Loop:
             # Tool response for debugging
             logger.debug(f"SimpleScreenInterpreter response: {message}")
 
-            self.add_thinking("Pensando en como transmitirte el resultado...")
+            self.add_thinking("💭 Formulando la mejor manera de contártelo...")
             return message
 
         @tool
@@ -180,7 +186,7 @@ class Loop:
                 msg: result of execution of tool
             """
             # URL only available if debug mode activated.
-            self.add_thinking("Intentando abrir Google Chrome...")
+            self.add_thinking("🌐 Iniciando Google Chrome para ayudarte...")
 
             url_debug = "http://localhost:9222/json"
 
@@ -189,7 +195,7 @@ class Loop:
             try:
                 response = requests.get(url_debug, timeout=1)
                 if response.status_code == 200:
-                    self.add_thinking("Parece que ya hay una instancia de Chrome abierta.")
+                    self.add_thinking("🔄 Detectada una ventana de Chrome ya abierta, la utilizaré.")
                     return "Ya hay una instancia de Chrome abierta."
             except requests.exceptions.RequestException:
                 logger.warning(
@@ -236,7 +242,11 @@ class Loop:
             computer.keyboard_input,
             computer.keyboard_hotkey,
             computer.delete_text,
+            computer.keyboard_combo,
+            computer.paste_full_code,
+            computer.keyboard_keypress,
             sumas,
+            
         ]
 
     def select_agent_model(self, option: int):
@@ -252,7 +262,7 @@ class Loop:
                 api_key=os.getenv("OPENAI_API_KEY"),  # type: ignore
                 timeout=None,
                 temperature=0,
-                max_tokens=2000,  # type: ignore
+                max_tokens=10000,  # type: ignore
             )
             self.llm_with_tools = llm.bind_tools(self.tools)
         elif option == 2:
@@ -262,7 +272,7 @@ class Loop:
                 api_key=os.getenv("ANTHROPIC_API_KEY"),
                 timeout=None,
                 temperature=0,
-                max_tokens=2000,  # type: ignore
+                max_tokens=10000,  # type: ignore
             )  # type: ignore
             self.llm_with_tools = llm.bind_tools(self.tools)
         else:
@@ -320,6 +330,8 @@ class Loop:
                                 If the user tell you something ambigous ALWAYS ask for more information.
                                 If users tell "exit" give a goodbye message as you'll stop working and the programm will stop.
                                 When asking something to be done over the internet, use browser_use tool, if it's on cooldown always check when it will be available
+                                Always try to use keyboard shortcuts over moving the mouse if possible.
+                                In case of writting code, always let the user 1st look at the code and he will tell you if it's wrong or not, but if you think there's any error you must tell it to the user but not modify it unless user requests so
 
                                 Always respond to user in spanish unless asked otherwise"""
             )
@@ -366,7 +378,7 @@ class Loop:
                 if isinstance(block,dict):
                     if block["type"] == "text":
                         text = block["text"]
-                        self.add_thinking(text)
+                        self.add_thinking(f"🧠 Reflexión del agente: {text.strip()}")
                         # logger.warning(f"Agent Response esperado: {text}")
 
             # Agent response for debugging

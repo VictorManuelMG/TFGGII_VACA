@@ -11,6 +11,12 @@ from CUA.tools.persistent_stt import ContinuousRecorder
 from main_loop import Loop
 
 from threading import Thread
+from initializer import initialize_endpoints
+import time
+
+
+initialize_endpoints()
+time.sleep(10)
 
 
 Whisper = WhisperASR()

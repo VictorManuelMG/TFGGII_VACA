@@ -53,12 +53,26 @@ class BrowserUse:
         )
 
         self.context = None
+        self.thinking_callback = thinking_callback
+
+    def set_callback(self,callback):
+        """sets browser callback
+
+        Args:
+            callback (function): Function to callback to.
+        """        
+        self.thinking_callback = callback
 
 
+    def _send_thought(self,thought:str):
+        """sends thought to callback.
 
-    def send_thinking(self, thought:str ):
-        from main_loop import CUA_loop
-        CUA_loop.add_thinking(thought)
+        Args:
+            thought (str): String to send to callback.
+        """        
+        if self.thinking_callback:
+            formatted_thought = f"🌐 [Navegador]: {thought.strip()}"
+            self.thinking_callback(formatted_thought)
 
     async def _init_context(self):
         """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser."""
@@ -119,9 +133,9 @@ class BrowserUse:
             last = agent.state.history.history[-1]
 
 
+            self._send_thought(last.model_output.current_state.memory) #type: ignore
 
-            self.send_thinking(last.model_output.current_state.memory)
-            logger.debug(f"Browser_executable result: {last.model_output.current_state.memory}")
+            logger.debug(f"Browser_executable result: {last.model_output.current_state.memory}") #type: ignore
 
             logger.info(f"brower_executable state previous goal info: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
 

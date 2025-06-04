@@ -3,9 +3,11 @@ from PIL import ImageGrab
 import io
 import base64
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-url = "https://chatbot-api.deeplearning.itcl.es:38380/v1/yolo-florence"
+url = f"{os.getenv("BASE_URL")}"
 
 headers = {"Authorization": f"Bearer {os.getenv("API_KEY")}"}
 

@@ -3,6 +3,8 @@ import keyboard
 from langchain_core.tools import tool
 import pyperclip
 
+from CUA.util.logger import logger
+
 
 @tool
 def move_mouse(x: int, y: int):
@@ -15,6 +17,7 @@ def move_mouse(x: int, y: int):
     Returns:
         status: Error or Sucessful
     """
+    logger.debug(f"move_mouse coordinates: x= {x} y = {y}")
     try:
         pyautogui.moveTo(x, y, 0.5)
         return f"Moved mouse to {x},{y}"
@@ -36,6 +39,8 @@ def mouse_clicker(action: str):
     Returns:
         status: error or sucessful
     """
+
+    logger.debug(f"mose_clicker action: {action }")
     try:
         if action == "single_clickleft":
             pyautogui.click(button="left")
@@ -61,7 +66,7 @@ def keyboard_input(text: str):
     Returns:
         status: Error or sucessful
     """
-
+    logger.debug(f"keyboard_input, input: {text}")
     try:
         keyboard.write(text, delay=0.02)
         return f"Inputted '{text}'"
@@ -79,7 +84,7 @@ def keyboard_hotkey(action: str):
     Returns:
         status: Error or sucessful
     """
-
+    logger.debug(f"keyboard_hotkey action : {action}")
     try:
         if action in [
             "enter",
@@ -107,6 +112,7 @@ def keyboard_keypress(key: str):
     Returns:
         status: Error or sucessful
     """
+    logger.debug(f"keyboard_keypress key pressed: {key}")
     try:
         if len(key) == 1 and key.isprintable():
             pyautogui.press(key)
@@ -124,6 +130,7 @@ def delete_text():
     Returns:
         status: Error or sucessful
     """
+    logger.debug("Deleting text")
     try:
         pyautogui.keyDown("ctrl")
         pyautogui.press("a")
@@ -145,6 +152,7 @@ def keyboard_combo(modifier: str, key: str):
     Returns:
         status: parses if there was an error trying to press the combo or if it was sucessful
     """
+    logger.debug(f"Combo key pressed: {modifier} + {key}")
     try:
         valid_modifiers = ["ctrl", "shift", "alt", "win"]
         if modifier not in valid_modifiers:
@@ -168,6 +176,7 @@ def paste_full_code(code: str):
     Returns:
         str: Status message about the result.
     """
+    logger.debug(f"paste_full_code to paste: {code}")
     try:
         pyperclip.copy(code)
         keyboard.press_and_release("ctrl+v")

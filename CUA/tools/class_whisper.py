@@ -113,7 +113,7 @@ class WhisperASR:
             wf.setframerate(self.RATE)
             wf.writeframes(data=b"".join(frames))
 
-    def whisper_SST(self):
+    def whisper_STT(self):
         """Calls whisper to make a transcription of a user voice prompt
 
         Returns:

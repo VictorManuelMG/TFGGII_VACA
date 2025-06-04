@@ -11,12 +11,6 @@ from CUA.tools.persistent_stt import ContinuousRecorder
 from main_loop import Loop
 
 from threading import Thread
-from initializer import initialize_endpoints
-import time
-
-
-initialize_endpoints()
-time.sleep(10)
 
 
 Whisper = WhisperASR()
@@ -24,7 +18,7 @@ Browser = BrowserUse()
 
 CUA_loop = Loop(Whisper, Browser)
 CUA_loop.select_agent_model(2)
-stt = ContinuousRecorder()
+stt = ContinuousRecorder(Whisper)
 
 
 # Global variables
@@ -62,7 +56,7 @@ def agent_response(user_prompt: str):
         agent_chat.insert(ctk.END, f"\n 😃 : {user_prompt}\n", "usuario")
         agent_chat.insert(ctk.END, "\n")
 
-        res = CUA_loop.run(user_prompt, True)
+        res = CUA_loop.run(user_prompt)
 
         agent_chat.insert(
             ctk.END, f" 🐄 : {res['messages'][-1].content}\n", "asistente"
@@ -82,15 +76,15 @@ def agent_response(user_prompt: str):
 
     Thread(target=task, daemon=True).start()
 
+# # Deactivated since permanent STT is working
+# def agent_stt():
+#     """Call to whisper for obtaining the text of the invoice prompt"""
 
-def agent_stt():
-    """Call to whisper for obtaining the text of the invoice prompt"""
+#     def task():
+#         user_prompt = CUA_loop.get_whisper_prompt()
+#         agent_response(user_prompt=user_prompt)
 
-    def task():
-        user_prompt = CUA_loop.get_whisper_prompt()
-        agent_response(user_prompt=user_prompt)
-
-    Thread(target=task, daemon=True).start()
+#     Thread(target=task, daemon=True).start()
 
 
 def clicked():
@@ -188,13 +182,13 @@ def safe_abort():
     )
     CUA_loop.set_stoppable(True)
 
-
-def record_clicked():
-    """Records a prompt of 5 seconds and sends it to the CUA agent"""
-    create_centered_popup(
-        "Grabando", "Se procedera a grabar durante 5 segundos", time_alive=5000
-    )
-    agent_stt()
+# # Deactivated since permanent stt is working
+# def record_clicked():
+#     """Records a prompt of 5 seconds and sends it to the CUA agent"""
+#     create_centered_popup(
+#         "Grabando", "Se procedera a grabar durante 5 segundos", time_alive=5000
+#     )
+#     agent_stt()
 
 
 def reset_click():
@@ -305,12 +299,16 @@ toggle_btn.pack(side="left", padx=5, pady=5)
 
 
 def stt_thread():
-    """Thread with the STT logic"""
+    """Generates a Thread logic with the STT logic"""
 
     def monitor_stt():
+        """Generates a new thead for the permanent_stt to work under gui.
+        """        
         Thread(target=stt.permanent_stt, daemon=True).start()
 
         def check_for_updates():
+            """Checks for updates on memory of permanent stt, on change proceed to parse the new prompt to the gui.
+            """            
             global \
                 last_result_stt, \
                 prompt_accept_flag, \

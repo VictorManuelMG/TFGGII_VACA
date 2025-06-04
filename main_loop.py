@@ -3,7 +3,6 @@ import asyncio
 from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from sympy import false
 from CUA.tools import computer
 from CUA.tools.endpoint_yolo_florence import yolo_florence_inference
 from langgraph.graph import MessagesState
@@ -50,7 +49,7 @@ class Loop:
         self.cooldowns = {}
         self.tools = self._load_tools()
         self.react_graph = self._build_graph()
-        self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 300}
+        self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 150}
         self.stoppable = stoppable
         self.thinking = []
 
@@ -475,7 +474,7 @@ class Loop:
 
         return
 
-    def run(self, user_prompt: str,TTS=false):
+    def run(self, user_prompt: str):
         """Given a user prompt calls the model to do the task given.
 
         Args:
@@ -492,7 +491,7 @@ class Loop:
         Returns:
             str: returns string of the transcription.
         """
-        return self.Whisper.whisper_SST()
+        return self.Whisper.whisper_STT()
     
     def set_stoppable(self,status:bool):
         """Sets the stoppable param for the program to decide if it has to stop execution or not.

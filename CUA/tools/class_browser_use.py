@@ -14,7 +14,7 @@ class BrowserUse:
         self,
         anthropic_model: str = "claude-3-7-sonnet-latest",
         temperature: float = 0.0,
-        timeout: int = 30,
+        timeout: int = 75,
         chrome_instance_path: str = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         max_steps: int = 75,
         thinking_callback = None

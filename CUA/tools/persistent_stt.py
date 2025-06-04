@@ -8,11 +8,11 @@ from CUA.util.logger import logger  # noqa: F401
 from CUA.util.path import project_root_path
 
 
-whisper = WhisperASR()
+
 
 
 class ContinuousRecorder:
-    def __init__(self):
+    def __init__(self,Whisper:WhisperASR):
         self.CHUNK = 441
         self.RATE = 4410
         self.RECORD_SECONDS = 1
@@ -21,6 +21,7 @@ class ContinuousRecorder:
         self.SILENCE_THRESHOLD = 45
         self.root = project_root_path() / "CUA/tools/output.wav"
         self.result_inference = ""
+        self.whisper = Whisper
 
     def _is_silent(self, audio_data):
         """Detect if chunk is silent based on RMS
@@ -50,7 +51,7 @@ class ContinuousRecorder:
         Returns:
             response(str): whisper inference speech to text
         """
-        return whisper._request_asr_inference(audio_bytes)
+        return self.whisper._request_asr_inference(audio_bytes)
 
     def permanent_stt(self):
         """Permanent speech to text function, after detecting audio sound (assuming it's a voice) generates chunks of audio and composes it on a .wav to be send to whisper endpoint."""

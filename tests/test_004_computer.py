@@ -1,6 +1,7 @@
-from CUA.tools.computer import move_mouse,mouse_clicker,keyboard_input,keyboard_hotkey,delete_text
+from CUA.tools.computer import move_mouse,mouse_clicker,keyboard_input,keyboard_hotkey,delete_text,keyboard_keypress,keyboard_combo,paste_full_code
 import keyboard
 import pyautogui
+import pyperclip
 from unittest.mock import MagicMock
 
 
@@ -177,4 +178,38 @@ def test_delete_text():
     pyautogui.press = original_press
     pyautogui.keyUp = original_keyUp
 
+def test_keyboard_keypress():
 
+    original_press = pyautogui.press
+    pyautogui.press = MagicMock()
+
+    keyboard_keypress("a")
+    pyautogui.press.assert_called_once_with("a")
+
+    pyautogui.press = original_press
+
+
+def test_keyboard_combo():
+
+    original_hokey = pyautogui.hotkey
+    pyautogui.hotkey = MagicMock()
+
+    keyboard_combo({'modifier':'ctrl','key':'ñ'}) #type: ignore
+    pyautogui.hotkey.assert_called_once_with('ctrl','ñ')
+    
+    pyautogui.hotkey = original_hokey
+
+def test_paste_full_code():
+    original_press = keyboard.press_and_release
+    original_pyperclip = pyperclip.copy
+
+    keyboard.press_and_release = MagicMock()
+    pyperclip.copy = MagicMock()
+
+    result = paste_full_code("Esto es un codigo")
+    pyperclip.copy.assert_called_once_with("Esto es un codigo")
+    keyboard.press_and_release.assert_called_once_with('ctrl+v')
+    assert (result == "Successfully pasted full code using clipboard.")
+
+    keyboard.press_and_release = original_press
+    pyperclip.copy = original_pyperclip

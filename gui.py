@@ -4,8 +4,6 @@ import sys
 import customtkinter as ctk
 from screeninfo import get_monitors
 
-
-from CUA.tools.class_browser_use import BrowserUse
 from CUA.tools.class_whisper import WhisperASR
 from CUA.tools.persistent_stt import ContinuousRecorder
 from main_loop import Loop
@@ -14,10 +12,8 @@ from threading import Thread
 
 
 Whisper = WhisperASR()
-Browser = BrowserUse()
 
-CUA_loop = Loop(Whisper, Browser)
-CUA_loop.select_agent_model(2)
+CUA_loop = Loop(Whisper=Whisper)
 stt = ContinuousRecorder(Whisper)
 
 

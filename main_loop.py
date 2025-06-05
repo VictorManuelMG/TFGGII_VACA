@@ -6,8 +6,8 @@ from langchain_openai import ChatOpenAI
 from CUA.tools import computer
 from CUA.tools.endpoint_yolo_florence import yolo_florence_inference
 from langgraph.graph import MessagesState
-from langchain_core.messages import HumanMessage, SystemMessage, RemoveMessage
-from langgraph.graph import START, StateGraph, END
+from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition, ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -32,8 +32,9 @@ root_path = project_root_path()
 class Loop:
     def __init__(
         self,
-        Whisper: WhisperASR,
-        Browser: BrowserUse,
+        Whisper: WhisperASR = WhisperASR(),
+        Browser: BrowserUse = BrowserUse(),
+        agent_model_option :int = 2,
         stoppable: bool = False,
     ):
         """_summary_
@@ -52,6 +53,7 @@ class Loop:
         self.config = {"configurable": {"thread_id": "1"}, "recursion_limit": 150}
         self.stoppable = stoppable
         self.thinking = []
+        self.select_agent_model(agent_model_option)
 
         #Set browser callback to loop add thinking when browser_use is called
         self.Browser.set_callback(self.add_thinking)
@@ -385,45 +387,46 @@ class Loop:
 
 
             return {"messages": response}
+        
+        #   # Commented as it's not used at the moment because of problems parsing tools.
+        # def summarize_conversation(state: State):
+        #     """Node that generates the summary of the conversation
 
-        def summarize_conversation(state: State):
-            """Node that generates the summary of the conversation
+        #     Returns:
+        #         Summary: summary of the conversation
+        #     """
+        #     logger.info(f"summarize_conversation state: {state}")
+        #     summary = state.get("summary", "")
 
-            Returns:
-                Summary: summary of the conversation
-            """
-            logger.info(f"summarize_conversation state: {state}")
-            summary = state.get("summary", "")
+        #     if summary:
+        #         summary_message = (
+        #             f"Este es el resumen de la conversación hasta la fecha: {summary}\n\n"
+        #             "Extiende el resumen teniendo en cuenta los nuevos mensajes:"
+        #         )
 
-            if summary:
-                summary_message = (
-                    f"Este es el resumen de la conversación hasta la fecha: {summary}\n\n"
-                    "Extiende el resumen teniendo en cuenta los nuevos mensajes:"
-                )
+        #     else:
+        #         summary_message = "Crea un resumen de toda la conversación mantenida."
 
-            else:
-                summary_message = "Crea un resumen de toda la conversación mantenida."
+        #     messages = state["messages"] + [HumanMessage(content=summary_message)]
+        #     response = self.llm_with_tools.invoke(messages)
 
-            messages = state["messages"] + [HumanMessage(content=summary_message)]
-            response = self.llm_with_tools.invoke(messages)
+        #     delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]]  # type: ignore
+        #     logger.debug(
+        #         f"summarize_conversation return: summary: {response.content} messages: {delete_messages}"
+        #     )
+        #     return {"summary": response.content, "messages": delete_messages}
 
-            delete_messages = [RemoveMessage(id=n.id) for n in state["messages"][:-2]]  # type: ignore
-            logger.debug(
-                f"summarize_conversation return: summary: {response.content} messages: {delete_messages}"
-            )
-            return {"summary": response.content, "messages": delete_messages}
+        # def should_continue(state: State):
+        #     """Condition to continue or generate a summary, by default it generates a summary after 6 exchanges
 
-        def should_continue(state: State):
-            """Condition to continue or generate a summary, by default it generates a summary after 6 exchanges
+        #     Args:
+        #         state (State): state
+        #     """
 
-            Args:
-                state (State): state
-            """
-
-            messages = state["messages"]
-            if len(messages) > 12:
-                return "summarize"
-            return END
+        #     messages = state["messages"]
+        #     if len(messages) > 12:
+        #         return "summarize"
+        #     return END
 
         def router(state: State):
             """Node to stop once recursion limit is approximating to the stopping point so the agent doesn't die due to recursion limit error.

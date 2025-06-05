@@ -12,7 +12,7 @@ from CUA.util.path import project_root_path
 
 
 class ContinuousRecorder:
-    def __init__(self,Whisper:WhisperASR):
+    def __init__(self,Whisper:WhisperASR = WhisperASR()):
         self.CHUNK = 441
         self.RATE = 4410
         self.RECORD_SECONDS = 1

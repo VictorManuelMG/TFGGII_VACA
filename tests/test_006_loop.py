@@ -94,7 +94,7 @@ def test_run():
     """    
     loop = Loop( whisper_mock, browser_mock,)
     loop.select_agent_model(2)
-    response = loop.run("this is a test input.", False)
+    response = loop.run("this is a test input.")
     assert isinstance(response["messages"][-1].content, str)
 
 

@@ -14,7 +14,7 @@ def test_initialization_loop():
     """Tests the initialization of loop object
     """    
     loop = Loop(whisper_mock, browser_mock)
-    assert loop.config == {"configurable": {"thread_id": "1"}, "recursion_limit": 120}
+    assert loop.config == {"configurable": {"thread_id": "1"}, "recursion_limit": 150}
     assert loop.stoppable is False
     assert loop.Whisper == whisper_mock
     assert loop.Browser == browser_mock
@@ -41,6 +41,10 @@ def test_load_tools():
         "keyboard_input",
         "keyboard_hotkey",
         "delete_text",
+        "keyboard_combo",
+        "paste_full_code",
+        "keyboard_keypress",
+        "sumas",
     ]
 
     for tool in loop.tools:

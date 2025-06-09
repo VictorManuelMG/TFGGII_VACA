@@ -1,16 +1,20 @@
-#Ignore files with the following extensions:
+# Ignore files with the following extensions:
 *.jpeg
 .env
 .venv/
 *.wav
 *.png
 
-#Ignore crops temporal folder
+# Ignore crops temporal folder
 /CUA/tools/tempcrops
 /logs
-#Ignore .py file
+
+# Ignore specific Python files
 mouse_move.py
 pruebas.py
 
-#Ignore py cache
-__pycache__
+# Ignore pycache
+__pycache__/
+
+# Ignore Florence2 model file
+CUA/tools/Florence2/model.safetensors

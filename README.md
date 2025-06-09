@@ -18,14 +18,13 @@ Permitir la interacción con interfaces gráficas mediante lenguaje natural, uti
 
 Este proyecto forma parte del Trabajo de Fin de Grado (TFG) en Ingeniería Informática por la Universidad de Burgos, desarrollado por:
 
-- **[Tu Nombre]**  
-  Departamento de Ingeniería Informática, Universidad de Burgos  
-  - Contacto: correo@ubu.es
+- **[Víctor Manuel Martínez Garcia]**   
+  - Contacto: vmg1004@ubu.es
 
 Tutor académico:
 
-- **[Nombre del tutor]**  
-  - Contacto: tutor@ubu.es
+- **[Pedro Luis Sanchez ortega]**  
+  - Contacto: psanchez@ubu.es
 
 Centro colaborador:
 

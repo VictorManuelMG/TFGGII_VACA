@@ -1,0 +1,23 @@
+services:
+  yoloandflorence:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # container_name: florence
+    ports:
+      - "8000:8000"           
+    volumes:
+    - ./yolo_florence:/app/yolo_florence
+    - ./main.py:/app/main.py
+    - ./pyproject.toml:/app/pyproject.toml
+    - ./poetry.lock:/app/poetry.lock              
+
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # runtime: nvidia
+    # restart: unless-stopped

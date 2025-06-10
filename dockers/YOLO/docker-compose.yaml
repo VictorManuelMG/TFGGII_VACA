@@ -1,0 +1,30 @@
+services:
+  yolo:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # container_name: yolo
+    ports:
+      - "8000:8000"           
+    volumes:
+    - ./yolo:/app/yolo
+    - ./main.py:/app/main.py
+    - ./pyproject.toml:/app/pyproject.toml
+    - ./poetry.lock:/app/poetry.lock              
+    networks:
+      - nw_interna
+
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # runtime: nvidia
+    # restart: unless-stopped
+
+networks:
+  nw_interna:
+    external: true
+    name: nw_interna

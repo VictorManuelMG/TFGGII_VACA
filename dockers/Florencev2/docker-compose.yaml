@@ -1,0 +1,31 @@
+services:
+  florence:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # container_name: florence
+    ports:
+      - "8001:8001"           
+    volumes:
+    - ./florencev2:/app/florencev2
+    - ./main.py:/app/main.py
+    - ./pyproject.toml:/app/pyproject.toml
+    - ./poetry.lock:/app/poetry.lock              
+    networks:
+      - nw_interna
+
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # runtime: nvidia
+    # restart: unless-stopped
+
+
+networks:
+  nw_interna:
+    external: true
+    name: nw_interna

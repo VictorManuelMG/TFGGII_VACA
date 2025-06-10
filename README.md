@@ -6,10 +6,29 @@
 
 Permitir la interacción con interfaces gráficas mediante lenguaje natural, utilizando inteligencia artificial para:
 
-- Detectar y describir elementos en pantalla.
-- Interpretar comandos de voz.
-- Tomar decisiones contextuales.
-- Simular acciones de usuario como clics o escritura.
+- Desarrollar un agente capaz de controlar un sistema operativo mediante comandos de voz.
+- Facilitar la accesibilidad informática a personas con movilidad reducida o dificultades técnicas.
+- Integrar modelos de lenguaje, visión artificial y síntesis de voz en una única solución.
+- Reducir la brecha digital promoviendo tecnologías inclusivas y reutilizables.
+
+
+---
+
+## 🎓 Información Académica
+
+Este proyecto forma parte del Trabajo de Fin de Grado (TFG) en Ingeniería Informática por la Universidad de Burgos, desarrollado por:
+
+- **[Víctor Manuel Martínez Garcia]**   
+  - Contacto: vmg1004@ubu.es
+
+Tutor académico:
+
+- **[Pedro Luis Sanchez ortega]**  
+  - Contacto: psanchez@ubu.es
+
+Centro colaborador:
+
+- **ITCL – Instituto Tecnológico de Castilla y León**
 
 ---
 
@@ -53,6 +72,49 @@ El agente VACA se apoya en diversos modelos de inteligencia artificial, cada uno
 ![Diagrama CUA](assets/CUA%20FLOW.png)
 
 ---
+
+
+## ⚙️ Instalación y Configuración
+
+### Clonar el repositorio
+
+```bash
+git clone https://github.com/VictorManuelMG/TFGGII_VACA.git
+cd TFGGII_VACA
+```
+
+### Requisitos
+
+- Python 3.12
+- Poetry
+- Docker (para modelos visuales)
+- GPU con soporte CUDA (opcional)
+- Acceso a servidores ITCL (si aplica)
+
+### Instalación con Poetry
+
+```bash
+poetry install
+```
+
+### Activar entorno virtual
+
+```bash
+poetry shell
+```
+
+### Variables de entorno
+
+Modificar archivo `.env.example` de la raiz con sus claves
+
+## 🚀 Ejecución del sistema
+
+```bash
+poetry run python gui.py
+```
+
+El sistema lanzará una interfaz gráfica desarrollada con CTkinter. La interacción es principalmente por voz, pero también admite entrada escrita.
+
 
 # Ejemplo de captación del interfaz :
 

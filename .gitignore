@@ -1,0 +1,16 @@
+#Ignore files with the following extensions:
+*.jpeg
+.env
+.venv/
+*.wav
+*.png
+
+#Ignore crops temporal folder
+/CUA/tools/tempcrops
+/logs
+#Ignore .py file
+mouse_move.py
+pruebas.py
+
+#Ignore py cache
+__pycache__CUA/tools/Florence2/model.safetensors

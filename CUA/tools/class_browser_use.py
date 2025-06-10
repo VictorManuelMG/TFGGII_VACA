@@ -9,14 +9,15 @@ from CUA.util.logger import logger
 load_dotenv()
 
 
-class browser:
+class BrowserUse:
     def __init__(
         self,
         anthropic_model: str = "claude-3-7-sonnet-latest",
         temperature: float = 0.0,
-        timeout: int = 30,
+        timeout: int = 75,
         chrome_instance_path: str = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         max_steps: int = 75,
+        thinking_callback = None
     ):
         """Initialization of browser_use agent.
 
@@ -52,6 +53,26 @@ class browser:
         )
 
         self.context = None
+        self.thinking_callback = thinking_callback
+
+    def set_callback(self,callback):
+        """sets browser callback
+
+        Args:
+            callback (function): Function to callback to.
+        """        
+        self.thinking_callback = callback
+
+
+    def _send_thought(self,thought:str):
+        """sends thought to callback.
+
+        Args:
+            thought (str): String to send to callback.
+        """        
+        if self.thinking_callback:
+            formatted_thought = f"🌐 [Navegador]: {thought.strip()}"
+            self.thinking_callback(formatted_thought)
 
     async def _init_context(self):
         """Initialization of context and browser, if it already exists it's deleted and reinizialitated again to keep the agent over the same browser."""
@@ -101,7 +122,7 @@ class browser:
             await agent.step()
 
             #Wait time for history state to update
-            for loop in range(10):
+            for loop in range(5):
                 await asyncio.sleep(0.1)
                 if len(agent.state.history.history) > prev_len:
                     break
@@ -110,6 +131,12 @@ class browser:
                 break
 
             last = agent.state.history.history[-1]
+
+
+            self._send_thought(last.model_output.current_state.memory) #type: ignore
+
+            logger.debug(f"Browser_executable result: {last.model_output.current_state.memory}") #type: ignore
+
             logger.info(f"brower_executable state previous goal info: {last.model_output.current_state.evaluation_previous_goal}") #type: ignore
 
             if "Failed:" in last.model_output.current_state.evaluation_previous_goal:  # type: ignore

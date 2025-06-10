@@ -10,7 +10,7 @@ from CUA.util.logger import logger
 load_dotenv()
 
 
-class whisper_asr:
+class WhisperASR:
     def __init__(
         self,
         CHUNK=1024,
@@ -66,6 +66,7 @@ class whisper_asr:
             response = requests.post(url, files=files, data=data, headers=headers)
 
             if response.status_code == 200:
+                logger.debug(f"Result from whisper asr inference: {response.json().get("text", "")}")
                 return response.json().get("text", "")
             else:
                 logger.error(
@@ -112,7 +113,7 @@ class whisper_asr:
             wf.setframerate(self.RATE)
             wf.writeframes(data=b"".join(frames))
 
-    def whisper_SST(self):
+    def whisper_STT(self):
         """Calls whisper to make a transcription of a user voice prompt
 
         Returns:

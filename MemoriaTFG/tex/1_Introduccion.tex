@@ -1,0 +1,55 @@
+\capitulo{1}{Introducción}
+
+En la actualidad, la tecnología forma una parte esencial para la vida cotidiana, el acceso equitativo a sistemas informáticos sigue siendo un desafío para personas con movilidad reducida. El proyecto \textbf{Voice-Assisted Computer Accessibility (VACA)} busca desarrollar un software que facilite el uso del ordenador a individuos con movilidad reducida mediante la combinación de \textbf{computer use agents (CUA)} e integración de tecnologías \textbf{speech-to-text (SST)} y \textbf{text-to-speech (TTS)}.
+
+Actualmente, los \textbf{usuarios con movilidad reducida} solo pueden acceder a sistemas operativos mediante el uso de \textbf{hardware específico}, los cuales pueden tener un \textbf{costo significativo}, generando así una \textbf{barrera tanto práctica como económica} para los usuarios.\cite{Gips1996EyeControl,Gabriel2012Brain-ComputerInterface,Krishnamurthy2006TongueDrive,Taheri2021Hands-FreeController}
+
+Y otras soluciones actuales plantean el \textbf{conocimiento de 'comandos'} para la gestión de sistemas operativos específicos y los paquetes integrados del mismo como podría llegar a ser \textbf{Microsoft}\cite{microsoftWindowsSpeech}, generando una \textbf{barrera técnica} para usuarios de edades más avanzadas, quienes a menudo no cuentan con el conocimiento necesario para interactuar con dichos comandos.
+
+Además, \textbf{Windows Speech Recognition} presenta una limitación importante al estar diseñado principalmente para interactuar solo con aplicaciones del ecosistema de \textbf{Microsoft}, lo que restringe su funcionalidad.
+
+A mayores, la creciente digitalización de los servicios, el \textbf{teletrabajo}, la \textbf{administración electrónica} y el \textbf{comercio online} ha generado nuevas oportunidades, pero también ha ampliado significativamente las \textbf{brechas digitales}. Este fenómeno no solo afecta a personas con movilidad reducida, sino también a otros colectivos que enfrentan dificultades en el acceso y uso de la tecnología.
+
+En el caso de las personas con discapacidad motriz, estas barreras suelen manifestarse de manera doble: por un lado, la \textbf{falta de dispositivos asequibles} adaptados a sus necesidades; por otro, la \textbf{complejidad de los sistemas actuales}, que requieren \textbf{conocimientos técnicos específicos} para su manejo. De igual forma, muchos \textbf{usuarios de edad avanzada} también se ven afectados, al no contar con la formación tecnológica necesaria para desenvolverse en un entorno digital que evoluciona rápidamente.
+
+Por todo ello, resulta \textbf{imprescindible} el desarrollo de \textbf{soluciones tecnológicas accesibles, intuitivas, abiertas y económicas} que promuevan una \textbf{verdadera inclusión digital}. La \textbf{accesibilidad informática} no debe entenderse como un añadido opcional, sino como una \textbf{garantía básica de participación} \textbf{social, laboral y educativa} en la sociedad actual.
+
+
+Es esta base la motivación de la creación del proyecto \textbf{VACA} en conjunto con \textbf{ITCL} \textit{(Instituto Tecnológico de Castilla y León)}, centro tecnológico el cual ha mostrado un gran compromiso con el \textbf{desarrollo de tecnologías orientadas a mejorar la calidad de vida y la salud} \textbf{en personas} con proyectos como:
+
+\begin{itemize}
+\item \textit{\textbf{HostSmartAI}} \cite{itclHosmartAISoluciones}
+\item \textit{\textbf{Iberus}} \cite{itclIBERUSIngeniera,itclIBERUS+WELLSA}
+\item \textit{\textbf{Wellsa}}\cite{itclWELLSA,itclIBERUS+WELLSA}
+\item \textit{\textbf{Rererevi}}\cite{itclREREREVI}
+\end{itemize}
+
+La propuesta de \textbf{VACA} incide en mejorar el \textbf{estado del arte} de las tecnologías de accesibilidad actuales, promoviendo un programa plug-and-play diseñado específicamente para integrarse en un \textbf{sistema Windows} con el uso de \textbf{tecnologías avanzadas} actuales como \textbf{modelos de lenguaje (LLM)} capaces de interpretar instrucciones complejas y contextuales mediante voz, integradas con sistemas \textbf{Speech To Text} y \textbf{Text To Speech} y tecnologías de interacción gráfica como \textbf{Omniparser} o \textbf{Browser-Use}. Siendo las únicas herramientas para el uso de esta tecnología, un micrófono y unos auriculares de uso cotidiano.
+
+Estas herramientas proporcionarán al usuario la \textbf{capacidad de realizar acciones cotidianas} como la gestión de un correo electrónico, realización de compras en línea, tramitación de documentos, etc... Sin la necesidad de conocimiento previo, dado que los \textbf{modelos de lenguaje serán el cerebro} de las operaciones que el usuario quiera realizar.
+
+El objetivo final de este proyecto será conseguir la implementación de un sistema que no solo contribuya a la \textbf{autonomía digital} de las personas con movilidad reducida, sino también \textbf{impulsar la inclusión laboral}, permitiendo a los usuarios desempeñar actividades profesionales que requieren principalmente del uso de un ordenador.
+
+Además de lo anteriormente mencionado, el proyecto \textbf{generará conocimiento técnico de vanguardia} que podrá transferirse a los \textbf{ámbitos del sector salud}, fortaleciendo la capacidad tecnológica de \textbf{ITCL} en futuras iniciativas.
+
+A futuro, dado que el proyecto requerirá de recursos computacionales significativos, el \textbf{ITCL} evaluará diferentes opciones técnicas para el soporte del mismo, desde el uso de servicios externos mediante \textbf{API (OpenAI - Anthropic)} hasta la implementación de servidores propios con GPUs capaces de ejecutar \textbf{modelos de lenguaje abiertos} \textbf{(Llama - Deepseek)}.
+
+\newpage
+
+\subsection{Desafíos}
+
+El proyecto podrá enfrentarse a grandes desafíos como la \textbf{precisión de reconocimiento de voz, reconocimiento de objetos en la interfaz gráfica, realización adecuada de los prompts del usuario}. Para superar las dificultades se procederá a usar \textbf{bibliotecas de IA preentrenadas de VLM (Anthropic-Claude)} y otras tecnologías que se puedan incorporar para el objetivo final como \textbf{HuggingFace-Coqui}\cite{coquiXTTSv2} o \textbf{OpenAI-Whisper}\cite{openaiWhisperV3}.
+
+\subsection{Metodología y fases}
+
+El proyecto usa una metodología ágil para el seguimiento del mismo y los indicadores de éxitos finales incluirán la precisión en el reconocimiento de prompts de voz, la realización correcta de dichos prompts y la satisfacción del usuario final.
+
+El proyecto será realizado desde \textbf{febrero hasta junio}, dividiéndose en las siguientes etapas/fases, las cuales estarán por dentro divididas en sprints:
+
+\begin{itemize}
+    \item Investigación
+    \item Desarrollo del software \textbf{back-end}
+    \item Desarrollo del software \textbf{front-end}
+    \item Pruebas del software
+    \item Despliegue
+\end{itemize}

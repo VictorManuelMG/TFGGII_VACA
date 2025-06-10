@@ -1,0 +1,193 @@
+\capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
+
+En este capítulo se detallan los aspectos más significativos durante el desarrollo del proyecto, desde las decisiones técnicas adoptadas, los obstáculos encontrados, hasta las soluciones implementadas. Se busca reflejar la evolución progresiva del sistema, la adquisición de competencias técnicas y la justificación de elecciones a la hora de dar forma al proyecto.
+
+\section{Inicio del Proyecto}
+
+La idea del proyecto surge como consecuencia del interés por una nueva línea de investigación en el ámbito de la inteligencia artificial: los \textbf{Computer-Use-Agents (CUAs)} \cite{OmniParser,Anthropic_CUA}, una tecnología emergente destinada a automatizar la interacción con sistemas operativos mediante agentes inteligentes.
+
+A partir de dicha investigación, se plantea el diseño y desarrollo de un agente asistencial que facilite el uso del ordenador a personas con movilidad reducida, combinando tecnologías como visión artificial, agentes con ASR.
+
+\newpage
+
+\section{Proceso de Adquisición de Conocimientos Técnicos}
+
+El desarrollo del proyecto requirió una fase intensiva de autoformación para adquirir los conocimientos técnicos necesarios. Se utilizaron plataformas formativas como DeepLearning.ai\cite{deeplearning} y la documentación oficial de los modelos utilizados.
+
+\subsection{Aprendizaje sobre LLMs}
+Se profundizó en el funcionamiento y aplicación de los \textbf{Large Language Models (LLMs)}, abordando los siguientes conceptos:
+
+\begin{itemize}
+    \item Procesamiento de texto y \textit{text overflow}
+    \item Recuperación aumentada con generación (RAG)
+    \item Diseño de agentes
+    \item Seguridad y mitigación de alucinaciones
+\end{itemize}
+
+\subsection{Estudio de Computer-Use Agents}
+
+\begin{itemize}
+    \item Análisis técnico del CUA de Anthropic.
+    \item Investigación del modelo \textbf{OmniParser} de Microsoft.
+    \item Comparativa entre agentes existentes.
+\end{itemize}
+
+\subsection{Tecnologías de Visión Artificial}
+
+\begin{itemize}
+    \item Implementación de detección de objetos con \textbf{YOLOv8} \cite{ultralytics}.
+    \item Uso del modelo \textbf{FlorenceV2} de Microsoft para tareas de captioning visual \cite{microsoftFlorence2}.
+    \item Integración con OpenCV para procesamiento intermedio de imágenes.
+\end{itemize}
+
+\section{Implementación Inicial}
+
+Durante las primeras etapas, se realizaron pruebas con el modelo de Anthropic, encontrando diversas limitaciones:
+
+\begin{itemize}
+    \item Alto consumo de memoria RAM en entornos Docker.
+    \item Inestabilidad del WebSocket de comunicación.
+    \item Escasa comprensión del entorno gráfico por parte del agente.
+\end{itemize}
+
+Posteriormente se experimentó con \textbf{OmniParser}, un modelo más avanzado pero con limitaciones clave:
+\begin{itemize}
+    \item Requiere entorno Docker exclusivo.
+    \item Falta de soporte para STT (Speech-to-Text) y TTS (Text-to-Speech).
+    \item Proceso de instalación complejo y poco robusto.
+\end{itemize}
+
+\section{Análisis de Herramientas Comunes en CUAs}
+
+Del estudio de los modelos existentes se extrajo una arquitectura común compuesta por tres pilares imprescindibles:
+
+\begin{enumerate}
+    \item Un \textbf{modelo de visión} capaz de detectar y clasificar iconos o elementos visuales.
+    \item Un \textbf{modelo multimodal} que entienda imágenes y razone sobre ellas.
+    \item Un \textbf{sistema de simulación de entradas} (mouse, teclado) para ejecutar acciones.
+\end{enumerate}
+
+Para dar soporte a este esquema, se integraron los siguientes elementos:
+\begin{itemize}
+    \item YOLOv8 para bounding boxes (ajustando parámetros para reducir falsos positivos).
+    \item FlorenceV2 como modelo de captioning descriptivo.
+    \item OpenCV como middleware de visualización y conexión.
+\end{itemize}
+
+\section{Frameworks de Desarrollo}
+
+El agente fue diseñado como un sistema modular utilizando los frameworks \textbf{LangChain} y \textbf{LangGraph}, adaptando sus herramientas para admitir llamadas a modelos como OpenAI y Anthropic.
+
+Se identificó un problema en el uso intensivo de tokens en el análisis de imágenes por parte de LangChain (hasta 100,000 tokens), en contraste con implementaciones dadas por las librerias de los propios modelos. (10,000 tokens con Anthropic).
+
+\section{Librerías y Herramientas Destacadas}
+
+Para el desarrollo del sistema y la interacción con el entorno operativo se utilizaron librerías clave:
+
+\begin{itemize}
+    \item \textbf{Tkinter}: interfaz gráfica de usuario.
+    \item \textbf{PyAutoGUI}: simulación de eventos de teclado y ratón.
+    \item \textbf{OpenCV}: procesamiento de imagen.
+\end{itemize}
+
+\section{Modelos de Reconocimiento de Voz (ASR)}
+
+Para la transcripción y síntesis de voz se emplearon los siguientes modelos los cuales se encontraban alojados en los servidores del ITCL:
+
+\begin{itemize}
+    \item \textbf{Whisper (OpenAI)}: transcripción STT.
+    \item \textbf{CUQUI-TTS}: síntesis TTS.
+\end{itemize}
+
+Las llamadas a estos servicios se integraron mediante endpoints personalizados del ITCL, produciendo archivos \texttt{.wav} y texto interpretado para acciones.
+
+\section{Limitaciones del Hardware y Solución}
+
+El entorno de desarrollo ofrecido por ITCL disponía de hardware limitado, afectando directamente al rendimiento de los modelos más pesados como Florence.
+
+Como solución, se desplegó un entorno Docker para Florence y YOLO en servidores ITCL, permitiendo:
+
+\begin{itemize}
+    \item Aceleración por GPU del servidor.
+    \item Disponibilidad de los modelos para otros proyectos.
+    \item Reducción de los tiempos de inferencia en un \textbf{79\%}.
+\end{itemize}
+
+Se crearon dos variantes:
+\begin{itemize}
+    \item Contenedor único con ambos modelos integrados.
+    \item Dos contenedores independientes comunicados por red.
+\end{itemize}
+
+
+\section{Conclusión del proceso}
+
+El desarrollo de este proyecto representó un desafío considerable, especialmente debido al desconocimiento inicial sobre muchas de las tecnologías involucradas. Ámbitos como la visión artificial, el procesamiento del lenguaje natural y la automatización de entradas, etc...
+
+\subsection{Errores y resolución de problemas}
+
+Durante el desarrollo, se presentaron numerosos errores y dificultades técnicas que fueron resueltos de forma iterativa. A continuación, se enumeran los principales problemas detectados y las soluciones implementadas:
+
+\begin{itemize}
+    \item \textbf{Compatibilidad entre librerías} 
+    
+    Se detectaron conflictos entre la versión de Python y diversas dependencias, especialmente con LangChain. Estos problemas se solventaron utilizando entornos virtuales aislados y controlando manualmente las versiones instaladas mediante archivos \texttt{PyProject.toml}.
+
+    \item \textbf{Problemas de rendimiento con modelos pesados}
+    
+    El equipo de desarrollo contaba con una GPU no compatible con CUDA, lo que afectó al rendimiento de modelos como Florence. Como solución, se dockerizaron tanto YOLOv8 como Florence y se desplegaron en los servidores del ITCL, aprovechando así recursos de cómputo con aceleración por GPU.
+
+    \item \textbf{Evaluación de Streamlit} 
+    
+    Se valoró inicialmente utilizar Streamlit como interfaz, pero tras discusión con el tutor del ITCL, se optó por desarrollar una aplicación autónoma con su propia interfaz gráfica. Esta decisión permite una mayor escalabilidad y posibilidad de integración con procesos del sistema operativo, como la ejecución al inicio del sistema.
+
+    \item \textbf{Falsos positivos en YOLOv8} 
+    
+    El modelo de visión YOLOv8 presentaba falsos positivos en la detección de elementos gráficos. Se mitigaron ajustando los umbrales de confianza y refinando las etiquetas asociadas a los objetos.
+
+    \item \textbf{Uso elevado de tokens en LangChain} 
+    
+    LangChain llegaba a consumir hasta 100.000 tokens al procesar imágenes. Esto fue optimizado utilizando directamente las llamadas de los modelos sin pasar por la interfaz de LangChain, reduciendo el uso de tokens a aproximadamente 10.000.
+
+    \item \textbf{Gestión de memoria en ejecución} 
+    
+    El sistema de memoria no cuenta actualmente con una ventana de contexto adaptable, lo que provoca un crecimiento continuo de la misma. Se identificó un problema al intentar resumir mensajes usando herramientas de LangChain, ya que las respuestas esperaban una estructura distinta. Se propone como solución futura separar mensajes de usuario/LLM de las herramientas, resumir solo los primeros y reenviarlos procesados.
+
+    \item \textbf{Problemas con PyAutoGUI} 
+    
+    Esta librería no gestionaba correctamente caracteres UTF-8 como tildes o la letra “ñ”. Se resolvió sustituyendo esta funcionalidad por la librería \texttt{keyboard}, que ofrecía una mayor compatibilidad.
+
+    \item \textbf{Errores al escribir código} 
+    
+    El agente generaba código con errores de indentación. Se solucionó utilizando la librería \texttt{pyperclip}, que permite copiar el texto generado y pegarlo con la indentación original preservada.
+
+    \item \textbf{Limitaciones con VPN y servidores remotos} 
+    
+    Al utilizar los workers del ITCL desde entornos externos, se detectaron problemas relacionados con la conexión VPN. Esta cuestión depende directamente de la administración del centro y escapa a mi control.
+
+    \item \textbf{Resolución de imágenes para Florence} 
+    
+    Las descripciones generadas por Florence fallaban si la imagen recortada era demasiado pequeña. Se resolvió escalando las imágenes a una resolución mínima de 64x64 píxeles. Aunque sería posible implementar un escalado proporcional dinámico, se decidió mantener esta solución por simplicidad y eficiencia.
+
+    \item \textbf{Prompts inconsistentes con Claude} 
+    
+    Claude, en ocasiones, ignoraba las instrucciones relacionadas con el uso del diccionario de coordenadas, inventando valores. Este comportamiento se corrigió parcialmente mediante prompts más restrictivos. No obstante, persisten ocasionales alucinaciones. Una solución definitiva podría pasar por un fine-tuning de un modelo opensource o implementar validación externa sobre las coordenadas generadas.
+
+    \item \textbf{Fallos con modelos multimodales opensource} 
+    
+    Se intentó utilizar modelos alojados en los servidores del ITCL con capacidades multimodales, así como integrarlos con \texttt{browser\_use}. Sin embargo, fallaron al interpretar correctamente imágenes o establecer conexiones con el navegador. Dado que otros usuarios también reportaron errores similares con modelos como DeepSeek u Ollama, se decidió posponer la integración de modelos opensource y continuar con APIs comerciales como Claude y GPT.
+    
+\end{itemize}
+
+Estas situaciones no solo requirieron solución técnica, sino también habilidades de investigación, prueba y documentación, fortaleciendo el aprendizaje obtenido a lo largo del proyecto.
+
+\subsection{Lecciones aprendidas y competencias adquiridas}
+
+A lo largo del proceso, no solo se lograron los objetivos propuestos, sino que también se adquirieron competencias fundamentales como :
+
+\begin{itemize}
+    \item Diseño e implementación de agentes inteligentes capaces de interactuar con entornos visuales complejos.
+    \item Optimización del uso de recursos en entornos de cómputo limitados, tanto a nivel local como distribuido.
+    \item Evaluación crítica de tecnologías emergentes en términos de rendimiento, escalabilidad y aplicabilidad.
+    \item Aplicación de principios de modularidad y escalabilidad en el diseño de sistemas, favoreciendo su mantenimiento y evolución futura.
+\end{itemize}

@@ -1,0 +1,70 @@
+\capitulo{6}{Trabajos relacionados}
+
+Dado que los \textbf{Computer Use Agents (CUA)} son una tecnología emergente, actualmente no existen desarrollos consolidados que funcionen de forma nativa en sistemas operativos como Windows y que estén específicamente dirigidos a personas con movilidad reducida. Sin embargo, sí es posible identificar ciertos proyectos y prototipos relevantes que han explorado esta línea, ya sea desde la perspectiva de agentes inteligentes o desde soluciones de accesibilidad alternativas.
+
+\section{Agentes de uso general basados en LLM}
+
+En el campo de los CUAs genéricos se han desarrollado algunos agentes capaces de interactuar con interfaces gráficas mediante razonamiento sobre el estado del sistema. A continuación, se presentan los más destacados:
+
+\begin{itemize}
+    \item \textbf{OmniParser} \cite{OmniParser}: agente de Microsoft enfocado en la interacción con interfaces de usuario mediante visión artificial, soportando múltiples modelos de lenguaje. Funciona exclusivamente sobre entornos Docker.
+    
+    \item \textbf{Anthropic CUA} \cite{Anthropic_CUA}: primer intento funcional de agente multimodal orientado al control de interfaz gráfica, basado en el modelo Claude. Requiere entorno dockerizado y presenta limitaciones de comprensión visual.
+    
+    \item \textbf{Operator (OpenAI)} \cite{Operator_OPENAI}: demo cerrada y de pago desarrollada por OpenAI, orientada a la interacción autónoma con entornos web mediante el uso exclusivo de sus propios modelos. Sin código abierto ni soporte extensible.
+\end{itemize}
+
+\section{Sistemas alternativos de asistencia para personas con movilidad reducida}
+
+Aunque los CUAs específicos para accesibilidad aún están en fase exploratoria, existen múltiples investigaciones y sistemas orientados a mejorar la interacción de personas con movilidad reducida con los sistemas informáticos anteriores a estes agentes, entre ellos,los que destacan son:
+
+\begin{itemize}
+    \item \textbf{Eye Control} \cite{Gips1996EyeControl}: sistemas de seguimiento ocular que permiten controlar el cursor del ratón mediante el movimiento de los ojos.
+    
+    \item \textbf{Hands-Free} \cite{Taheri2021Hands-FreeController}: interfaces basadas en movimientos de cabeza y reconocimiento de gestos para simular entradas de usuario.
+    
+    \item \textbf{Brain-Computer Interface (BCI)} \cite{Gabriel2012Brain-ComputerInterface}: dispositivos que detectan señales eléctricas del cerebro para traducirlas en acciones computacionales, aunque de uso limitado por su complejidad y coste.
+    
+    \item \textbf{Tongue Drive} \cite{Krishnamurthy2006TongueDrive}: tecnología que permite el control de dispositivos mediante movimientos de la lengua, especialmente útil para usuarios con cuadriplejía.
+\end{itemize}
+
+\section{Comparativa funcional}
+
+La siguiente tabla resume una comparativa entre VACA y otros CUAs genéricos disponibles, considerando aspectos clave como integración con voz, ejecución en entorno local, modelos soportados y accesibilidad de uso:
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{5cm} >{\centering\arraybackslash}m{2.5cm} >{\centering\arraybackslash}m{2.5cm} >{\centering\arraybackslash}m{2.5cm} >{\centering\arraybackslash}m{2.5cm}}
+			\toprule  
+			\textbf{Característica} & \textbf{VACA} & \textbf{OmniParser} & \textbf{Operator} & \textbf{Anthropic} \\
+			\midrule
+			STT y TTS integrados & Sí & No & No & No \\
+			Ejecución en local (nativo Windows) & Sí & Solo Docker & Solo Docker & Solo Docker \\
+			Detección de objetos & Sí & Sí & Sí & No \\
+			Integración de voz & Sí & No & No & No \\
+			Modelos multimodales soportados & Cualquiera (configurable) & Qwen, DeepSeek, OpenAI, Claude & Solo OpenAI & Solo Claude \\
+			Código abierto & Sí & Sí & No & Sí \\
+			Interfaz gráfica & GUI nativa & WebUI & WebUI & WebUI \\
+			Requiere pocos recursos & Sí & No especificado & No especificado & No especificado \\
+			Costo de uso & Gratuito & Gratuito & 200€ (demo) & Gratuito \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Comparativa entre VACA y otras herramientas de asistencia basadas en modelos de lenguaje}
+	\label{tab:comparativa_vaca}
+\end{table}
+
+\section{Valor diferencial de VACA}
+
+El sistema VACA se presenta como una alternativa accesible, extensible y de bajo coste, centrada desde su origen en usuarios con movilidad reducida. A diferencia de otras soluciones que actúan como pruebas de concepto o herramientas de desarrollo, VACA ofrece:
+
+\begin{itemize}
+    \item Integración completa de entrada y salida por voz.
+    \item Soporte nativo para Windows sin necesidad de contenedores.
+    \item Modularidad para incorporar diferentes modelos de lenguaje (Aunque no esté implementada actualmente al 100\%).
+    \item Interfaz gráfica simple, funcional y accesible.
+\end{itemize}
+

@@ -1,0 +1,896 @@
+\apendice{Especificación de Requisitos}
+
+\section{Introducción}
+
+En esta sección se presentaran los requisitos de la aplicación \textbf{Voice Assisted Computer Accesibility (VACA)} abordando los objetivos generales como especificos del proyecto.
+
+También se proporcionara una especificación detallada de los requisitos a traves de tablas de casos de uso, complementadas con su respectivos diagramas para mejor comprensión.
+
+\section{Objetivos generales}
+
+El objetivo principal del proyecto \textbf{VACA} es conseguir una mejora en la accesibilidad de usuarios con movilidad reducida a sistemas informáticos.
+
+\begin{itemize}
+    \item \textbf{Crear una herramienta accesible para sistemas informaticos:} Facilitar a usuarios con movilidad reducida el uso de sistemas informáticos. 
+    \item \textbf{Eliminar la interaccion fisica con teclado o raton:} Utilizando un agente que se encargue de estas tareas.
+    \item \textbf{Fomentar la empleabilidad:} Promover y crear puestos de trabajo que requieran el uso de sistemas informaticos para personas con movilidad reducida gracias al uso de \textbf{VACA}
+    \item \textbf{Optimizar costes:} Crear una herramienta de coste reducido comparado a soluciones actuales a este mismo dilema, sin ningún tipo de repercusión fisica.
+    \item \textbf{Promover el uso de herramientas inteligentes:} Mediante los beneficios que puede dar este para las personas como demuestra el proyecto \textbf{VACA}
+\end{itemize}
+
+\section{Catálogo de requisitos}
+
+\subsection{Requisitos Funcionales}
+
+\begin{itemize}
+    \item \textbf{RF-01  El sistema debe interpretar prompts de voz del usuario:} La aplicación ha de ser capaz de detectar y usar el microfono del entorno en el que se encuentra y entender al usuario.
+    
+    \item \textbf{RF-02 Comprensión del entorno:} La aplicación ha de ser consciente de lo que se encuentra en el entorno gráfico.
+
+    \item \textbf{RF-03 Capacidad de realizar acciones:} La aplicación ha de ser capaz de realizar acciones dentro del sistema del usuario para cumplir el prompt dado por el usuario.
+
+    \item \textbf{RF-04 Proporción de respuestas por voz:} La aplicacion ha de ser capaz de poder convertir texto en habla y devolverla al usuario por una salida periferica.
+
+    \item \textbf{RF-05 Interfaz accesible:} Se ha de contar con una interfaz sencilla y facil de entender para el usuario con distintos tipos de outputs.
+
+    \item \textbf{RF-06 Pensamiento:} La aplicación ha de ser capaz de transmitir sus acciones a realizar o realizandose.
+
+    \item \textbf{RF-07 Memoria:} La aplicación ha de ser capaz de tener una memoria cuando se ejecute.
+
+    \item \textbf{RF-08 Abortar/Reiniciar:} La aplicacion ha de ser capaz de poder ser abortada o reiniciada en caso de deteccion de comportamientos anómalos.
+
+    \item \textbf{RF-09 Input adicional:} La aplicación a mayores de recibir prompts mediante voz ha de ser capaz tambien de funcionar con prompts escritas a mano.
+
+    \item \textbf{RF-10 Ejecutable en entornos locales:} La aplicación ha de ser capaz de ejecutarse en cualquier dispositivo con entorno windows 10.
+
+\end{itemize}
+
+\subsection{Requisitos no funcionales}
+
+\begin{itemize}
+    \item \textbf{RNF-01 Rendimiento:} Los tiempos de inferencia de imagenes han de ser bajos para que la aplicación pueda ser mas fluida.
+    \item \textbf{RNF-02 Usabilidad:} La aplicación debe poder funcionar correctamente con sistemas con VRAM de 4GB.
+    \item \textbf{RNF-03 Privacidad:} Los datos personales del usuario no seran guardados en ningun sistema que no sea el local propio del usuario.
+    \item \textbf{RNF-04 Escalabilidad:} La aplicación es capaz de escalar progresivamente hacia arriba segun se desarrollen mas los modelos implementados en el mismo.
+    \item \textbf{RNF-05 Mantenimiento:} La aplicacion es facil de mantener dado que los modelos mas "pesados" se encuentran alojados en los servidores del ITCL, y el proyecto en si se encuentra correctamente estructurado para su mantenimiento.
+    \item \textbf{RNF-06 Disponibilidad:} La aplicacion siempre estara disponible mientras los servidores del ITCL esten disponibles y el contenedor con los modelos pesados funcional.
+\end{itemize}
+
+
+\section{Especificación de requisitos}
+\subsection{Actores}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A01 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{Usuario} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & \autor \\
+		\textbf{Descripción}          & Usuario que utiliza la aplicación \textbf{VACA} para poder hacer que este gestione su sistema.\\
+		\textbf{Tipo}                 & Usuario \\
+		\textbf{Objetivo}             & Poder usar un sistema operativo. \\
+		\textbf{Responsabilidades}    & 
+		\begin{itemize}
+			\tightlist
+			\item Insertar prompts mediante voz o teclado.
+            \item Confirmar o cancelar los prompts recogidos por el asistente.
+            \item Consultar resultado del asistente.
+            \item Consultar pensamientos del asistente.
+            \item Reiniciar o abortar el asistente.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \hyperref[CU-01 Enviar prompt al sistema]{CU-01},\hyperref[CU-01.1 Capturar prompt por voz]{CU-01.1}, \hyperref[CU-01.1.2 Confirmar o cancelar prompt]{CU-01.1.2}, \hyperref[CU-05 Mostrar interfaz accesible]{CU-05}, \hyperref[CU-05.1 Presentar resultado del asistente]{CU-05.1}, \hyperref[CU-05.2 Mostrar pensamientos]{CU-05.2}\\
+		\bottomrule
+	\end{tabularx}
+	\caption{A01 - Usuario}
+	\label{actor:Usuario}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A02 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{ITCL YOLO-Florence} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Víctor Manuel Martínez García \\
+		\textbf{Descripción}          & Contenedor que aloja el modelo de Yolo-Florence\\
+		\textbf{Tipo}                 & Sistema \\
+		\textbf{Objetivo}             & Retornar lo que vea o pida el asistense sobre el entorno gráfico. \\
+		\textbf{Responsabilidades}    & 
+		\begin{itemize}
+			\tightlist
+			\item Obtener una captura de pantalla del sistema.
+            \item Generar una imagen que el LLM pueda entender.
+            \item Retornar un mensaje con el contexto de la interfaz gráfica.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \hyperref[CU-02 Interpretar entorno grafico]{CU-02}, \hyperref[CU-02.3 Obtenener descripcion del entorno visual]{CU-02.3}\\
+		\bottomrule
+	\end{tabularx}
+	\caption{A02 - ITCL Yolo-FLorence}
+	\label{actor:ITCL YOLO-Florence}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A03 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{ITCL Whisper-Coqui} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Víctor Manuel Martínez García \\
+		\textbf{Descripción}          & Contenedor que aloja el modelo de Whisper-Coqui\\
+		\textbf{Tipo}                 & Sistema \\
+		\textbf{Objetivo}             & Retornar audios transcritos a texto o texto transformado en audio. \\
+		\textbf{Responsabilidades}    & \hyperref[CU-01.1 Capturar prompt por voz]{CU-01.1}, \hyperref[CU-03.3 Confirmar ejecucion al usuario]{CU-03.3}\hyperref[CU-04 Responder al usuario por voz]{ CU-04}, \hyperref[CU-04.2 Transformar texto en audio]{CU-04.2}
+		\begin{itemize}
+			\tightlist
+			\item Recibir un audio o texto.
+            \item Devolver audio bytes para la generacion de un \texttt{.wav}.
+            \item Retornar un texto obtenido de la inferencia de un audio.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \\
+		\bottomrule
+	\end{tabularx}
+	\caption{A03 - ITCL Whisper-Coqui}
+	\label{actor:ITCL Whisper-Coqui}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A04 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{Computer Use Agent} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Víctor Manuel Martínez García \\
+		\textbf{Descripción}          & Agente que se encarga de la intercomunicacion de todo el sistema.\\
+		\textbf{Tipo}                 & Sistema \\
+		\textbf{Objetivo}             & Gestionar prompts del usuario llamando a las herramientas necesarias en cada momento. \\
+		\textbf{Responsabilidades}    & \hyperref[CU-01 Enviar prompt al sistema]{CU-01}, \hyperref[CU-02 Interpretar entorno grafico]{CU-02}, \hyperref[CU-02.1 Capturar imagen del sistema]{CU-02.1}, \hyperref[CU-02.2 Enviar Imagen a YOLO-Florence]{ CU-02.2}, \hyperref[CU-02.3 Obtenener descripcion del entorno visual]{CU-02.3}, \hyperref[CU-03 Realizar acciones en el sistema]{CU-03}, \hyperref[CU-03.2 Ejecutar accion solicitada]{CU-03.2}, \hyperref[CU-03.3 Confirmar ejecucion al usuario]{CU-03.3}, \hyperref[CU-04 Responder al usuario por voz]{CU-04}, \hyperref[CU-04.1 Generar respuesta textual]{CU-4.1}, \hyperref[CU-04.3 Reproducir respuesta por altavoz]{CU-04.03}, \hyperref[CU-06.1 Enviar prompt de busqueda a Browser-Use]{CU-06.1}, \hyperref[CU-06.3 Devolver información estructurada al CUA]{CU-06.3}
+		\begin{itemize}
+			\tightlist
+			\item Gestionar los prompts del usuario.
+            \item Comunicacion con las herramientas.
+            \item Retorno de pensamiento y resultados para el usuario.
+            \item Reproducir audio TTS del resultado final.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \\
+		\bottomrule
+	\end{tabularx}
+	\caption{A04 - Computer Use Agent}
+	\label{actor:Computer Use Agent}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A05 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{OpenAI / Anthropic} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Víctor Manuel Martínez García \\
+		\textbf{Descripción}          & LLM proporcionado por OpenAI o Anthropic dependiendo a que API se llame.\\
+		\textbf{Tipo}                 & Sistema \\
+		\textbf{Objetivo}             & Actuara como el cerebro del agente. \\
+		\textbf{Responsabilidades}    & 
+		\begin{itemize}
+			\tightlist
+			\item Recibir prompt del agente o agentes.
+            \item Retornar una respuesta a el prompt del agente.
+            \item Entender imagenes.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \hyperref[CU-03.1 Interpretar intención del usuario]{CU-03.1}\\
+		\bottomrule
+	\end{tabularx}
+	\caption{A05 - OpenAI/Anthropic}
+	\label{actor:OpenAI/Anthropic}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{Actor-ID}    & A06 \\
+		\toprule
+		\textbf{Nombre: } 			  & \textbf{Browser-Use} \\
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Víctor Manuel Martínez García \\
+		\textbf{Descripción}          & Agente que se encargara de realizar busquedas por internet.\\
+		\textbf{Tipo}                 & Sistema \\
+		\textbf{Objetivo}             & Buscar en internet información pedida por el CUA. \\
+		\textbf{Responsabilidades}    & 
+		\begin{itemize}
+			\tightlist
+			\item Recibir prompt de CUA
+            \item Navegar por internet
+            \item Retornar una respuesta a el prompt del CUA.
+		\end{itemize}\\
+		\textbf{Relaciones con casos de uso} & \hyperref[CU-06 Buscar Informacion de internet]{CU-06}, \hyperref[CU-06.2 Realizar navegacion y recuperacion de datos]{CU-06.2}\\
+		\bottomrule
+	\end{tabularx}
+	\caption{A06 - Browser-Use}
+	\label{actor:Browser-Use}
+\end{table}
+
+\subsection{Casos de uso}
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01}    & \textbf{Enviar prompt al sistema}\\
+        \toprule
+        \textbf{Versión}              & 1.0    \\
+        \textbf{Autor}                & Victor Manuel Martinez García \\
+        \textbf{Requisitos asociados} & RF-01, RF-09, RF-06, RF08 \\
+        \textbf{Descripción}          & El usuario emite un prompt que será interpretado y procesado por el sistema.\\
+        \textbf{Precondición}         & El sistema está en funcionamiento y esperando una orden.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-01.1 Capturar prompt por voz.
+          \item CU-01.2 Capturar prompt escrita.
+          \item CU-01.3 Enviar prompt al agente CUA.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El agente recibe y empieza a procesar el prompt.\\
+        \textbf{Excepciones}          & Error en micrófono, texto no válido, orden no comprendida.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01 Enviar prompt al sistema.}
+    \label{CU-01 Enviar prompt al sistema}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01.1}    & \textbf{Capturar prompt por voz}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Victor Manuel Martinez García \\
+        \textbf{Requisitos asociados} & RF-01 \\
+        \textbf{Descripción}          & El sistema activa el micrófono y detecta voz del usuario.\\
+        \textbf{Precondición}         & Micrófono habilitado.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Activar escucha de voz.
+          \item Registrar la entrada en formato de audio \texttt{.wav}.
+          \item CU-01.1.1 Transcribir el audio.
+          \item CU-01.1.2 Confirmar o cancelar prompt
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Audio disponible para transcripción.\\
+        \textbf{Excepciones}          & Micrófono no disponible o sin permisos.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01.1 Capturar prompt por voz.}
+        \label{CU-01.1 Capturar prompt por voz}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01.1.1}    & \textbf{Transcribir audio}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-01 \\
+        \textbf{Descripción}          & Se transforma la entrada de voz en texto utilizando ASR.\\
+        \textbf{Precondición}         & Se ha capturado audio del usuario.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Enviar audio al modelo Whisper.
+          \item Obtener y almacenar texto resultante.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Texto disponible para validación.\\
+        \textbf{Excepciones}          & Ruido, errores de transcripción.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01.1.1 Transcribir audio.}
+    \label{CU-01.1.1 Transcribir audio}
+\end{table}
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01.1.2}    & \textbf{Confirmar o cancelar prompt}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Alumno \\
+        \textbf{Requisitos asociados} & RF-01, RF-05 \\
+        \textbf{Descripción}          & El usuario decide si quiere enviar el prompt transcrito o escrito.\\
+        \textbf{Precondición}         & Prompt ya transcrito o escrito.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Mostrar el prompt al usuario en pantalla.
+          \item Esperar validación o rechazo mediante voz.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Prompt validado o descartado.\\
+        \textbf{Excepciones}          & No hay confirmación.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01.1.2 Confirmar o cancelar prompt.}
+    \label{CU-01.1.2 Confirmar o cancelar prompt}
+\end{table}
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01.2}    & \textbf{Capturar orden escrita}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-05,RF-09 \\
+        \textbf{Descripción}          & El sistema registra un prompt escrito manualmente por el usuario.\\
+        \textbf{Precondición}         & El usuario tiene acceso a un teclado.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Capturar texto introducido.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Prompt textual disponible para procesamiento.\\
+        \textbf{Excepciones}          & Entrada vacía o inválida.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01.2 Capturar orden escrita.}
+    \label{CU-01.2 Capturar prompt escrito}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-01.3}    & \textbf{Enviar prompt al agente CUA}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-06 \\
+        \textbf{Descripción}          & Se comunica el prompt confirmado al Computer Use Agent para su ejecución.\\
+        \textbf{Precondición}         & Prompt validado.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Encapsular prompt.
+          \item Enviar al CUA.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & CUA inicia procesamiento.\\
+        \textbf{Excepciones}          & Falla en envío o tiempo de espera.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-01.3 Enviar prompt al agente CUA.}
+    \label{CU-01.3 Enviar prompt al agente CUA}
+\end{table}
+
+    
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-02}    & \textbf{Interpretar entorno gráfico}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-02 \\
+        \textbf{Descripción}          & El sistema analiza el entorno gráfico para obtener contexto visual.\\
+        \textbf{Precondición}         & Prompt del usuario requiere contexto visual.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-02.1 Capturar imagen del sistema.
+          \item CU-02.2 Enviar imagen a YOLO-Florence.
+          \item CU-02.3 Obtener descripción del entorno visual.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Contexto visual entregado al agente para razonar.\\
+        \textbf{Excepciones}          & Captura fallida, error en el contenedor de visión.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-02 Interpretar entorno gráfico.}
+    \label{CU-02 Interpretar entorno grafico}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-02.1}    & \textbf{Capturar imagen del sistema}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-02 \\
+        \textbf{Descripción}          & Se realiza una captura de pantalla del entorno gráfico.\\
+        \textbf{Precondición}         & CUA requiere información visual.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Ejecutar captura automática.
+          \item Guardar imagen en memoria temporal.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Imagen lista para ser analizada.\\
+        \textbf{Excepciones}          & Fallo en permisos o captura nula.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-02.1 Capturar imagen del sistema.}
+    \label{CU-02.1 Capturar imagen del sistema}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-02.2}    & \textbf{Enviar imagen a YOLO-Florence}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-02 \\
+        \textbf{Descripción}          & Se envía la imagen capturada al contenedor YOLO-Florence.\\
+        \textbf{Precondición}         & Imagen capturada correctamente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Formatear imagen a base64.
+          \item Enviar petición POST al contenedor.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Imagen en procesamiento.\\
+        \textbf{Excepciones}          & Error HTTP, contenedor inactivo.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+        \end{tabularx}
+    \caption{CU-02.2 Enviar imagen a YOLO-Florence.}
+    \label{CU-02.2 Enviar Imagen a YOLO-Florence}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-02.3}    & \textbf{Obtener descripción del entorno visual}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Alumno \\
+        \textbf{Requisitos asociados} & RF-02, RF-07 \\
+        \textbf{Descripción}          & Recibe el análisis semántico del entorno gráfico y lo pasa al LLM.\\
+        \textbf{Precondición}         & YOLO-Florence ha respondido con éxito.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Interpretar respuesta.
+          \item Añadir información al contexto del agente.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Entorno visual contextualizado.\\
+        \textbf{Excepciones}          & Respuesta nula o sin comunicación al servidor.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-02.3 Obtener descripción del entorno visual.}
+    \label{CU-02.3 Obtenener descripcion del entorno visual}
+\end{table}
+
+
+
+
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+    \toprule
+    \textbf{CU-03}    & \textbf{Realizar acciones en el sistema}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-01,RF-03 \\
+        \textbf{Descripción}          & El sistema lleva a cabo las acciones requeridas por el usuario en el sistema operativo.\\
+        \textbf{Precondición}         & Prompt ya ha sido interpretado y validado.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-03.1 Interpretar intención del usuario.
+          \item CU-03.2 Ejecutar acción solicitada.
+          \item CU-03.3 Confirmar ejecución al usuario.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Acción realizada y notificada.\\
+        \textbf{Excepciones}          & Error al ejecutar comandos, permisos insuficientes.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-03 Realizar acciones en el sistema.}
+    \label{CU-03 Realizar acciones en el sistema}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-03.1}    & \textbf{Interpretar intención del usuario}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-03 \\
+        \textbf{Descripción}          & El sistema analiza el contenido del prompt para identificar la acción a ejecutar.\\
+        \textbf{Precondición}         & Prompt recibido por el CUA.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Enviar prompt al LLM.
+          \item Recibir razonamiento e instrucción.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Acción identificada.\\
+        \textbf{Excepciones}          & Prompt ambiguo o no comprendido.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-03.1 Interpretar intención del usuario.}
+    \label{CU-03.1 Interpretar intención del usuario}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-03.2}    & \textbf{Ejecutar acción solicitada}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-03 \\
+        \textbf{Descripción}          & Se lleva a cabo la acción dentro del sistema operativo.\\
+        \textbf{Precondición}         & Instrucción de acción clara y válida.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Invocar herramienta correspondiente (abrir app, escribir, mover cursor, etc.).
+          \item Ejecutar la orden recibida.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Acción completada o fallida.\\
+        \textbf{Excepciones}          & Error del sistema, permisos, acción no implementada.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-03.2 Ejecutar acción solicitada.}
+    \label{CU-03.2 Ejecutar accion solicitada}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-03.3}    & \textbf{Confirmar ejecución al usuario}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Alumno \\
+        \textbf{Requisitos asociados} & RF-06 \\
+        \textbf{Descripción}          & El sistema notifica al usuario si la acción se realizó correctamente.\\
+        \textbf{Precondición}         & Acción finalizada.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Generar mensaje con el resultado.
+          \item Mostrar y/o vocalizar el mensaje al usuario.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Usuario informado.\\
+        \textbf{Excepciones}          & Error en la interfaz o en el TTS.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-03.3 Confirmar ejecución al usuario.}
+    \label{CU-03.3 Confirmar ejecucion al usuario}
+\end{table}
+
+
+
+
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-04}    & \textbf{Responder al usuario por voz}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-04, RF-06 \\
+        \textbf{Descripción}          & El sistema convierte la respuesta en texto del asistente a formato de voz y la reproduce para el usuario.\\
+        \textbf{Precondición}         & El asistente ha generado una respuesta final para el usuario.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-04.1 Generar respuesta textual.
+          \item CU-04.2 Transformar texto en audio.
+          \item CU-04.3 Reproducir respuesta por altavoz.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El usuario recibe una respuesta verbal clara.\\
+        \textbf{Excepciones}          & Fallo en la síntesis o reproducción de audio.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-04 Responder al usuario por voz.}
+    \label{CU-04 Responder al usuario por voz}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-04.1}    & \textbf{Generar respuesta textual}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-06 \\
+        \textbf{Descripción}          & El asistente crea una respuesta en texto a partir del análisis del prompt.\\
+        \textbf{Precondición}         & Prompt interpretado correctamente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Elaborar texto de respuesta.
+          \item Validar el contenido semántico.
+          \item Guardar en memoria la respuesta.
+          \item CU-5.1 Mostrar texto en GUI
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Texto listo para ser vocalizado.\\
+        \textbf{Excepciones}          & Fallo en la generación por parte del LLM.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-04.1 Generar respuesta textual.}
+    \label{CU-04.1 Generar respuesta textual}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-04.2}    & \textbf{Transformar texto en audio}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez Garcia \\
+        \textbf{Requisitos asociados} & RF-04 \\
+        \textbf{Descripción}          & Se sintetiza la voz a partir del texto generado usando TTS.\\
+        \textbf{Precondición}         & Texto válido generado por el asistente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Enviar texto al modelo TTS.
+          \item Recibir archivo de audio.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Audio generado correctamente.\\
+        \textbf{Excepciones}          & Error de red, respuesta vacía, error del modelo.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-04.2 Transformar texto en audio.}
+    \label{CU-04.2 Transformar texto en audio}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-04.3}    & \textbf{Reproducir respuesta por altavoz}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-04 \\
+        \textbf{Descripción}          & El sistema reproduce el audio resultante por la salida de sonido del dispositivo.\\
+        \textbf{Precondición}         & Audio generado correctamente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Reproducir audio por altavoz.
+          \item Finalizar emisión.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El usuario ha escuchado la respuesta.\\
+        \textbf{Excepciones}          & Fallo de hardware, volumen nulo.\\
+        \textbf{Importancia}          & Alta \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-04.3 Reproducir respuesta por altavoz.}
+    \label{CU-04.3 Reproducir respuesta por altavoz}
+\end{table}
+
+
+
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-05}    & \textbf{Mostrar interfaz accesible}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Alumno \\
+        \textbf{Requisitos asociados} & RF-05, RF-06 \\
+        \textbf{Descripción}          & El sistema proporciona una interfaz visual clara y comprensible para el usuario.\\
+        \textbf{Precondición}         & El sistema está ejecutándose y en espera de interacción.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-05.1 Presentar resultado del asistente.
+          \item CU-05.2 Mostrar pensamiento y razonamiento.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El usuario puede interpretar y actuar sobre la información.\\
+        \textbf{Excepciones}          & Error en el renderizado, datos incompletos.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-05 Mostrar interfaz accesible.}
+    \label{CU-05 Mostrar interfaz accesible}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-05.1}    & \textbf{Presentar resultado del asistente}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-05 \\
+        \textbf{Descripción}          & Se muestra el resultado final del razonamiento del asistente al usuario.\\
+        \textbf{Precondición}         & El asistente ha finalizado su tarea.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Mostrar resultado textual o gráfico.
+          \item Permitir al usuario leer o interactuar con la salida.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El usuario ve la respuesta generada.\\
+        \textbf{Excepciones}          & Interfaz no responde, error de diseño.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-05.1 Presentar resultado del asistente.}
+    \label{CU-05.1 Presentar resultado del asistente}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-05.2}    & \textbf{Mostrar pensamientos}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-06 \\
+        \textbf{Descripción}          & El sistema muestra los pasos o razonamientos internos que ha seguido el asistente.\\
+        \textbf{Precondición}         & El asistente ha generado una trazabilidad lógica.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Mostrar la cadena de razonamiento.
+          \item Ofrecer seguimiento del proceso paso a paso.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & El usuario comprende cómo se ha llegado al resultado.\\
+        \textbf{Excepciones}          & Datos parciales o razonamiento inconsistente.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-05.2 Mostrar pensamientos}
+    \label{CU-05.2 Mostrar pensamientos}
+\end{table}
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-06}    & \textbf{Buscar información en internet}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-03, RF-06 \\
+        \textbf{Descripción}          & El sistema consulta información externa en internet cuando el agente lo considera necesario.\\
+        \textbf{Precondición}         & El CUA determina que necesita apoyo externo para responder.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item CU-06.1 Enviar prompt de búsqueda a Browser-Use.
+          \item CU-06.2 Realizar navegación y recuperación de datos.
+          \item CU-06.3 Devolver información estructurada al CUA.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Información externa recibida por el agente.\\
+        \textbf{Excepciones}          & Timeout, error en navegación, resultados no encontrados.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-06 Buscar información en internet.}
+    \label{CU-06 Buscar Informacion de internet}
+\end{table}
+
+% Subcaso CU-06.1
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-06.1}    & \textbf{Enviar prompt de búsqueda a Browser-Use}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-03 \\
+        \textbf{Descripción}          & El CUA emite un prompt a Browser-Use para consultar información externa.\\
+        \textbf{Precondición}         & Prompt analizado y marcado como necesidad de búsqueda.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Formatear la consulta.
+          \item Enviar la petición al agente Browser-Use.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Petición correctamente transmitida.\\
+        \textbf{Excepciones}          & Fallo de comunicación o formato inválido.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-06.1 Enviar prompt de búsqueda a Browser-Use.}
+    \label{CU-06.1 Enviar prompt de busqueda a Browser-Use}
+\end{table}
+
+% Subcaso CU-06.2
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-06.2}    & \textbf{Realizar navegación y recuperación de datos}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-03 \\
+        \textbf{Descripción}          & Browser-Use accede a internet, realiza la búsqueda y filtra resultados.\\
+        \textbf{Precondición}         & Prompt de búsqueda recibido correctamente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Ejecutar motor de búsqueda o navegación.
+          \item Analizar y extraer contenido útil.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Información externa lista para envío.\\
+        \textbf{Excepciones}          & Web inaccesible, datos irrelevantes, timeout.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-06.2 Realizar navegación y recuperación de datos.}
+    \label{CU-06.2 Realizar navegacion y recuperacion de datos}
+\end{table}
+
+
+\begin{table}[p]
+    \centering
+    \begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+        \toprule
+        \textbf{CU-06.3}    & \textbf{Devolver información estructurada al CUA}\\
+        \toprule
+        \textbf{Versión}              & 1.0 \\
+        \textbf{Autor}                & Víctor Manuel Martínez García \\
+        \textbf{Requisitos asociados} & RF-06 \\
+        \textbf{Descripción}          & Browser-Use devuelve los resultados procesados al agente para ser utilizados en la respuesta final.\\
+        \textbf{Precondición}         & Información obtenida correctamente.\\
+        \textbf{Acciones}             &
+        \begin{enumerate}
+          \item Estructurar respuesta (resumen, URL, etc.).
+          \item Enviar respuesta al agente CUA.
+        \end{enumerate}\\
+        \textbf{Postcondición}        & Información integrada al razonamiento del asistente.\\
+        \textbf{Excepciones}          & Error en el parseo de datos o en la transmisión.\\
+        \textbf{Importancia}          & Media \\
+        \bottomrule
+    \end{tabularx}
+    \caption{CU-06.3 Devolver información estructurada al CUA.}
+    \label{CU-06.3 Devolver información estructurada al CUA}
+\end{table}
+

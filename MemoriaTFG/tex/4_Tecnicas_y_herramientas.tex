@@ -1,0 +1,46 @@
+\capitulo{4}{Técnicas y herramientas}
+
+El desarrollo del proyecto \textbf{Voice-Assisted Computer Accessibility (VACA)} implica la utilización de diversas técnicas y herramientas que permiten alcanzar los objetivos definidos, garantizando que el software sea accesible, eficiente y funcional para personas con movilidad reducida.
+
+A continuación, se describen las principales técnicas empleadas, así como las herramientas tecnológicas utilizadas durante las distintas fases del proyecto, incluyendo desarrollo, entrenamiento, pruebas y despliegue.
+
+\begin{itemize}
+    \item \textbf{Procesamiento de Lenguaje Natural (PLN):} Se implementan tecnologías de reconocimiento y síntesis de voz, como \textbf{Speech-to-Text (STT)} y \textbf{Text-to-Speech (TTS)}, así como modelos de lenguaje para la comprensión e interpretación del texto generado. Estas técnicas permiten una interacción natural entre el usuario y el sistema.
+
+    \item \textbf{Agentes Inteligentes basados en IA:} Se emplean agentes inteligentes que actúan como \textbf{Computer Use Agents (CUA)}, diseñados para razonar sobre el entorno gráfico y ejecutar acciones en nombre del usuario. Estos agentes combinan razonamiento contextual y visión artificial.
+
+    \item \textbf{Procesamiento de interfaz gráfica y visión por computadora:} Se utilizan técnicas de detección de objetos, segmentación semántica y captioning de imágenes mediante modelos como YOLO y Florence, para que el sistema identifique y entienda los elementos gráficos del sistema operativo.
+
+    \item \textbf{Metodología ágil (Agile):} Se adopta una metodología ágil basada en sprints y entregas iterativas, que permite adaptar el desarrollo a cambios y mejoras continuas. Se aplica principalmente mediante herramientas de planificación como Zube.io.
+
+    \item \textbf{Ingeniería de prompts:} Se utiliza \textit{prompt engineering} para optimizar la interacción con modelos de lenguaje, reducir el uso de tokens y mejorar la eficiencia en respuestas.
+\end{itemize}
+
+\section{Herramientas utilizadas}
+
+A continuación, se presentan las herramientas y tecnologías que se utilizarán para desarrollar el proyecto:
+
+\begin{itemize}
+    \item \textbf{Lenguaje de programación Python:} Utilizado como lenguaje principal por su versatilidad, amplio ecosistema de bibliotecas y compatibilidad con los principales modelos de inteligencia artificial, visión artifical y procesamiento de lenguaje.
+
+    \item \textbf{Modelos de inteligencia artificial:} Se emplean modelos como \textbf{Whisper} (STT) y \textbf{CUQUI-TTS} (TTS), además de modelos de lenguaje como \textbf{Claude (Anthropic)} y \textbf{GPT (OpenAI)}. También se integran modelos visuales como \textbf{YOLOv8} y \textbf{FlorenceV2}.
+
+    \item \textbf{Interfaces de usuario:} Se desarrolla la interfaz utilizando \textbf{CTkinter}, una versión moderna y personalizable de Tkinter, con un enfoque minimalista y de alto contraste, ideal para accesibilidad.
+
+    \item \textbf{Sistema operativo:} El software está optimizado inicialmente para \textbf{Windows}, aprovechando su compatibilidad con bibliotecas de automatización y visión. Se contempla la portabilidad futura a \textbf{Linux} y \textbf{macOS}.
+
+    \item \textbf{Control de versiones:} Se utiliza \textbf{Git} como sistema de control de versiones, con almacenamiento en \textbf{BitBucket}, lo que permite un seguimiento detallado de cambios y colaboración eficiente.
+
+    \item \textbf{Gestión de proyecto:} Se emplea la plataforma \textbf{Zube.io}, basada en tableros Kanban, para la gestión de tareas, seguimiento de sprints y control de entregables.
+
+    \item \textbf{Entornos de desarrollo (IDE):} Se utiliza \textbf{Visual Studio Code (VSCode)} como entorno principal de desarrollo, dada su compatibilidad con extensiones, terminal integrada y soporte para Python y Docker.
+
+    \item \textbf{Bibliotecas para modelos de lenguaje:} Se integran \textbf{LangChain} y \textbf{LangGraph} para la gestión de agentes y flujos conversacionales, así como \textbf{Transformers (HuggingFace)} para la ejecución de modelos personalizados.
+
+    \item \textbf{Bibliotecas de automatización de escritorio:} \textbf{PyAutoGUI} se emplea para simular movimientos del ratón, clics, escritura de texto y otras acciones típicas de usuario. También se evalúa el uso de \textbf{Browser-Use} para exploración automatizada de interfaces web.
+
+    \item \textbf{Docker y contenedores:} Se utiliza \textbf{Docker} para empaquetar y desplegar los modelos en contenedores independientes. Se desarrolla una arquitectura cliente-servidor mediante \textbf{FastAPI}, lo que permite migrar los procesos de inferencia a servidores ITCL y facilitar su reutilización.
+
+    \item \textbf{OpenCV:} Librería clave para el procesamiento de imágenes, que permite transformar y manipular los outputs de los modelos visuales como YOLO o Florence.
+    
+\end{itemize}

@@ -1,0 +1,147 @@
+\apendice{Documentación técnica de programación}
+
+\section{Introducción}
+
+\section{Datos tratados}
+
+
+\section{Estructura de directorios}
+
+\begin{itemize}
+  \item \textbf{Raíz del proyecto (VACA/)}
+  \begin{itemize}
+    \item \texttt{main\_loop.py} -- Bucle principal del agente
+    \item \texttt{gui.py} -- Interfaz gráfica en CTkinter
+    \item \texttt{initializer.py} -- Inicialización del entorno
+    \item \texttt{.env}, \texttt{pyproject.toml}, \texttt{README.md}
+  \end{itemize}
+  
+  \item \textbf{CUA/} -- Módulo central del agente
+  \begin{itemize}
+    \item \texttt{cfg.py}, \texttt{\_\_init\_\_.py}
+    \item \textbf{tools/}
+    \begin{itemize}
+      \item \texttt{class\_whisper.py}, \texttt{class\_browser\_use.py}, \texttt{computer.py}
+      \item \texttt{endpoint\_yolo\_florence.py} -- Objetos de los modelos para instanciación y tools varias.
+      \item \texttt{audio\_TTS.wav}, \texttt{output.wav} -- Generacion de TTS y STT
+      \item \textbf{tmpcrops/} -- Capturas temporales para detección de elementos visuales
+    \end{itemize}
+    \item \textbf{util/} -- Funciones de soporte (configuración, rutas, logs)
+  \end{itemize}
+
+  \item \textbf{assets/} -- Material gráfico del proyecto
+  \begin{itemize}
+    \item Diagramas: \texttt{CUA FLOW.png}, \texttt{GUI\_inicial.png}, \texttt{resultado\_final.png}
+    \item Pruebas visuales: \texttt{ejemplo\_original.jpeg}, \texttt{ejemplo\_yoloed.jpeg}
+    \item Videos demostrativos: \texttt{cua\_example1.mp4}, \texttt{cua\_example2.mp4}
+  \end{itemize}
+
+  \item \textbf{tests/} -- Suite de pruebas del sistema
+  \begin{itemize}
+    \item \texttt{test\_001\_ScreenAssistant.py}, \texttt{test\_002\_Florence.py}, etc.
+    \item \textbf{resources/}
+    \begin{itemize}
+      \item \textbf{generatedAudio/} -- Audios generados en pruebas
+      \item \textbf{generatedimage/} -- Imágenes procesadas por los modelos
+    \end{itemize}
+  \end{itemize}
+
+  \item \textbf{logs/} -- Registro de eventos y configuración
+  \begin{itemize}
+    \item \texttt{CUA.util.cfg\_base.log}
+  \end{itemize}
+\end{itemize}
+
+
+\section{Manual del programador}
+
+En esta sección elaborare una "visión" técnica para que cualquier otra persona que desee comprender, mantener o mejorar la aplicación VACA.
+
+A continuación detallare los módulos clave y las dependendias principales del proyecto:
+
+\begin{itemize}
+    \item \textbf{Lenguaje de programación:} Python 3.12
+    \item \textbf{Gestor de dependencias:} Poetry
+    \item \textbf{Frameworks y librerías clave:}
+    \begin{itemize}
+        \item \texttt{openai, langchain-openai, langchain-anthropic,python-dotenv}
+        \item \texttt{pyautogui, pillow,anthropic,langchain}
+        \item \texttt{opencv-python, screeninfo, ultralytics,safetensors}
+        \item \texttt{transformers,langchain-community,keyboard}
+        \item \texttt{timm,einops,langgraph,logging}
+        \item \texttt{pyaudio,wave,browser-use}
+        \item \texttt{threaded}
+    \end{itemize}
+    \item \textbf{Estructura modular:}
+    \begin{itemize}
+        \item Módulo \texttt{CUA/}: lógica del agente, herramientas de audio y visión.
+        \item \texttt{main\_loop.py}: orquestador del flujo principal.
+        \item \texttt{gui.py}: interfaz visual del sistema.
+        \item \texttt{initializer.py}: carga inicial para levantar modelos del servidor del ITCL.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Instrucciones para ejecución sin modelos dockerizados}
+
+En caso de querer ejecutar la aplicación sin utilizar los modelos dockerizados para \texttt{Whisper}, \texttt{Coqui}, \texttt{Florence} o \texttt{YOLO}, se proporciona en el repositorio de GitHub el contenedor Docker correspondiente al modelo \texttt{Florence-YOLO}, facilitando así su despliegue local. Para ello, únicamente sería necesario adaptar los endpoints a la configuración local deseada.
+
+Respecto a los modelos \texttt{Whisper} y \texttt{Coqui}, no se incluyen directamente en el proyecto debido a motivos dep privacidad. Sin embargo, ambos modelos son de código abierto y están disponibles en los siguientes enlaces:
+
+\begin{itemize}
+
+\item \textbf{Coqui XTTS-v2}\cite{coquiXTTSv2}
+\item \textbf{OpenAI Whisper Large v3}\cite{openaiWhisperV3}
+\end{itemize}
+
+Para ejecutar el sistema sin estos modelos, se recomienda desactivar el módulo de TTS (activado por defecto) y también el hilo de transcripción continua (STT) que se lanza desde la clase \texttt{GUI}. Esta configuración permitirá el uso parcial del agente sin necesidad de contar con los modelos de voz en funcionamiento, manteniendo otras funcionalidades operativas.
+
+
+
+
+
+\section{Compilación, instalación y ejecución del proyecto}
+
+En esta sección se describen los pasos necesarios para compilar, instalar y ejecutar correctamente la aplicación \textbf{VACA}.
+
+\subsection{Descarga del programa desde GitHub}
+
+El código del proyecto se encuentra disponible en el repositorio personal del alumno. Se recomienda descargar la última versión publicada en la sección de releases del repositorio.\cite{VACARepo}
+
+\subsection{Instalación de los programas necesarios e inicialización}
+
+Para la correcta ejecución del proyecto, se deben seguir los siguientes pasos:
+
+\begin{enumerate}
+    \item Instalar un entorno de desarrollo para Python. En este caso se ha utilizado Visual Studio Code, aunque puede utilizarse cualquier otro compatible.
+    \item Instalar Python en su versión 3.12. \cite{python312}
+    
+    \item Instalar un gestor de entornos virtuales compatible con archivos \texttt{pyproject.toml}. En este proyecto se ha utilizado \textbf{Poetry}\cite{poetryDocs}.
+    
+    \item Crear un nuevo entorno virtual y utilizar el archivo \texttt{pyproject.toml} del repositorio para importar automáticamente todas las librerías necesarias.
+    
+    \item Una vez finalizada la instalación de dependencias, se puede ejecutar el archivo \texttt{gui.py}, el cual lanza la interfaz principal del programa.
+\end{enumerate}
+
+\subsection{Recomendaciones de uso}
+
+Se recomienda encarecidamente utilizar un sistema con doble monitor, ya que la aplicación trabaja principalmente sobre el monitor configurado como principal, y requiere visibilidad total del entorno gráfico para su funcionamiento correcto.
+
+\section{Pruebas del sistema}
+
+El sistema fue sometido a diversas pruebas con el objetivo de garantizar su correcto funcionamiento en distintos contextos de uso.
+
+Dado que \textbf{VACA} se basa en el uso de modelos de lenguaje de gran escala (LLM) y controla el entorno operativo del usuario, muchas de las pruebas fueron realizadas de forma manual. Esto se debe a que, por la naturaleza del sistema, cualquier ejecución fuera de control podría requerir intervención humana para ser detenida o corregida.
+
+\subsection{Pruebas automatizadas}
+
+Se implementó una batería de pruebas unitarias y funcionales que puede encontrarse en la carpeta \texttt{test} del repositorio del proyecto. Estas pruebas tienen como objetivo verificar el correcto funcionamiento individual de los distintos módulos que componen el sistema.
+
+Para ejecutar todas las pruebas, basta con utilizar el siguiente comando en el entorno del proyecto:
+
+\texttt{pytests \@master\_test.txt}
+
+Este comando lanza la ejecución de todos los casos definidos de manera estructurada.
+
+Adicionalmente, se valoró la posibilidad de integrar la aplicación en un entorno de evaluación tipo \textit{benchmark} con el fin de analizar su rendimiento de forma más rigurosa. Sin embargo, debido a que se trata de un agente de "reciente" y que funciona exclusivamente sobre el sistema operativo Windows, no existen muchas opciones disponibles.
+
+La única alternativa identificada fue el entorno de evaluación \textbf{Windows Agent Arena} \cite{Bonatti2024WindowsAgentArena}. No obstante, su integración se descartó en esta fase del proyecto debido a la falta de tiempo y la complejidad técnica para su puesta en marcha, quedando como posible mejora a implementar en el futuro.

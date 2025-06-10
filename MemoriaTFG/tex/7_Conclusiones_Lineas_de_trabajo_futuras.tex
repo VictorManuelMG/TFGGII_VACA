@@ -1,0 +1,97 @@
+\capitulo{7}{Conclusiones y líneas de trabajo futuras}
+
+\section{Conclusiones}
+
+En este apartado se exponen las principales conclusiones obtenidas a lo largo del desarrollo del proyecto \textbf{Voice-Assisted Computer Accessibility (VACA)}. Este trabajo ha supuesto no solo un reto técnico, sino también una experiencia de aprendizaje integral, tanto a nivel tecnológico como en la gestión de un proyecto de software con potencial de aplicación real.
+
+\subsection{Cumplimiento de los objetivos}
+
+\subsubsection{Objetivos funcionales}
+
+Se han alcanzado los objetivos funcionales planteados al inicio del proyecto. Entre los logros más destacados se encuentran:
+
+\begin{itemize}
+    \item El desarrollo de una solución accesible que permite controlar un sistema operativo mediante comandos de voz, sin necesidad de dispositivos de entrada físicos como ratón o teclado.
+
+    \item La integración completa de tecnologías de \textbf{Speech-to-Text (STT)} y \textbf{Text-to-Speech (TTS)} usando modelos como \textit{Whisper} y \textit{CUQUI-TTS}, ofreciendo una interacción fluida con el sistema.
+
+    \item La implementación de \textbf{Computer Use Agents} capaces de combinar visión artificial, modelos de lenguaje y automatización de acciones dentro del entorno gráfico del sistema operativo.
+
+    \item La ejecución local del sistema en Windows de forma nativa, sin necesidad de contenedores o entornos virtualizados, facilitando su uso desde cualquier equipo personal.
+
+    \item El despliegue eficiente de los modelos más pesados (como FlorenceV2 y YOLO) mediante Docker en servidores del ITCL, lo que permitió reducir los tiempos de inferencia en más de un 70\%.
+\end{itemize}
+
+\subsubsection{Objetivos no funcionales}
+
+\begin{itemize}
+    \item Se ha priorizado la modularidad y escalabilidad del sistema, facilitando futuras mejoras, mantenimiento y extensión a nuevos contextos.
+
+    \item El sistema ha sido desarrollado como una solución gratuita y de código abierto, con un bajo consumo de recursos, lo que lo hace viable en entornos con limitaciones técnicas o económicas.
+
+    \item Se ha diseñado una interfaz gráfica funcional y sencilla usando \textbf{CTkinter}, con el objetivo de que cualquier persona pueda utilizarla, incluso con pocos conocimientos informáticos.
+\end{itemize}
+
+\subsubsection{Objetivos personales}
+
+\begin{itemize}
+    \item Este proyecto me ha permitido adentrarme formalmente en el campo de los \textbf{modelos de lenguaje (LLM)} y en el uso de agentes inteligentes, un área en la que quiero seguir especializándome.
+
+    \item He aplicado metodologías ágiles a lo largo del desarrollo del proyecto, gestionando tareas, sprints y versiones de código mediante herramientas como \textit{Zube.io}, \textit{BitBucket} y \textit{GitHub}.
+
+    \item Me enorgullece haber creado una herramienta con potencial de uso real, que quedará como una aportación al ITCL y podrá servir como base para desarrollos futuros.
+
+    \item Este trabajo ha sido el broche final de mi formación como ingeniero informático, permitiéndome aplicar muchos de los conocimientos adquiridos durante el grado de una manera práctica y con sentido.
+\end{itemize}
+
+\newpage
+
+\subsection{Reflexiones sobre el proceso}
+
+Uno de los retos más grandes fue trabajar con tecnologías que están aún en desarrollo y para las que, muchas veces, apenas existe documentación. Cada pocas semanas aparecían nuevos modelos o herramientas, lo que me obligó a adaptarme constantemente y tomar decisiones rápidas.
+
+Algunas de las dificultades más destacadas fueron:
+
+\begin{itemize}
+    \item Las limitaciones de algunos modelos existentes, como el CUA de Anthropic o el Omniparser de Microsoft, que llevaron a crear soluciones propias más ajustadas a las necesidades reales del proyecto.
+
+    \item El trabajo con hardware limitado, que exigió optimizar recursos al máximo y trasladar parte de los procesos a servidores remotos del ITCL mediante Docker.
+
+    \item La integración de herramientas complejas como LangChain, PyAutoGUI, YOLOv8, FlorenceV2, FastAPI y Docker, que requirió tiempo, paciencia y muchas pruebas hasta lograr un sistema robusto y funcional.
+\end{itemize}
+
+\subsection{Valoración personal}
+
+Para mí, el desarrollo de VACA ha sido mucho más que un proyecto de clase. Ha sido una oportunidad para crear algo útil, con impacto potencial en la vida de personas con movilidad reducida. Me siento orgulloso de haber conseguido una solución funcional.
+
+Además, ha sido una excelente forma de comenzar mi camino dentro del mundo de la inteligencia artificial, un área que me motiva especialmente y en las que quiero seguir creciendo profesionalmente.
+
+\vspace{1em}
+\noindent
+\textit{VACA no es solo un software funcional; representa una forma de poner la tecnología al servicio de quienes más la necesitan.}
+
+\newpage
+
+\section{Líneas de trabajo futuras}
+
+Aunque VACA ya es un sistema funcional, su arquitectura modular permite ampliaciones y mejoras que podrían marcar una gran diferencia. Algunas de las líneas de trabajo que me gustaría destacar son:
+
+\begin{itemize}
+    \item \textbf{Soporte multilingüe:} Añadir compatibilidad con varios idiomas para que personas de diferentes países puedan beneficiarse del sistema.
+
+    \item \textbf{Versión embebida:} Crear una versión del sistema que funcione de forma local en dispositivos compactos como Jetson Orin, garantizando autonomía y privacidad total.
+
+    \item \textbf{Entrenamiento personalizado del STT:} Permitir que el sistema se adapte a la voz concreta del usuario, mejorando la precisión y la comodidad en el uso diario.
+
+    \item \textbf{Compatibilidad con otros sistemas operativos:} Llevar VACA a Linux y macOS, ampliando así su disponibilidad y uso en otros entornos.
+
+    \item \textbf{Interfaz gráfica adaptativa:} Mejorar la GUI para que se ajuste a las necesidades visuales o cognitivas del usuario, permitiendo configuraciones avanzadas y personalizadas.
+
+    \item \textbf{Sistema de retroalimentación:} Añadir una función que permita al usuario corregir errores o malentendidos del agente para mejorar la experiencia general.
+
+    \item \textbf{Conexión con herramientas externas:} Integrar el sistema con aplicaciones como navegadores, calendarios o gestores de tareas para extender su funcionalidad como asistente personal.
+
+    \item \textbf{Validación con usuarios reales:} Realizar pruebas con personas con movilidad reducida para validar la utilidad del sistema, recoger sugerencias reales y priorizar futuras mejoras.
+
+    \item \textbf{Mejora del rendimiento de los modelos de visión:} Entrenar los modelos YOLOv8 y FlorenceV2 con datasets propios para afinar su precisión y adaptarlos aún más al contexto de escritorios y sistemas operativos.
+\end{itemize}

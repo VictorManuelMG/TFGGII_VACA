@@ -1,0 +1,218 @@
+\apendice{Plan de Proyecto Software}
+
+\section{Introducción}
+
+Este plan detalla los aspectos clave en la planificación, gestión y viabilidad del desarrollo del software \textbf{Voice-Assisted Computer Accessibility (VACA)}.
+
+El proyecto es una solución accesible y funcional que facilita el uso de sistemas informáticos a personas con movilidad reducida, introduciendo tecnologias de voz, visión artifical e inteligencia artifical.
+
+Este documento incluye una planificacion temporal asi como un analisis de la viabilidad economica y legal.
+
+\section{Planificación temporal}
+
+La planificación del proyecto se realizó siguiendo una metodología ágil, dividiendo el trabajo en sprints que cubren diferentes fases. El proyecto abarca desde febrero hasta junio, organizándose en las siguientes etapas:
+
+\begin{enumerate}
+    \item \textbf{Fase de investigación (febrero)}: Revisión del estado del arte de CUAs, estudio de modelos STT/TTS, aprendizaje sobre frameworks para el uso de LLMs, herramientas para visión artifical.
+    
+    \item \textbf{Desarrollo del back-end (marzo-abril)}:
+    Integración de LLMs, modelos de ASR, modelos de visión, y arquitectura entre todas las partes a un agente principal.
+    
+    \item \textbf{Desarrollo del front-end (abril-mayo)}: 
+    Busqueda de una herramienta OpenSource para el desarrollo de la interfaz gráfica.
+
+    Uso y aprendizaje de Tkinter y posterior paso a CTkinter integrando back-end y front-end.
+    
+    \item \textbf{Pruebas y validación (mayo)}: Evaluación funcional de las herramientas, pruebas de prompts de voz, tiempos de respuesta de los modelos de inferencia, pruebas del software en local/VM.
+    
+    \item \textbf{Documentación (mayo-junio)}: elaboración de una memoria del proyecto en conjunto con los anexos del mismo.
+\end{enumerate}
+
+\section{Estudio de viabilidad}
+
+\subsection{Viabilidad económica}
+
+El proyecto se ha desarrollado utilizando principalmente herramientas y recursos gratuitos o de código abierto, lo cual ha permitido minimizar los costes asociados. A continuación, se detallan los principales aspectos económicos:
+
+\begin{itemize}
+    \item \textbf{Herramientas utilizadas:} Python, CTkinter, OpenCV, PyAutoGUI, LangChain, Whisper, COQUI-TTS, Docker y FastAPI. Todas ellas son gratuitas y de código abierto.
+    
+    \item \textbf{Recursos computacionales:} Durante el desarrollo se utilizó hardware local, y en fases avanzadas, modelos pesados como YOLOv8 y FlorenceV2 fueron desplegados en un servidor del ITCL equipado con una \textbf{GPU NVIDIA A30 de 24GB}, optimizando así los tiempos de inferencia.
+
+    \item \textbf{Modelos LLM:} Se emplearon tanto modelos de código abierto (FlorenceV2, YOLOv8, Whisper, COQUI) como APIs comerciales (Claude y GPT-4) que implicaron costes variables.
+\end{itemize}
+
+\vspace{1em}
+A continuación, se desglosan los costes estimados si el sistema se llevase a producción real, considerando tanto infraestructura como licencias, consumo energético y otros factores de operación continua.
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{8cm} >{\centering\arraybackslash}m{3cm} >{\centering\arraybackslash}m{3cm}}
+			\toprule
+			\textbf{Elemento} & \textbf{Coste estimado} & \textbf{Frecuencia} \\
+			\midrule
+			Servidor con GPU NVIDIA A30 (24GB VRAM) & 6.000 € & Único \\
+			Consumo eléctrico servidor (8h/día) & 14,40 € & Mensual \\
+			Conexión a internet (fibra 1 Gbps) & 40 € & Mensual \\
+			Mantenimiento de infraestructura (ITCL) & 600 € & Anual \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Coste estimado de infraestructura y recursos computacionales}
+	\label{tab:coste_infraestructura}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{8cm} >{\centering\arraybackslash}m{3cm} >{\centering\arraybackslash}m{3cm}}
+			\toprule
+			\textbf{Servicio/API} & \textbf{Coste estimado} & \textbf{Frecuencia} \\
+			\midrule
+			OpenAI GPT-4 (100.000 tokens/mes aprox.) & 20 € & Mensual \\
+			Anthropic Claude (acceso de desarrollador) & 15 € & Mensual \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Costes asociados al uso de APIs comerciales de modelos LLM}
+	\label{tab:coste_llm}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{8cm} >{\centering\arraybackslash}m{3cm} >{\centering\arraybackslash}m{3cm}}
+			\toprule
+			\textbf{Elemento} & \textbf{Coste estimado} & \textbf{Frecuencia} \\
+			\midrule
+			Salario programador (5 meses) & 7.500 € & Proyecto \\
+			Hardware usuario final (PC + mic + auriculares) & 500 € & Único \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Otros costes estimados para desarrollo y operación}
+	\label{tab:coste_otros}
+\end{table}
+
+\textbf{Alternativa económica basada en ejecución local:}
+
+Como alternativa al mantenimiento continuo de un servidor con GPU dedicada, se considera viable la ejecución del sistema en local utilizando un ordenador personal de gama media-alta con una GPU dedicada. Esto permitiría realizar inferencias de modelos como YOLOv8 o Florence sin necesidad de recurrir a infraestructura externa, reduciendo así los costes mensuales de operación.
+
+A continuación, se muestra una configuración de hardware recomendada para lograr tiempos de inferencia aceptables ejecutando el sistema en local:
+
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{8cm} >{\centering\arraybackslash}m{3cm} >{\centering\arraybackslash}m{3cm}}
+			\toprule
+			\textbf{Elemento} & \textbf{Coste estimado} \\
+			\midrule
+			PC Case & 80 €  \\
+			Placa Base (MSI B550M PRO-VDH WIFI & 111 € \\
+            RAM DDR4 3200Mhz 32GB & 60 € \\
+            Procesador AM4 (Ryzen 7 5800X) & 180 € \\
+            Refrigeración & 80 € \\
+            PSU 750W & 100€ \\
+            GPU 6GB VRAM (RTX 3050) & 210€ \\
+            Disco Duro & 100 €\\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Coste de un ordenador que pueda usar el modelo en local sin servidores}
+	\label{tab:coste_otros}
+\end{table}
+
+\textbf{Resumen económico aproximado del proyecto en fase de producción:}
+
+
+\begin{itemize}
+    \item \textbf{Coste inicial de la infraestructura:} Incluye la adquisición de un servidor con GPU (NVIDIA A30), asi como el hardware minimo necesario para un usuario final, el coste estimado asciende a un valor de entre \textbf{6000 - 8000 €}.
+
+    \item \textbf{Coste operativo mensual:} Este se comprende del consumo electrico del servidor, conexión a internet, uso de APIs comerciales de OpenAI y Anthropic. Esto tendria un coste aproximado de \textbf{80-100€ mensuales}
+
+    \item \textbf{Coste de desarrollo humano:} Estimado de un único programador trabajando durante 5 meses, con una media salarial de 1500€ mensuales. \textbf{Total: 7500€}
+\end{itemize}
+
+
+Considerando el uso intensivo de herramientas open-source, la reutilización de infraestructura preexistente en el ITCL y la posibilidad de sustituir APIs de pago por modelos open-source (cambiando APIs de Claude y OpenAI), el proyecto presenta una \textbf{viabilidad económica alta}. Puede ser escalado o adaptado a distintos entornos sin incurrir en costes prohibitivos, lo que lo convierte en una solución sostenible tanto a corto como a largo plazo.
+
+
+\subsection{Viabilidad legal}
+
+El proyecto cumple con las normativas legales vigentes en los siguientes aspectos:
+
+\begin{itemize}
+    \item \textbf{Licencias de software:} Todas las herramientas utilizadas (Python, bibliotecas de IA, modelos open-source) se encuentran bajo licencias compatibles con su uso, modificación y distribución (MIT, Apache 2.0, GNU).
+    
+    \item \textbf{Protección de datos personales:} El sistema no almacena información personal ni sensible. Las grabaciones de voz son procesadas de forma local o en servidores seguros del ITCL, sin ser enviadas a terceros, ademas de que los contenedores de los modelos son destruidos tras un tiempo de inactividad sin dejar ningun tipo de dato en el servidor.
+    
+    \item \textbf{Accesibilidad:} El software está diseñado específicamente para cumplir con principios de accesibilidad digital, lo que alinea con las directrices de la \textit{Ley General de Discapacidad}.
+    
+    \item \textbf{Código abierto:} El código desarrollado puede ser compartido, auditado o ampliado por terceros, fomentando la transparencia, colaboración y reutilización del software en contextos sociales o institucionales.
+
+\end{itemize}
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{gray!20}{white}
+	\resizebox{\textwidth}{!}{
+		\begin{tabular}{m{7cm} >{\centering\arraybackslash}m{4cm} >{\centering\arraybackslash}m{4cm}}
+			\toprule
+			\textbf{Requisito Legal} & \textbf{Aplicación en VACA} & \textbf{Cumplimiento} \\
+			\midrule
+			Accesibilidad universal & Control por voz sin necesidad de dispositivos físicos & Sí \\
+			Diseño para todos (diseño universal) & Accesible sin adaptaciones adicionales & Sí \\
+			Acceso a las TICs & Compatible con lectores de pantalla y salida TTS & Sí \\
+			Solución no discriminatoria & Uso gratuito, sin hardware costoso & Sí \\
+			Accesibilidad desde el diseño & Interfaz visual adaptada desde fase inicial & Sí \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Cumplimiento del proyecto VACA con la Ley General de Discapacidad (España)}
+	\label{tab:ley_discapacidad}
+\end{table}
+
+
+\subsection{Amortización del proyecto}
+
+Teniendo en cuenta los costes descritos previamente, se estima que el coste total de desarrollo y puesta en marcha del sistema \textbf{VACA} ronda los \textbf{8.000 a 10.000 €}, incluyendo infraestructura, desarrollo, y coste de APIs comerciales en el primer año.
+
+Es importante destacar que parte del hardware utilizado, especialmente el servidor con GPU proporcionado por el ITCL, no está dedicado exclusivamente a este proyecto. Dicho servidor alberga modelos que también se utilizan en otras investigaciones y aplicaciones, lo que permite distribuir parte del coste de infraestructura entre varios desarrollos. Esta reutilización de recursos mejora significativamente la rentabilidad global del sistema.
+
+Aunque el código fuente de VACA se encuentra alojado públicamente en GitHub como \textbf{software libre}, se podria contemplar su distribución mediante versiones comerciales mantenidas y actualizadas, orientadas a usuarios con movilidad reducida. Estas versiones podrían incluir soporte técnico y actualizaciones periódicas.
+
+
+\subsubsection{Resumen estimado de amortización:}
+
+\begin{itemize}
+    \item \textbf{Coste inicial total:} 10.000 € aprox.\ (con parte de infraestructura compartida)
+    \item \textbf{Coste de mantenimiento durante 5 años:} 600 € × 5 = 3.000 €
+    \item \textbf{Coste total acumulado estimado para VACA:} \textbf{13.000 €}, aunque parte del hardware puede considerarse amortizado parcialmente por su uso compartido.
+\end{itemize}
+
+Si el sistema fuese licenciado a \textbf{50 usuarios} durante esos cinco años con una tarifa de \textbf{5 € mensuales} por usuario (modelo de suscripción), se obtendría un ingreso de:
+
+\[
+50 \text{ usuarios} \times 5 \text{ €/mes} \times 12 \text{ meses} \times 5 \text{ años} = \textbf{15.000 €}
+\]
+
+Este escenario permitiría no solo amortizar completamente la inversión realizada, sino también generar un pequeño margen económico. En caso de alcanzar una mayor base de usuarios o integrar el sistema en contextos institucionales o sanitarios, el retorno económico sería aún más favorable.
+
+Adicionalmente, el sistema sustituye soluciones comerciales mucho más costosas, y reduce significativamente la necesidad de hardware especializado, haciendo su adopción más accesible y sostenible a nivel económico y social.
+
+\subsubsection{Conclusión} 
+
+La amortización del proyecto es viable incluso en contextos de adopción moderada. El uso compartido de infraestructura, el enfoque open-source y la orientación social del sistema refuerzan su sostenibilidad técnica y económica en el medio y largo plazo.
+

@@ -13,4 +13,6 @@ mouse_move.py
 pruebas.py
 
 #Ignore py cache
-__pycache__CUA/tools/Florence2/model.safetensors
+__pycache__
+
+CUA/tools/Florence2/model.safetensors

@@ -115,6 +115,15 @@ poetry run python gui.py
 
 El sistema lanzará una interfaz gráfica desarrollada con CTkinter. La interacción es principalmente por voz, pero también admite entrada escrita.
 
+## ‼ A tener en cuenta
+
+Es recomendado lanzar el proyecto en local dado que al utilizar los dockers si se quiere probar desde un entorno virtual tendra que:
+
+- Realizar nested virtualizacion, lo cual suele dar problemas con entornos virtuales de windows.
+
+- Realizar una conexión desde la el entorno virtual al host en caso de usar docker local.
+
+Destacar también que Coqui y Whisper se encuentran alojados en los servidores de ITCL, por lo que estaran deshabilitados en su uso a menos que se utilice la infraestructura del ITCL.
 
 # Ejemplo de captación del interfaz :
 
